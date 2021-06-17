@@ -51,9 +51,9 @@ All module functions and values are exported individually, thus allowing your bu
 Let's assume that you already "required" or "imported" (or simply loaded) the module according to your local environment. In that case, you may use it as follows:
 
 ```
-  console.log(JIL.ValueIsListSatisfying(
-    [1,2,3,4], JIL.ValueIsOrdinal, 1,10
-  ))
+console.log(JIL.ValueIsListSatisfying(
+  [1,2,3,4], JIL.ValueIsOrdinal, 1,10
+))
 ```
 
 ### API Reference ###
