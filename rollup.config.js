@@ -12,7 +12,6 @@ export default {
       name:      'Device', // required for UMD modules
       noConflict:true,
       sourcemap: true,
-      exports:   'default',
     },{
       file:     './dist/javascript-interface-library.esm.js',
       format:   'esm',
