@@ -1,0 +1,38 @@
+{
+  "name": "javascript-interface-library",
+  "version": "0.1.0",
+  "description": "various classification, validation and utility functions",
+  "main": "./dist/javascript-interface-library.js",
+  "module": "./dist/javascript-interface-library.esm.js",
+  "exports": {
+    "require": "./dist/javascript-interface-library.js",
+    "import": "./dist/javascript-interface-library.esm.js"
+  },
+  "scripts": {
+    "build": "rimraf dist && tsc && rollup -c rollup.config.js && mv src/*.js src/*.d.ts dist",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rozek/javascript-interface-library.git"
+  },
+  "keywords": [
+    "javascript",
+    "typescript"
+  ],
+  "author": "Andreas Rozek <a.rozek@gmx.de> (https://www.rozek.de/)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/rozek/javascript-interface-library/issues"
+  },
+  "homepage": "https://github.com/rozek/javascript-interface-library#readme",
+  "devDependencies": {
+    "@rollup/plugin-commonjs": "^19.0.0",
+    "@rollup/plugin-node-resolve": "^13.0.0",
+    "@rollup/plugin-typescript": "^8.2.1",
+    "rimraf": "^3.0.2",
+    "rollup": "^2.52.1",
+    "rollup-plugin-terser": "^7.0.2",
+    "typescript": "^4.3.3"
+  }
+}
