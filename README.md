@@ -58,7 +58,7 @@ console.log(JIL.ValueIsListSatisfying(
 
 ### API Reference ###
 
-As shown above, the individual functions and values may either be accessed directly (when used as an ESM) or by prefixing them with their namespace `JIL` (in all other cases). The following documentation lists all module contents without namespace prefix.
+As shown above, the individual functions and values may either be accessed directly (when used as an ESM) or by prefixing them with their namespace `JIL` (in all other cases). The following documentation lists all module contents without namespace prefix only.
 
 #### Object Functions ####
 
