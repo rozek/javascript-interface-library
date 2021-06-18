@@ -128,7 +128,7 @@ Unless stated otherwise, these functions exist in four different "flavours", as 
 
 For the sake of clarity, however, only the first "flavour" (namely `allowXXX`) is shown in the list below (provided that this flavour actually exists).
 
-* **`expectValue (Description:string, Argument:any):any`**<br>checks if the given `Argument` exists (i.e., if it differs from both `null` and `undefined`). If this is the case, the function returns the given `Argument`, otherwise an error with the message "no \\"${Description}\\" given" is thrown which uses the given `Description` argument<br>&nbsp;<br>
+* **`expectValue (Description:string, Argument:any):any`**<br>checks if the given `Argument` exists (i.e., if it differs from both `null` and `undefined`). If this is the case, the function returns the given `Argument`, otherwise an error with the message `"no \\"${Description}\\" given"` is thrown, which uses the given `Description` argument<br>&nbsp;<br>
 * **`allowBoolean (Description:string, Argument:any):boolean|null|undefined`**<br><br>&nbsp;<br>
 * **`allowNumber (Description:string, Argument:any):number|null|undefined`**<br>
 * **`allowFiniteNumber (Description:string, Argument:any):number|null|undefined`**<br>
