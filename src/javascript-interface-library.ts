@@ -270,10 +270,10 @@
 
 /**** ValueIsStringMatching ****/
 
-  export function ValueIsStringMatching (Value:any, pattern:RegExp):boolean {
+  export function ValueIsStringMatching (Value:any, Pattern:RegExp):boolean {
     return (
       (typeof Value === 'string') || (Value instanceof String)
-    ) && pattern.test(Value.valueOf())
+    ) && Pattern.test(Value.valueOf())
   }
 
 /**** ValueIsText ****/
@@ -412,14 +412,14 @@
 
 /**** ValueIsInstanceOf ****/
 
-  export function ValueIsInstanceOf (Value:any, constructor:Function):boolean {
-    return (Value instanceof constructor)
+  export function ValueIsInstanceOf (Value:any, Constructor:Function):boolean {
+    return (Value instanceof Constructor)
   }
 
 /**** ValueInheritsFrom ****/
 
-  export function ValueInheritsFrom (Value:any, prototype:Object):boolean {
-    return Object_isPrototypeOf(prototype,Value)
+  export function ValueInheritsFrom (Value:any, Prototype:Object):boolean {
+    return Object_isPrototypeOf(Prototype,Value)
   }
 
 /**** ValueIsDate ****/
@@ -810,11 +810,11 @@
 /**** allow[ed]StringMatching ****/
 
   export function allowStringMatching (
-    Description:string, Argument:any, pattern:RegExp
+    Description:string, Argument:any, Pattern:RegExp
   ):string|null|undefined {
     return (Argument == null
       ? Argument
-      : expectedStringMatching(Description, Argument, pattern)
+      : expectedStringMatching(Description, Argument, Pattern)
     )
   }
   export const allowedStringMatching = allowStringMatching
@@ -822,11 +822,11 @@
 /**** expect[ed]StringMatching ****/
 
   export function expectStringMatching (
-    Description:string, Argument:any, pattern:RegExp
+    Description:string, Argument:any, Pattern:RegExp
   ):string {
     expectString(Description, Argument)
 
-    if (pattern.test(Argument)) {
+    if (Pattern.test(Argument)) {
       return Argument.valueOf()
     } else {
       throwError(
@@ -1381,11 +1381,11 @@
       case 'undefined':
       case 'boolean':
       case 'string':
-      case 'string': return true  // most primitives can be compared using "==="
-      case 'number': return (
-                       (isNaN(thisValue) !== isNaN(otherValue)) ||
-                       (Math.abs(thisValue-otherValue) > Number.EPSILON)
-                     )
+      case 'function': return true   // most primitives are compared using "==="
+      case 'number':   return (
+                         (isNaN(thisValue) !== isNaN(otherValue)) ||
+                         (Math.abs(thisValue-otherValue) > Number.EPSILON)
+                       )
       case 'object':
         if (thisValue  == null) { return true }  // since "other_value" != null!
         if (otherValue == null) { return true }   // since "this_value" != null!
@@ -1605,20 +1605,9 @@
     throwError('InvalidArgument: the given Value is not a valid CSS Color specification')
   }
 
-/**** CSSColor - converts #RRGGBBAA into rgba(r,g,b,a) ****/
+/**** shortHexColor - converts a given color into #RRGGBB ****/
 
-  export function CSSColor (Color:string):string {
-    return ('rgba(' +
-      parseInt(Color.slice(1,3),16) + ',' +
-      parseInt(Color.slice(3,5),16) + ',' +
-      parseInt(Color.slice(5,7),16) + ',' +
-      (parseInt(Color.slice(7),16)/255) +
-    ')')
-  }
-
-/**** shortCSSColor - converts #RRGGBBAA into #RRGGBB ****/
-
-  export function shortCSSColor (Color:string):string {
+  export function shortHexColor (Color:string):string {
     return HexColor(Color).slice(0,7)
   }
 
@@ -1680,6 +1669,6 @@
       HTMLsafe, MarkDownSafe,
       ValuesDiffer, ValuesAreEqual,
       ObjectIsEmpty, StringIsEmpty, StringIsNotEmpty,
-      ColorSet, HexColor, RGBAColor, CSSColor, shortCSSColor
+      ColorSet, HexColor, shortHexColor, RGBAColor
     }
   }
