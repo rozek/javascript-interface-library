@@ -12,7 +12,7 @@ These situations are, what the `javascript-interface-library` is providing funct
 
 `javascript-interface-library` may be used as an ESM, CommonJS or AMD module or from a global variable.
 
-You may either install the package into your build environment
+You may either install the package into your build environment using [NPM](https://docs.npmjs.com/) with the command
 
 ```
 npm install javascript-interface-library
@@ -66,54 +66,54 @@ The JavaScript `Object` class provides a few useful functions (or "static method
 
 `JIL` therefore contains the following functions which mimic their counterparts from the `Object` class, but succeed even if the given target object is "vanilla".
 
-* `Object_hasOwnProperty (Value:Object, PropertyName:string):boolean` <br>
-* `Object_isPrototypeOf (Value:Object, Candidate:any):boolean` <br>
-* `Object_propertyIsEnumerable (Value:Object, PropertyName:string):boolean` <br>
-* `Object_toString (Value:Object):string` <br>
-* `Object_toLocaleString (Value:Object):string` <br>
-* `Object_valueOf (Value:Object):any` <br>
+* **`Object_hasOwnProperty (Value:Object, PropertyName:string):boolean`**<br>returns `true` if the given `Value` contains a property with the name `PropertyName` as its own property - or `false` otherwise. This function mimics the JavaScript method [Object.hasOwnProperty](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/hasOwnProperty)
+* **`Object_isPrototypeOf (Value:Object, Candidate:any):boolean`**<br>returns `true` if the given `Value` exists in the prototype chain of a given `Candidate` - or `false` otherwise. This function mimics the JavaScript method [Object.isPrototypeOf](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/isPrototypeOf)
+* **`Object_propertyIsEnumerable (Value:Object, PropertyName:string):boolean`**<br>returns `true` if the given `Value` contains a property with the name `PropertyName` as its own property and that one is enumerable - or `false` otherwise. This function mimics the JavaScript method [Object.propertyIsEnumerable](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/propertyIsEnumerable)
+* **`Object_toString (Value:Object):string`**<br>returns a string which represents the given `Value`. This function mimics the JavaScript method [Object.toString](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/toString)
+* **`Object_toLocaleString (Value:Object):string`**<br>returns a locale-specific string which represents the given `Value`. This function mimics the JavaScript method [Object.toLocaleString](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/toLocaleString)
+* **`Object_valueOf (Value:Object):any`**<br>returns the primitive value of the given `Value` object. This function mimics the JavaScript method [Object.valueOf](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/valueOf)
 
 #### Value Classification Functions ####
 
 The following functions check whether a given argument satisfies a certain constraint (e.g., belongs to a certain category) and return either `true` (if the constrain is met) or false otherwise.
 
-* `ValueExists (Value:any):boolean`<br>
-* `ValueIsMissing (Value:any):boolean`<br>
-* `ValueIsBoolean (Value:any):boolean`<br>
-* `ValueIsNumber (Value:any):boolean`<br>
-* `ValueIsFiniteNumber (Value:any):boolean`<br>
-* `ValueIsNaN (Value:any):boolean`<br>
-* `ValueIsNumberInRange (Value:any, minValue?:number, maxValue?:number, withMin:boolean = true, withMax:boolean = true):boolean`<br>
-* `ValueIsInteger (Value:any):boolean`<br>
-* `ValueIsIntegerInRange (Value:any, minValue?:number, maxValue?:number):boolean`<br>
-* `ValueIsOrdinal (Value:any):boolean`<br>
-* `ValueIsCardinal (Value:any):boolean`<br>
-* `ValueIsString (Value:any):boolean`<br>
-* `ValueIsNonEmptyString (Value:any):boolean`<br>
-* `ValueIsStringMatching (Value:any, Pattern:RegExp):boolean`<br>
-* `ValueIsText (Value:any):boolean`<br>
-* `ValueIsTextline (Value:any):boolean`<br>
-* `ValueIsFunction (Value:any):boolean`<br>
-* `ValueIsAnonymousFunction (Value:any):boolean`<br>
-* `ValueIsNamedFunction (Value:any):boolean`<br>
-* `ValueIsNativeFunction (Value:any):boolean`<br>
-* `ValueIsScriptedFunction (Value:any):boolean`<br>
-* `ValueIsObject (Value:any):boolean`<br>
-* `ValueIsPlainObject (Value:any):boolean`<br>
-* `ValueIsVanillaObject (Value:any):boolean`<br>
-* `ValueIsArray (Value:any):boolean`<br>
-* `ValueIsList (Value:any, minLength?:number, maxLength?:number):boolean`<br>
-* `ValueIsListSatisfying (Value:any, Validator:Function, minLength?:number, maxLength?:number):boolean`<br>
-* `ValueIsInstanceOf (Value:any, constructor:Function):boolean`<br>
-* `ValueInheritsFrom (Value:any, prototype:Object):boolean`<br>
-* `ValueIsDate (Value:any):boolean`<br>
-* `ValueIsError (Value:any):boolean`<br>
-* `ValueIsPromise (Value:any):boolean`<br>
-* `ValueIsRegExp (Value:any):boolean`<br>
-* `ValueIsOneOf (Value:any, ValueList:any[]):boolean`<br>
-* `ValueIsColor (Value:any):boolean`<br>
-* `ValueIsEMailAddress (Value:any):boolean`<br>
-* `ValueIsURL (Value:any):boolean`<br>
+* **`ValueExists (Value:any):boolean`**<br>returns `true` if the given `Value` exists, i.e., if it differs from both `null` and `undefined` - or `false` otherwise
+* **`ValueIsMissing (Value:any):boolean`**<br>returns `true` if the given `Value` is either `null` or `undefined` - or `false` otherwise<br>&nbsp;<br>
+* **`ValueIsBoolean (Value:any):boolean`**<br>returns `true` if the given `Value` is either a primitive boolean value or an instance of `Boolean` - or `false` otherwise<br>&nbsp;<br>
+* **`ValueIsNumber (Value:any):boolean`**<br>returns `true` if the given `Value` is either a primitive numeric value or an instance of `Number` - or `false` otherwise
+* **`ValueIsFiniteNumber (Value:any):boolean`**<br>returns `true` if the given `Value` is a finite number, i.e. a number which is not `NaN` and whose value is greater than negative and smaller than positive infinity - or `false` otherwise
+* **`ValueIsNaN (Value:any):boolean`**<br>returns `true` if the given `Value` is `NaN` - or `false` otherwise
+* **`ValueIsNumberInRange (Value:any, minValue?:number, maxValue?:number, withMin:boolean = true, withMax:boolean = true):boolean`**<br>returns `true` if the given `Value` is a number whose value is within the range given by `minValue` and `maxValue` - or `false` otherwise. `minValue` is optional and defaults to negative infinity, `maxValue` is also optional and defaults to positive infinity. When `true`, `withMin` indicates that `Value` may also be *equal* to the lower end of the given range, otherwise it must just be *greater than* the lower limit. When `true`, `withMax` indicates that `Value` may also be *equal* to the upper end of the given range, otherwise it must just be *lower than* the upper limit
+* **`ValueIsInteger (Value:any):boolean`**<br>returns `true` if the given `Value` is a whole number - or `false` otherwise
+* **`ValueIsIntegerInRange (Value:any, minValue?:number, maxValue?:number):boolean`**<br>returns `true` if the given `Value` is a whole number whose value is within the range given by `minValue` and `maxValue` - or `false` otherwise. `minValue` is optional and defaults to negative infinity, `maxValue` is also optional and defaults to positive infinity
+* **`ValueIsOrdinal (Value:any):boolean`**<br>returns `true` if the given `Value` is a whole number greater than or equal to zero - or `false` otherwise
+* **`ValueIsCardinal (Value:any):boolean`**<br>returns `true` if the given `Value` is a whole number greater than or equal to one - or `false` otherwise<br>&nbsp;<br>
+* **`ValueIsString (Value:any):boolean`**<br>returns `true` if the given `Value` is either a primitive literal value or an instance of `String` - or `false` otherwise
+* **`ValueIsNonEmptyString (Value:any):boolean`**<br>returns `true` if the given `Value` is a string with some content that does not just consist of white-space characters - or `false` otherwise
+* **`ValueIsStringMatching (Value:any, Pattern:RegExp):boolean`**<br>returns `true` if the given `Value` is a string whose content matches the given regular expression `Pattern` - or `false` otherwise
+* **`ValueIsText (Value:any):boolean`**<br>returns `true` if the given `Value` is a string containing "ordinary" text only (i.e., a string which lacks any kind of control characters except \\n or \\r) - or `false` otherwise
+* **`ValueIsTextline (Value:any):boolean`**<br>returns `true` if the given `Value` is a string containing a single line of "ordinary" text only (i.e., a string which lacks any kind of control characters) - or `false` otherwise<br>&nbsp;<br>
+* **`ValueIsFunction (Value:any):boolean`**<br>returns `true` if the given `Value` is a JavaScript function - or `false` otherwise
+* **`ValueIsAnonymousFunction (Value:any):boolean`**<br>returns `true` if the given `Value`is an anonymous JavaScript function (i.e., a function without a `name` property)  - or `false` otherwise
+* **`ValueIsNamedFunction (Value:any):boolean`**<br>returns `true` if the given `Value` is a "named" JavaScript function (i.e., a function with a non-empty `name` property) - or `false` otherwise
+* **`ValueIsNativeFunction (Value:any):boolean`**<br>returns `true` if the given `Value` is a native JavaScript function - or `false` otherwise
+* **`ValueIsScriptedFunction (Value:any):boolean`**<br>returns `true` if the given `Value` is a scripted JavaScript function - or `false` otherwise<br>&nbsp;<br>
+* **`ValueIsObject (Value:any):boolean`**<br>returns `true` if the given `Value` is a JavaScript object (and not `null`) - or `false` otherwise
+* **`ValueIsPlainObject (Value:any):boolean`**<br>returns `true` if the given `Value` is a JavaScript object (different from `null`) which directly inherits from `Object` (such as a Javascript object literal) - or `false` otherwise
+* **`ValueIsVanillaObject (Value:any):boolean`**<br>returns `true` if the given `Value` s a JavaScript object which has been built using `Object.create(null)` - or `false` otherwise<br>&nbsp;<br>
+* **`ValueIsArray (Value:any):boolean`**<br>returns `true` if the given `Value` is an `Array` instance - or `false` otherwise
+* **`ValueIsList (Value:any, minLength?:number, maxLength?:number):boolean`**<br>returns `true` if the given `Value` is a "dense" JavaScript array (i.e., an array whose indices 0...n-1 all exist, where n is the `length` of the given array) - or `false` otherwise
+* **`ValueIsListSatisfying (Value:any, Validator:Function, minLength?:number, maxLength?:number):boolean`**<br>returns `true` if the given `Value` is a "dense" JavaScript array, whose elements all pass the given `Validator` - or `false` otherwise. `Validator` is a function which receives a list element as its sole argument and returns `true` if the given element is "valid" or `false` otherwise. If given, `minLength` specifies the minimal required list length and `maxLength` specifies the maximal allowed list length<br>&nbsp;<br>
+* **`ValueIsInstanceOf (Value:any, Constructor:Function):boolean`**<br>returns `true` if the given `Value` was constructed using the given `Constructor` function - or `false` otherwise
+* **`ValueInheritsFrom (Value:any, Prototype:Object):boolean`**<br>returns `true` if `Prototype` exists in the prototype chain of the given `Value` - or `false` otherwise<br>&nbsp;<br>
+* **`ValueIsDate (Value:any):boolean`**<br>returns `true` if the given `Value` is a `Date` instance - or `false` otherwise
+* **`ValueIsError (Value:any):boolean`**<br>returns `true` if the given `Value` is an `Error` instance  - or `false` otherwise
+* **`ValueIsPromise (Value:any):boolean`**<br>returns `true` if the given `Value` is a "Promise", i.e., an object with a property named `then` which contains a function - or `false` otherwise
+* **`ValueIsRegExp (Value:any):boolean`**<br>returns `true` if the given `Value` is a `RegExp` instance - or `false` otherwise<br>&nbsp;<br>
+* **`ValueIsOneOf (Value:any, ValueList:any[]):boolean`**<br>returns `true` if the given `Value` equals (at least) one of the items found in the given `ValueList` - or `false` otherwise. Equality is checked using the JavaScript `===` operator<br>&nbsp;<br>
+* **`ValueIsColor (Value:any):boolean`**<br>returns `true` if the given `Value` is a string containing a syntactically valid CSS color specification - or `false` otherwise
+* **`ValueIsEMailAddress (Value:any):boolean`**<br>returns `true` if the given `Value` is a string containing a syntactically valid EMail address - or `false` otherwise
+* **`ValueIsURL (Value:any):boolean`**<br>returns `true` if the given `Value` is a string containing a syntactically valid URL - or `false` otherwise
 
 #### Argument Validation Functions ####
 
@@ -128,67 +128,77 @@ Unless stated otherwise, these functions exist in four different "flavours", as 
 
 For the sake of clarity, however, only the first "flavour" (namely `allowXXX`) is shown in the list below (provided that this flavour actually exists).
 
-* `expectValue (Description:string, Argument:any):any`<br>
-* `allowBoolean (Description:string, Argument:any):boolean|null|undefined`<br>
-* `allowNumber (Description:string, Argument:any):number|null|undefined`<br>
-* `allowFiniteNumber (Description:string, Argument:any):number|null|undefined`<br>
-* `allowNaN (Description:string, Argument:any):number|null|undefined`<br>
-* `allowNumberInRange (Description:string, Argument:any, minValue?:number, maxValue?:number, withMin?:boolean, withMax?:boolean):number|null|undefined`<br>
-* `allowInteger (Description:string, Argument:any):number|null|undefined`<br>
-* `allowIntegerInRange (Description:string, Argument:any, minValue?:number, maxValue?:number):number|null|undefined`<br>
-* `allowOrdinal (Description:string, Argument:any):number|null|undefined`<br>
-* `allowCardinal (Description:string, Argument:any):number|null|undefined`<br>
-* `allowString (Description:string, Argument:any):string|null|undefined`<br>
-* `allowNonEmptyString (Description:string, Argument:any):string|null|undefined`<br>
-* `allowStringMatching (Description:string, Argument:any, pattern:RegExp):string|null|undefined`<br>
-* `allowText (Description:string, Argument:any):string|null|undefined`<br>
-* `allowTextline (Description:string, Argument:any):string|null|undefined`<br>
-* `allowFunction (Description:string, Argument:any):Function|null|undefined`<br>
-* `allowAnonymousFunction (Description:string, Argument:any):Function|null|undefined`<br>
-* `allowNamedFunction (Description:string, Argument:any):Function|null|undefined`<br>
-* `allowNativeFunction (Description:string, Argument:any):Function|null|undefined`<br>
-* `allowScriptedFunction (Description:string, Argument:any):Function|null|undefined`<br>
-* `allowObject (Description:string, Argument:any):any|null|undefined`<br>
-* `allowPlainObject (Description:string, Argument:any):any|null|undefined`<br>
-* `allowVanillaObject (Description:string, Argument:any):any|null|undefined`<br>
-* `allowArray (Description:string, Argument:any):any[]|null|undefined`<br>
-* `allowList (Description:string, Argument:any, Expectation?:string,minLength?:number, maxLength?:number):any[]|null|undefined`<br>
-* `allowListSatisfying (Description:string, Argument:any, Validator:(Value:any) => boolean,Expectation?:string, minLength?:number, maxLength?:number):any[]|null|undefined`<br>
-* `allowInstanceOf (Description:string, Argument:any, constructor:Function, Expectation:string):any|null|undefined`<br>
-* `allowValueInheritingFrom (Description:string, Argument:any, prototype:any, Expectation:string):any|null|undefined`<br>
-* `allowDate (Description:string, Argument:any):Date|null|undefined`<br>
-* `allowError (Description:string, Argument:any):Error|null|undefined`<br>
-* `allowPromise (Description:string, Argument:any):any|null|undefined`<br>
-* `allowRegExp (Description:string, Argument:any):RegExp|null|undefined`<br>
-* `allowOneOf (Description:string, Argument:any, ValueList:any[]):any|null|undefined`<br>
-* `allowColor (Description:string, Argument:any):string|null|undefined`<br>
-* `allowEMailAddress (Description:string, Argument:any):string|null|undefined`<br>
-* `allowURL (Description:string, Argument:any):string|null|undefined`<br>
+* **`expectValue (Description:string, Argument:any):any`**<br>
+* **`allowBoolean (Description:string, Argument:any):boolean|null|undefined`**<br>
+* **`allowNumber (Description:string, Argument:any):number|null|undefined`**<br>
+* **`allowFiniteNumber (Description:string, Argument:any):number|null|undefined`**<br>
+* **`allowNaN (Description:string, Argument:any):number|null|undefined`**<br>
+* **`allowNumberInRange (Description:string, Argument:any, minValue?:number, maxValue?:number, withMin?:boolean, withMax?:boolean):number|null|undefined`**<br>
+* **`allowInteger (Description:string, Argument:any):number|null|undefined`**<br>
+* **`allowIntegerInRange (Description:string, Argument:any, minValue?:number, maxValue?:number):number|null|undefined`**<br>
+* **`allowOrdinal (Description:string, Argument:any):number|null|undefined`**<br>
+* **`allowCardinal (Description:string, Argument:any):number|null|undefined`**<br>
+* **`allowString (Description:string, Argument:any):string|null|undefined`**<br>
+* **`allowNonEmptyString (Description:string, Argument:any):string|null|undefined`**<br>
+* **`allowStringMatching (Description:string, Argument:any, pattern:RegExp):string|null|undefined`**<br>
+* **`allowText (Description:string, Argument:any):string|null|undefined`**<br>
+* **`allowTextline (Description:string, Argument:any):string|null|undefined`**<br>
+* **`allowFunction (Description:string, Argument:any):Function|null|undefined`**<br>
+* **`allowAnonymousFunction (Description:string, Argument:any):Function|null|undefined`**<br>
+* **`allowNamedFunction (Description:string, Argument:any):Function|null|undefined`**<br>
+* **`allowNativeFunction (Description:string, Argument:any):Function|null|undefined`**<br>
+* **`allowScriptedFunction (Description:string, Argument:any):Function|null|undefined`**<br>
+* **`allowObject (Description:string, Argument:any):any|null|undefined`**<br>
+* **`allowPlainObject (Description:string, Argument:any):any|null|undefined`**<br>
+* **`allowVanillaObject (Description:string, Argument:any):any|null|undefined`**<br>
+* **`allowArray (Description:string, Argument:any):any[]|null|undefined`**<br>
+* **`allowList (Description:string, Argument:any, Expectation?:string,minLength?:number, maxLength?:number):any[]|null|undefined`**<br>
+* **`allowListSatisfying (Description:string, Argument:any, Validator:(Value:any) => boolean,Expectation?:string, minLength?:number, maxLength?:number):any[]|null|undefined`**<br>
+* **`allowInstanceOf (Description:string, Argument:any, constructor:Function, Expectation:string):any|null|undefined`**<br>
+* **`allowValueInheritingFrom (Description:string, Argument:any, prototype:any, Expectation:string):any|null|undefined`**<br>
+* **`allowDate (Description:string, Argument:any):Date|null|undefined`**<br>
+* **`allowError (Description:string, Argument:any):Error|null|undefined`**<br>
+* **`allowPromise (Description:string, Argument:any):any|null|undefined`**<br>
+* **`allowRegExp (Description:string, Argument:any):RegExp|null|undefined`**<br>
+* **`allowOneOf (Description:string, Argument:any, ValueList:any[]):any|null|undefined`**<br>
+* **`allowColor (Description:string, Argument:any):string|null|undefined`**<br>
+* **`allowEMailAddress (Description:string, Argument:any):string|null|undefined`**<br>
+* **`allowURL (Description:string, Argument:any):string|null|undefined`**<br>
 
 #### Utility Functions ####
 
-* `throwError (Message:string):never`<br>
-* `ObjectMergedWith (TargetObject:object, ...otherObjectList:object[]):object`<br>
-* `escaped (Text:string):string`<br>
-* `unescaped (Text:string):string`<br>
-* `quotable (Text:string, Quote:'"' | "'" = '"'):string`<br>
-* `quoted (Text:string, Quote:'"' | "'" = '"'):string`<br>
-* `HTMLsafe (Argument:string, EOLReplacement?:string):string`<br>
-* `MarkDownSafe (Argument:string, EOLReplacement?:string):string`<br>
-* `ValuesDiffer (thisValue:any, otherValue:any):boolean`<br>
-* `ValuesAreEqual (thisValue:any, otherValue:any):boolean`<br>
-* `ObjectIsEmpty (Candidate:any):boolean`<br>
-* `StringIsEmpty (Candidate:string):boolean`<br>
-* `StringIsNotEmpty (Candidate:string):boolean`<br>
-* `ValidatorForClassifier (Classifier:(Value:any) => boolean, NilIsAcceptable:boolean,Expectation:string):Function`<br>
-* `validatedArgument (Description:string, Argument:any, ValueIsValid:(Value:any) => boolean,NilIsAcceptable:boolean, Expectation:string):any|null|undefined`<br>
-* `FunctionWithName (originalFunction:Function, desiredName:string|String):Function`
+* **`throwError (Message:string):never`**<br>
+* **`ObjectMergedWith (TargetObject:object, ...otherObjectList:object[]):object`**<br>
+* **`escaped (Text:string):string`**<br>
+* **`unescaped (Text:string):string`**<br>
+* **`quotable (Text:string, Quote:'"' | "'" = '"'):string`**<br>
+* **`quoted (Text:string, Quote:'"' | "'" = '"'):string`**<br>
+* **`HTMLsafe (Argument:string, EOLReplacement?:string):string`**<br>
+* **`MarkDownSafe (Argument:string, EOLReplacement?:string):string`**<br>
+* **`ValuesDiffer (thisValue:any, otherValue:any):boolean`**<br>
+* **`ValuesAreEqual (thisValue:any, otherValue:any):boolean`**<br>
+* **`ObjectIsEmpty (Candidate:any):boolean`**<br>
+* **`StringIsEmpty (Candidate:string):boolean`**<br>
+* **`StringIsNotEmpty (Candidate:string):boolean`**<br>
+* **`ValidatorForClassifier (Classifier:(Value:any) => boolean, NilIsAcceptable:boolean,Expectation:string):Function`**<br>
+* **`validatedArgument (Description:string, Argument:any, ValueIsValid:(Value:any) => boolean,NilIsAcceptable:boolean, Expectation:string):any|null|undefined`**<br>
+* **`FunctionWithName (originalFunction:Function, desiredName:string|String):Function`**<br>
 
 #### Color Utilities ####
 
-* `ColorSet`<br>
-* `HexColor (Color:string):string`<br>
-* `RGBAColor (Color:string):string`<br>
-* `CSSColor (Color:string):string`<br>
-* `shortCSSColor (Color:string):string`<br>
+* **`ColorSet`**<br>
+* **`HexColor (Color:string):string`**<br>
+* **`RGBAColor (Color:string):string`**<br>
+* **`CSSColor (Color:string):string`**<br>
+* **`shortCSSColor (Color:string):string`**<br>
 
+### Build Instructions ###
+
+You may easily build this package yourself.
+
+Just install [NPM](https://docs.npmjs.com/) according to the instructions for your platform and follow these steps:
+
+1. either clone this repository using [git](https://git-scm.com/) or [download a ZIP archive](https://github.com/rozek/javascript-interface-library/archive/refs/heads/main.zip) with its contents to your disk and unpack it there 
+2. open a shell and navigate to the root directory of this repository
+3. run `npm install` in order to install the complete build environment
+4. execute `npm run build` to create a new build
