@@ -199,3 +199,11 @@ Just install [NPM](https://docs.npmjs.com/) according to the instructions for yo
 2. open a shell and navigate to the root directory of this repository
 3. run `npm install` in order to install the complete build environment
 4. execute `npm run build` to create a new build
+
+If you made some changes to the source code, you may also try
+
+```
+npm run agadoo
+```
+
+in order to check if the result is still tree-shakable.
