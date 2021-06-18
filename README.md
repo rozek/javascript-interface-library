@@ -37,11 +37,9 @@ Alternatively, you may access the global Variable `JIL` directly.
 ### Usage as an ECMAscript Module ###
 
 ```
-<script>
-  console.log(ValueIsListSatisfying(
-    [1,2,3,4], ValueIsOrdinal, 1,10
-  ))
-</script>
+console.log(ValueIsListSatisfying(
+  [1,2,3,4], ValueIsOrdinal, 1,10
+))
 ```
 
 All module functions and values are exported individually, thus allowing your bundler to perform some "tree-shaking" in order to import actually used functions or values only.
