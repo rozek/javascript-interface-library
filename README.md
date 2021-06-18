@@ -66,12 +66,12 @@ The JavaScript `Object` class provides a few useful functions (or "static method
 
 `JIL` therefore contains the following functions which mimic their counterparts from the `Object` class, but succeed even if the given target object is "vanilla".
 
-* `Object_hasOwnProperty (Value:Object, PropertyName:string):boolean` <br>This function mimics the JavaScript method [Object.hasOwnProperty](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/hasOwnProperty)
-* `Object_isPrototypeOf (Value:Object, Candidate:any):boolean` <br>This function mimics the JavaScript method [Object.isPrototypeOf](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/isPrototypeOf)
-* `Object_propertyIsEnumerable (Value:Object, PropertyName:string):boolean` <br>This function mimics the JavaScript method [Object.propertyIsEnumerable](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/propertyIsEnumerable)
-* `Object_toString (Value:Object):string` <br>This function mimics the JavaScript method [Object.toString](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/toString)
-* `Object_toLocaleString (Value:Object):string` <br>This function mimics the JavaScript method [Object.toLocaleString](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/toLocaleString)
-* `Object_valueOf (Value:Object):any` <br>This function mimics the JavaScript method [Object.valueOf](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/valueOf)
+* `Object_hasOwnProperty (Value:Object, PropertyName:string):boolean` <br>returns `true` if the given `Value` contains a property with the name `PropertyName` as its own property, or `false` otherwise. This function mimics the JavaScript method [Object.hasOwnProperty](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/hasOwnProperty)
+* `Object_isPrototypeOf (Value:Object, Candidate:any):boolean` <br>returns `true` if the given `Value` exists in the prototype chain of a given `Candidate`, or `false` otherwise. This function mimics the JavaScript method [Object.isPrototypeOf](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/isPrototypeOf)
+* `Object_propertyIsEnumerable (Value:Object, PropertyName:string):boolean` <br> returns `true` if the given `Value` contains a property with the name `PropertyName` as its own property and that one is enumerable, or `false` otherwise. This function mimics the JavaScript method [Object.propertyIsEnumerable](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/propertyIsEnumerable)
+* `Object_toString (Value:Object):string` <br>returns a string which represents the given `Value`. This function mimics the JavaScript method [Object.toString](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/toString)
+* `Object_toLocaleString (Value:Object):string` <br>returns a locale-specific string which represents the given `Value`. This function mimics the JavaScript method [Object.toLocaleString](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/toLocaleString)
+* `Object_valueOf (Value:Object):any` <br>returns the primitive value of the given `Value` object. This function mimics the JavaScript method [Object.valueOf](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/valueOf)
 
 #### Value Classification Functions ####
 
