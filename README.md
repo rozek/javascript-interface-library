@@ -128,8 +128,8 @@ Unless stated otherwise, these functions exist in four different "flavours", as 
 
 For the sake of clarity, however, only the first "flavour" (namely `allowXXX`) is shown in the list below (provided that this flavour actually exists).
 
-* **`expectValue (Description:string, Argument:any):any`**<br>
-* **`allowBoolean (Description:string, Argument:any):boolean|null|undefined`**<br>
+* **`expectValue (Description:string, Argument:any):any`**<br>checks if the given `Argument` exists (i.e., if it differs from both `null` and `undefined`). If this is the case, the function returns the given `Argument`, otherwise an error with the message "no \\"${Description}\\" given" is thrown which uses the given `Description` argument<br>&nbsp;<br>
+* **`allowBoolean (Description:string, Argument:any):boolean|null|undefined`**<br><br>&nbsp;<br>
 * **`allowNumber (Description:string, Argument:any):number|null|undefined`**<br>
 * **`allowFiniteNumber (Description:string, Argument:any):number|null|undefined`**<br>
 * **`allowNaN (Description:string, Argument:any):number|null|undefined`**<br>
@@ -137,30 +137,30 @@ For the sake of clarity, however, only the first "flavour" (namely `allowXXX`) i
 * **`allowInteger (Description:string, Argument:any):number|null|undefined`**<br>
 * **`allowIntegerInRange (Description:string, Argument:any, minValue?:number, maxValue?:number):number|null|undefined`**<br>
 * **`allowOrdinal (Description:string, Argument:any):number|null|undefined`**<br>
-* **`allowCardinal (Description:string, Argument:any):number|null|undefined`**<br>
+* **`allowCardinal (Description:string, Argument:any):number|null|undefined`**<br><br>&nbsp;<br>
 * **`allowString (Description:string, Argument:any):string|null|undefined`**<br>
 * **`allowNonEmptyString (Description:string, Argument:any):string|null|undefined`**<br>
 * **`allowStringMatching (Description:string, Argument:any, pattern:RegExp):string|null|undefined`**<br>
 * **`allowText (Description:string, Argument:any):string|null|undefined`**<br>
-* **`allowTextline (Description:string, Argument:any):string|null|undefined`**<br>
+* **`allowTextline (Description:string, Argument:any):string|null|undefined`**<br><br>&nbsp;<br>
 * **`allowFunction (Description:string, Argument:any):Function|null|undefined`**<br>
 * **`allowAnonymousFunction (Description:string, Argument:any):Function|null|undefined`**<br>
 * **`allowNamedFunction (Description:string, Argument:any):Function|null|undefined`**<br>
 * **`allowNativeFunction (Description:string, Argument:any):Function|null|undefined`**<br>
-* **`allowScriptedFunction (Description:string, Argument:any):Function|null|undefined`**<br>
+* **`allowScriptedFunction (Description:string, Argument:any):Function|null|undefined`**<br><br>&nbsp;<br>
 * **`allowObject (Description:string, Argument:any):any|null|undefined`**<br>
 * **`allowPlainObject (Description:string, Argument:any):any|null|undefined`**<br>
-* **`allowVanillaObject (Description:string, Argument:any):any|null|undefined`**<br>
+* **`allowVanillaObject (Description:string, Argument:any):any|null|undefined`**<br><br>&nbsp;<br>
 * **`allowArray (Description:string, Argument:any):any[]|null|undefined`**<br>
 * **`allowList (Description:string, Argument:any, Expectation?:string,minLength?:number, maxLength?:number):any[]|null|undefined`**<br>
-* **`allowListSatisfying (Description:string, Argument:any, Validator:(Value:any) => boolean,Expectation?:string, minLength?:number, maxLength?:number):any[]|null|undefined`**<br>
+* **`allowListSatisfying (Description:string, Argument:any, Validator:(Value:any) => boolean,Expectation?:string, minLength?:number, maxLength?:number):any[]|null|undefined`**<br><br>&nbsp;<br>
 * **`allowInstanceOf (Description:string, Argument:any, constructor:Function, Expectation:string):any|null|undefined`**<br>
-* **`allowValueInheritingFrom (Description:string, Argument:any, prototype:any, Expectation:string):any|null|undefined`**<br>
+* **`allowValueInheritingFrom (Description:string, Argument:any, prototype:any, Expectation:string):any|null|undefined`**<br><br>&nbsp;<br>
 * **`allowDate (Description:string, Argument:any):Date|null|undefined`**<br>
 * **`allowError (Description:string, Argument:any):Error|null|undefined`**<br>
 * **`allowPromise (Description:string, Argument:any):any|null|undefined`**<br>
-* **`allowRegExp (Description:string, Argument:any):RegExp|null|undefined`**<br>
-* **`allowOneOf (Description:string, Argument:any, ValueList:any[]):any|null|undefined`**<br>
+* **`allowRegExp (Description:string, Argument:any):RegExp|null|undefined`**<br><br>&nbsp;<br>
+* **`allowOneOf (Description:string, Argument:any, ValueList:any[]):any|null|undefined`**<br><br>&nbsp;<br>
 * **`allowColor (Description:string, Argument:any):string|null|undefined`**<br>
 * **`allowEMailAddress (Description:string, Argument:any):string|null|undefined`**<br>
 * **`allowURL (Description:string, Argument:any):string|null|undefined`**<br>
