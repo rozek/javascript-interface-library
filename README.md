@@ -66,54 +66,54 @@ The JavaScript `Object` class provides a few useful functions (or "static method
 
 `JIL` therefore contains the following functions which mimic their counterparts from the `Object` class, but succeed even if the given target object is "vanilla".
 
-* `Object_hasOwnProperty (Value:Object, PropertyName:string):boolean` <br>returns `true` if the given `Value` contains a property with the name `PropertyName` as its own property, or `false` otherwise. This function mimics the JavaScript method [Object.hasOwnProperty](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/hasOwnProperty)
-* `Object_isPrototypeOf (Value:Object, Candidate:any):boolean` <br>returns `true` if the given `Value` exists in the prototype chain of a given `Candidate`, or `false` otherwise. This function mimics the JavaScript method [Object.isPrototypeOf](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/isPrototypeOf)
-* `Object_propertyIsEnumerable (Value:Object, PropertyName:string):boolean` <br> returns `true` if the given `Value` contains a property with the name `PropertyName` as its own property and that one is enumerable, or `false` otherwise. This function mimics the JavaScript method [Object.propertyIsEnumerable](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/propertyIsEnumerable)
-* `Object_toString (Value:Object):string` <br>returns a string which represents the given `Value`. This function mimics the JavaScript method [Object.toString](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/toString)
-* `Object_toLocaleString (Value:Object):string` <br>returns a locale-specific string which represents the given `Value`. This function mimics the JavaScript method [Object.toLocaleString](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/toLocaleString)
-* `Object_valueOf (Value:Object):any` <br>returns the primitive value of the given `Value` object. This function mimics the JavaScript method [Object.valueOf](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/valueOf)
+* **`Object_hasOwnProperty (Value:Object, PropertyName:string):boolean`**<br>returns `true` if the given `Value` contains a property with the name `PropertyName` as its own property - or `false` otherwise. This function mimics the JavaScript method [Object.hasOwnProperty](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/hasOwnProperty)
+* **`Object_isPrototypeOf (Value:Object, Candidate:any):boolean`**<br>returns `true` if the given `Value` exists in the prototype chain of a given `Candidate` - or `false` otherwise. This function mimics the JavaScript method [Object.isPrototypeOf](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/isPrototypeOf)
+* **`Object_propertyIsEnumerable (Value:Object, PropertyName:string):boolean`**<br>returns `true` if the given `Value` contains a property with the name `PropertyName` as its own property and that one is enumerable - or `false` otherwise. This function mimics the JavaScript method [Object.propertyIsEnumerable](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/propertyIsEnumerable)
+* **`Object_toString (Value:Object):string`**<br>returns a string which represents the given `Value`. This function mimics the JavaScript method [Object.toString](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/toString)
+* **`Object_toLocaleString (Value:Object):string`**<br>returns a locale-specific string which represents the given `Value`. This function mimics the JavaScript method [Object.toLocaleString](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/toLocaleString)
+* **`Object_valueOf (Value:Object):any`**<br>returns the primitive value of the given `Value` object. This function mimics the JavaScript method [Object.valueOf](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/valueOf)
 
 #### Value Classification Functions ####
 
 The following functions check whether a given argument satisfies a certain constraint (e.g., belongs to a certain category) and return either `true` (if the constrain is met) or false otherwise.
 
-* `ValueExists (Value:any):boolean`<br>
-* `ValueIsMissing (Value:any):boolean`<br>
-* `ValueIsBoolean (Value:any):boolean`<br>
-* `ValueIsNumber (Value:any):boolean`<br>
-* `ValueIsFiniteNumber (Value:any):boolean`<br>
-* `ValueIsNaN (Value:any):boolean`<br>
-* `ValueIsNumberInRange (Value:any, minValue?:number, maxValue?:number, withMin:boolean = true, withMax:boolean = true):boolean`<br>
-* `ValueIsInteger (Value:any):boolean`<br>
-* `ValueIsIntegerInRange (Value:any, minValue?:number, maxValue?:number):boolean`<br>
-* `ValueIsOrdinal (Value:any):boolean`<br>
-* `ValueIsCardinal (Value:any):boolean`<br>
-* `ValueIsString (Value:any):boolean`<br>
-* `ValueIsNonEmptyString (Value:any):boolean`<br>
-* `ValueIsStringMatching (Value:any, Pattern:RegExp):boolean`<br>
-* `ValueIsText (Value:any):boolean`<br>
-* `ValueIsTextline (Value:any):boolean`<br>
-* `ValueIsFunction (Value:any):boolean`<br>
-* `ValueIsAnonymousFunction (Value:any):boolean`<br>
-* `ValueIsNamedFunction (Value:any):boolean`<br>
-* `ValueIsNativeFunction (Value:any):boolean`<br>
-* `ValueIsScriptedFunction (Value:any):boolean`<br>
-* `ValueIsObject (Value:any):boolean`<br>
-* `ValueIsPlainObject (Value:any):boolean`<br>
-* `ValueIsVanillaObject (Value:any):boolean`<br>
-* `ValueIsArray (Value:any):boolean`<br>
-* `ValueIsList (Value:any, minLength?:number, maxLength?:number):boolean`<br>
-* `ValueIsListSatisfying (Value:any, Validator:Function, minLength?:number, maxLength?:number):boolean`<br>
-* `ValueIsInstanceOf (Value:any, constructor:Function):boolean`<br>
-* `ValueInheritsFrom (Value:any, prototype:Object):boolean`<br>
-* `ValueIsDate (Value:any):boolean`<br>
-* `ValueIsError (Value:any):boolean`<br>
-* `ValueIsPromise (Value:any):boolean`<br>
-* `ValueIsRegExp (Value:any):boolean`<br>
-* `ValueIsOneOf (Value:any, ValueList:any[]):boolean`<br>
-* `ValueIsColor (Value:any):boolean`<br>
-* `ValueIsEMailAddress (Value:any):boolean`<br>
-* `ValueIsURL (Value:any):boolean`<br>
+* **`ValueExists (Value:any):boolean`**<br>
+* **`ValueIsMissing (Value:any):boolean`**<br>
+* **`ValueIsBoolean (Value:any):boolean`**<br>
+* **`ValueIsNumber (Value:any):boolean`**<br>
+* **`ValueIsFiniteNumber (Value:any):boolean`**<br>
+* **`ValueIsNaN (Value:any):boolean`**<br>
+* **`ValueIsNumberInRange (Value:any, minValue?:number, maxValue?:number, withMin:boolean = true, withMax:boolean = true):boolean`**<br>
+* **`ValueIsInteger (Value:any):boolean`**<br>
+* **`ValueIsIntegerInRange (Value:any, minValue?:number, maxValue?:number):boolean`**<br>
+* **`ValueIsOrdinal (Value:any):boolean`**<br>
+* **`ValueIsCardinal (Value:any):boolean`**<br>
+* **`ValueIsString (Value:any):boolean`**<br>
+* **`ValueIsNonEmptyString (Value:any):boolean`**<br>
+* **`ValueIsStringMatching (Value:any, Pattern:RegExp):boolean`**<br>
+* **`ValueIsText (Value:any):boolean`**<br>
+* **`ValueIsTextline (Value:any):boolean`**<br>
+* **`ValueIsFunction (Value:any):boolean`**<br>
+* **`ValueIsAnonymousFunction (Value:any):boolean`**<br>
+* **`ValueIsNamedFunction (Value:any):boolean`**<br>
+* **`ValueIsNativeFunction (Value:any):boolean`**<br>
+* **`ValueIsScriptedFunction (Value:any):boolean`**<br>
+* **`ValueIsObject (Value:any):boolean`**<br>
+* **`ValueIsPlainObject (Value:any):boolean`**<br>
+* **`ValueIsVanillaObject (Value:any):boolean`**<br>
+* **`ValueIsArray (Value:any):boolean`**<br>
+* **`ValueIsList (Value:any, minLength?:number, maxLength?:number):boolean`**<br>
+* **`ValueIsListSatisfying (Value:any, Validator:Function, minLength?:number, maxLength?:number):boolean`**<br>
+* **`ValueIsInstanceOf (Value:any, constructor:Function):boolean`**<br>
+* **`ValueInheritsFrom (Value:any, prototype:Object):boolean`**<br>
+* **`ValueIsDate (Value:any):boolean`**<br>
+* **`ValueIsError (Value:any):boolean`**<br>
+* **`ValueIsPromise (Value:any):boolean`**<br>
+* **`ValueIsRegExp (Value:any):boolean`**<br>
+* **`ValueIsOneOf (Value:any, ValueList:any[]):boolean`**<br>
+* **`ValueIsColor (Value:any):boolean`**<br>
+* **`ValueIsEMailAddress (Value:any):boolean`**<br>
+* **`ValueIsURL (Value:any):boolean`**<br>
 
 #### Argument Validation Functions ####
 
@@ -128,69 +128,69 @@ Unless stated otherwise, these functions exist in four different "flavours", as 
 
 For the sake of clarity, however, only the first "flavour" (namely `allowXXX`) is shown in the list below (provided that this flavour actually exists).
 
-* `expectValue (Description:string, Argument:any):any`<br>
-* `allowBoolean (Description:string, Argument:any):boolean|null|undefined`<br>
-* `allowNumber (Description:string, Argument:any):number|null|undefined`<br>
-* `allowFiniteNumber (Description:string, Argument:any):number|null|undefined`<br>
-* `allowNaN (Description:string, Argument:any):number|null|undefined`<br>
-* `allowNumberInRange (Description:string, Argument:any, minValue?:number, maxValue?:number, withMin?:boolean, withMax?:boolean):number|null|undefined`<br>
-* `allowInteger (Description:string, Argument:any):number|null|undefined`<br>
-* `allowIntegerInRange (Description:string, Argument:any, minValue?:number, maxValue?:number):number|null|undefined`<br>
-* `allowOrdinal (Description:string, Argument:any):number|null|undefined`<br>
-* `allowCardinal (Description:string, Argument:any):number|null|undefined`<br>
-* `allowString (Description:string, Argument:any):string|null|undefined`<br>
-* `allowNonEmptyString (Description:string, Argument:any):string|null|undefined`<br>
-* `allowStringMatching (Description:string, Argument:any, pattern:RegExp):string|null|undefined`<br>
-* `allowText (Description:string, Argument:any):string|null|undefined`<br>
-* `allowTextline (Description:string, Argument:any):string|null|undefined`<br>
-* `allowFunction (Description:string, Argument:any):Function|null|undefined`<br>
-* `allowAnonymousFunction (Description:string, Argument:any):Function|null|undefined`<br>
-* `allowNamedFunction (Description:string, Argument:any):Function|null|undefined`<br>
-* `allowNativeFunction (Description:string, Argument:any):Function|null|undefined`<br>
-* `allowScriptedFunction (Description:string, Argument:any):Function|null|undefined`<br>
-* `allowObject (Description:string, Argument:any):any|null|undefined`<br>
-* `allowPlainObject (Description:string, Argument:any):any|null|undefined`<br>
-* `allowVanillaObject (Description:string, Argument:any):any|null|undefined`<br>
-* `allowArray (Description:string, Argument:any):any[]|null|undefined`<br>
-* `allowList (Description:string, Argument:any, Expectation?:string,minLength?:number, maxLength?:number):any[]|null|undefined`<br>
-* `allowListSatisfying (Description:string, Argument:any, Validator:(Value:any) => boolean,Expectation?:string, minLength?:number, maxLength?:number):any[]|null|undefined`<br>
-* `allowInstanceOf (Description:string, Argument:any, constructor:Function, Expectation:string):any|null|undefined`<br>
-* `allowValueInheritingFrom (Description:string, Argument:any, prototype:any, Expectation:string):any|null|undefined`<br>
-* `allowDate (Description:string, Argument:any):Date|null|undefined`<br>
-* `allowError (Description:string, Argument:any):Error|null|undefined`<br>
-* `allowPromise (Description:string, Argument:any):any|null|undefined`<br>
-* `allowRegExp (Description:string, Argument:any):RegExp|null|undefined`<br>
-* `allowOneOf (Description:string, Argument:any, ValueList:any[]):any|null|undefined`<br>
-* `allowColor (Description:string, Argument:any):string|null|undefined`<br>
-* `allowEMailAddress (Description:string, Argument:any):string|null|undefined`<br>
-* `allowURL (Description:string, Argument:any):string|null|undefined`<br>
+* **`expectValue (Description:string, Argument:any):any`**<br>
+* **`allowBoolean (Description:string, Argument:any):boolean|null|undefined`**<br>
+* **`allowNumber (Description:string, Argument:any):number|null|undefined`**<br>
+* **`allowFiniteNumber (Description:string, Argument:any):number|null|undefined`**<br>
+* **`allowNaN (Description:string, Argument:any):number|null|undefined`**<br>
+* **`allowNumberInRange (Description:string, Argument:any, minValue?:number, maxValue?:number, withMin?:boolean, withMax?:boolean):number|null|undefined`**<br>
+* **`allowInteger (Description:string, Argument:any):number|null|undefined`**<br>
+* **`allowIntegerInRange (Description:string, Argument:any, minValue?:number, maxValue?:number):number|null|undefined`**<br>
+* **`allowOrdinal (Description:string, Argument:any):number|null|undefined`**<br>
+* **`allowCardinal (Description:string, Argument:any):number|null|undefined`**<br>
+* **`allowString (Description:string, Argument:any):string|null|undefined`**<br>
+* **`allowNonEmptyString (Description:string, Argument:any):string|null|undefined`**<br>
+* **`allowStringMatching (Description:string, Argument:any, pattern:RegExp):string|null|undefined`**<br>
+* **`allowText (Description:string, Argument:any):string|null|undefined`**<br>
+* **`allowTextline (Description:string, Argument:any):string|null|undefined`**<br>
+* **`allowFunction (Description:string, Argument:any):Function|null|undefined`**<br>
+* **`allowAnonymousFunction (Description:string, Argument:any):Function|null|undefined`**<br>
+* **`allowNamedFunction (Description:string, Argument:any):Function|null|undefined`**<br>
+* **`allowNativeFunction (Description:string, Argument:any):Function|null|undefined`**<br>
+* **`allowScriptedFunction (Description:string, Argument:any):Function|null|undefined`**<br>
+* **`allowObject (Description:string, Argument:any):any|null|undefined`**<br>
+* **`allowPlainObject (Description:string, Argument:any):any|null|undefined`**<br>
+* **`allowVanillaObject (Description:string, Argument:any):any|null|undefined`**<br>
+* **`allowArray (Description:string, Argument:any):any[]|null|undefined`**<br>
+* **`allowList (Description:string, Argument:any, Expectation?:string,minLength?:number, maxLength?:number):any[]|null|undefined`**<br>
+* **`allowListSatisfying (Description:string, Argument:any, Validator:(Value:any) => boolean,Expectation?:string, minLength?:number, maxLength?:number):any[]|null|undefined`**<br>
+* **`allowInstanceOf (Description:string, Argument:any, constructor:Function, Expectation:string):any|null|undefined`**<br>
+* **`allowValueInheritingFrom (Description:string, Argument:any, prototype:any, Expectation:string):any|null|undefined`**<br>
+* **`allowDate (Description:string, Argument:any):Date|null|undefined`**<br>
+* **`allowError (Description:string, Argument:any):Error|null|undefined`**<br>
+* **`allowPromise (Description:string, Argument:any):any|null|undefined`**<br>
+* **`allowRegExp (Description:string, Argument:any):RegExp|null|undefined`**<br>
+* **`allowOneOf (Description:string, Argument:any, ValueList:any[]):any|null|undefined`**<br>
+* **`allowColor (Description:string, Argument:any):string|null|undefined`**<br>
+* **`allowEMailAddress (Description:string, Argument:any):string|null|undefined`**<br>
+* **`allowURL (Description:string, Argument:any):string|null|undefined`**<br>
 
 #### Utility Functions ####
 
-* `throwError (Message:string):never`<br>
-* `ObjectMergedWith (TargetObject:object, ...otherObjectList:object[]):object`<br>
-* `escaped (Text:string):string`<br>
-* `unescaped (Text:string):string`<br>
-* `quotable (Text:string, Quote:'"' | "'" = '"'):string`<br>
-* `quoted (Text:string, Quote:'"' | "'" = '"'):string`<br>
-* `HTMLsafe (Argument:string, EOLReplacement?:string):string`<br>
-* `MarkDownSafe (Argument:string, EOLReplacement?:string):string`<br>
-* `ValuesDiffer (thisValue:any, otherValue:any):boolean`<br>
-* `ValuesAreEqual (thisValue:any, otherValue:any):boolean`<br>
-* `ObjectIsEmpty (Candidate:any):boolean`<br>
-* `StringIsEmpty (Candidate:string):boolean`<br>
-* `StringIsNotEmpty (Candidate:string):boolean`<br>
-* `ValidatorForClassifier (Classifier:(Value:any) => boolean, NilIsAcceptable:boolean,Expectation:string):Function`<br>
-* `validatedArgument (Description:string, Argument:any, ValueIsValid:(Value:any) => boolean,NilIsAcceptable:boolean, Expectation:string):any|null|undefined`<br>
-* `FunctionWithName (originalFunction:Function, desiredName:string|String):Function`
+* **`throwError (Message:string):never`**<br>
+* **`ObjectMergedWith (TargetObject:object, ...otherObjectList:object[]):object`**<br>
+* **`escaped (Text:string):string`**<br>
+* **`unescaped (Text:string):string`**<br>
+* **`quotable (Text:string, Quote:'"' | "'" = '"'):string`**<br>
+* **`quoted (Text:string, Quote:'"' | "'" = '"'):string`**<br>
+* **`HTMLsafe (Argument:string, EOLReplacement?:string):string`**<br>
+* **`MarkDownSafe (Argument:string, EOLReplacement?:string):string`**<br>
+* **`ValuesDiffer (thisValue:any, otherValue:any):boolean`**<br>
+* **`ValuesAreEqual (thisValue:any, otherValue:any):boolean`**<br>
+* **`ObjectIsEmpty (Candidate:any):boolean`**<br>
+* **`StringIsEmpty (Candidate:string):boolean`**<br>
+* **`StringIsNotEmpty (Candidate:string):boolean`**<br>
+* **`ValidatorForClassifier (Classifier:(Value:any) => boolean, NilIsAcceptable:boolean,Expectation:string):Function`**<br>
+* **`validatedArgument (Description:string, Argument:any, ValueIsValid:(Value:any) => boolean,NilIsAcceptable:boolean, Expectation:string):any|null|undefined`**<br>
+* **`FunctionWithName (originalFunction:Function, desiredName:string|String):Function`**<br>
 
 #### Color Utilities ####
 
-* `ColorSet`<br>
-* `HexColor (Color:string):string`<br>
-* `RGBAColor (Color:string):string`<br>
-* `CSSColor (Color:string):string`<br>
-* `shortCSSColor (Color:string):string`<br>
+* **`ColorSet`**<br>
+* **`HexColor (Color:string):string`**<br>
+* **`RGBAColor (Color:string):string`**<br>
+* **`CSSColor (Color:string):string`**<br>
+* **`shortCSSColor (Color:string):string`**<br>
 
 ### Build Instructions ###
 
