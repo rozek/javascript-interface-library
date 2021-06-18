@@ -186,9 +186,9 @@ For the sake of clarity, however, only the first "flavour" (namely `allowXXX`) i
 
 #### Color Utilities ####
 
-* **`ColorSet`**<br>is an object, whose keys are the names of all colors known by (and built into) a web browser and the corresponding values the RGBA specifications of these colors
+* **`ColorSet`**<br>is an object, whose keys are the names of all colors known by (and built into) a web browser and the corresponding values are the RGBA specifications of these colors
 * **`HexColor (Color:string):string`**<br>converts a given `Color` string (which must be a valid CSS color specification) into the long hexadecimal format (`#rrggbbaa`)
-* **`shortHexColor (Color:string):string`**<br>converts a given `Color` string (which must be a valid CSS color specification) into the short hexadecimal format (`#rrggbb`) - this one must be used for HTML input elements of type "color", e.g.
+* **`shortHexColor (Color:string):string`**<br>converts a given `Color` string (which must be a valid CSS color specification) into the short hexadecimal format (`#rrggbb`) - such a format must be used for HTML input elements of type "color"
 * **`RGBAColor (Color:string):string`**<br>converts a given `Color` string (which must be a valid CSS color specification) into the RGBA format (`rgba(r,g,b,a)`)
 
 ### Build Instructions ###
