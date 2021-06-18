@@ -12,11 +12,14 @@ export default {
       name:      'Device', // required for UMD modules
       noConflict:true,
       sourcemap: true,
+      plugins: [terser({ format:{ comments:false, safari10:true } })],
     },{
       file:     './dist/javascript-interface-library.esm.js',
       format:   'esm',
       sourcemap:true,
     }
   ],
-  plugins: [typescript(), terser({ format:{ comments:false, safari10:true } })],
+  plugins: [
+    typescript(),
+  ],
 };
