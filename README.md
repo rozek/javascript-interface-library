@@ -167,21 +167,21 @@ For the sake of clarity, however, only the first "flavour" (namely `allowXXX`) i
 
 #### Utility Functions ####
 
-* **`throwError (Message:string):never`**<br>
-* **`ObjectMergedWith (TargetObject:object, ...otherObjectList:object[]):object`**<br>
+* **`throwError (Message:string):never`**<br>this function has been provided in order to simplify throwing "named" `Error` instances: if the given `Message` starts with a JavaScript identifier followed by a colon, identifier and colon are stripped apart and the identifier is used as the `name` property of a newly constructed `Error` instance for the remaining part of `Message`. Otherwise, this function is equivalent to `throw new Error(Message)` <br>&nbsp;<br>
+* **`ObjectMergedWith (TargetObject:object, ...otherObjectList:object[]):object`**<br>`Object.assign` can not be used to copy properties with getters and setters from one object into another one - this is what `ObjectMergedWith` is good for: XXXX <br>&nbsp;<br>
 * **`escaped (Text:string):string`**<br>
-* **`unescaped (Text:string):string`**<br>
+* **`unescaped (Text:string):string`**<br><br>&nbsp;<br>
 * **`quotable (Text:string, Quote:'"' | "'" = '"'):string`**<br>
-* **`quoted (Text:string, Quote:'"' | "'" = '"'):string`**<br>
+* **`quoted (Text:string, Quote:'"' | "'" = '"'):string`**<br><br>&nbsp;<br>
 * **`HTMLsafe (Argument:string, EOLReplacement?:string):string`**<br>
-* **`MarkDownSafe (Argument:string, EOLReplacement?:string):string`**<br>
+* **`MarkDownSafe (Argument:string, EOLReplacement?:string):string`**<br><br>&nbsp;<br>
 * **`ValuesDiffer (thisValue:any, otherValue:any):boolean`**<br>
-* **`ValuesAreEqual (thisValue:any, otherValue:any):boolean`**<br>
+* **`ValuesAreEqual (thisValue:any, otherValue:any):boolean`**<br><br>&nbsp;<br>
 * **`ObjectIsEmpty (Candidate:any):boolean`**<br>
 * **`StringIsEmpty (Candidate:string):boolean`**<br>
-* **`StringIsNotEmpty (Candidate:string):boolean`**<br>
+* **`StringIsNotEmpty (Candidate:string):boolean`**<br><br>&nbsp;<br>
 * **`ValidatorForClassifier (Classifier:(Value:any) => boolean, NilIsAcceptable:boolean,Expectation:string):Function`**<br>
-* **`validatedArgument (Description:string, Argument:any, ValueIsValid:(Value:any) => boolean,NilIsAcceptable:boolean, Expectation:string):any|null|undefined`**<br>
+* **`validatedArgument (Description:string, Argument:any, ValueIsValid:(Value:any) => boolean,NilIsAcceptable:boolean, Expectation:string):any|null|undefined`**<br><br>&nbsp;<br>
 * **`FunctionWithName (originalFunction:Function, desiredName:string|String):Function`**<br>
 
 #### Color Utilities ####
