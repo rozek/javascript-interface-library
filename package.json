@@ -4,7 +4,6 @@
   "description": "various classification, validation and utility functions",
   "main": "./dist/javascript-interface-library.js",
   "module": "./dist/javascript-interface-library.esm.js",
-  "sideEffects": false,
   "exports": {
     "require": "./dist/javascript-interface-library.js",
     "import": "./dist/javascript-interface-library.esm.js"
