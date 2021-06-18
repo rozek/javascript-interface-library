@@ -58,7 +58,7 @@ console.log(JIL.ValueIsListSatisfying(
 
 ### API Reference ###
 
-As shown above, the individual functions and values may either be accessed directly (when used as an ESM) or by prefixing them with their namespace `JIL` (in all other cases). The following documentation lists all module contents without namespace prefix only.
+As shown above, the individual functions and values may either be accessed directly (when used as an ESM) or by prefixing them with their namespace `JIL` (in all other cases). The following documentation lists all module contents without namespace prefix only, and the shown function signatures are those used by TypeScript.
 
 #### Object Functions ####
 
@@ -168,15 +168,15 @@ For the sake of clarity, however, only the first "flavour" (namely `allowXXX`) i
 #### Utility Functions ####
 
 * **`throwError (Message:string):never`**<br>this function has been provided in order to simplify throwing "named" `Error` instances: if the given `Message` starts with a JavaScript identifier followed by a colon, identifier and colon are stripped apart and the identifier is used as the `name` property of a newly constructed `Error` instance for the remaining part of `Message`. Otherwise, this function is equivalent to `throw new Error(Message)` <br>&nbsp;<br>
-* **`ObjectMergedWith (TargetObject:object, ...otherObjectList:object[]):object`**<br>`Object.assign` can not be used to copy properties with getters and setters from one object into another one - this is what `ObjectMergedWith` is good for: XXXX <br>&nbsp;<br>
-* **`escaped (Text:string):string`**<br>
-* **`unescaped (Text:string):string`**<br><br>&nbsp;<br>
-* **`quotable (Text:string, Quote:'"' | "'" = '"'):string`**<br>
-* **`quoted (Text:string, Quote:'"' | "'" = '"'):string`**<br><br>&nbsp;<br>
-* **`HTMLsafe (Argument:string, EOLReplacement?:string):string`**<br>
-* **`MarkDownSafe (Argument:string, EOLReplacement?:string):string`**<br><br>&nbsp;<br>
-* **`ValuesDiffer (thisValue:any, otherValue:any):boolean`**<br>
-* **`ValuesAreEqual (thisValue:any, otherValue:any):boolean`**<br><br>&nbsp;<br>
+* **`ObjectMergedWith (TargetObject:object, ...otherObjectList:object[]):object`**<br>`Object.assign` can not be used to copy properties with getters and setters from one object into another one - this is what `ObjectMergedWith` is good for: it copies the descriptors of all *own* properties from any object found in `otherObjectList` into the given `TargetObject` and also returns that object as its function result. Any  descriptor already existing for a given property will be overwritten<br>&nbsp;<br>
+* **`escaped (Text:string):string`**<br>returns a copy of the given `Text` in which all control characters have been replaced by their corresponding escape sequences
+* **`unescaped (Text:string):string`**<br>returns a copy of the given `Text` in which all character escape sequences have been replaced by their corresponding (control) characters<br>&nbsp;<br>
+* **`quotable (Text:string, Quote:'"' | "'" = '"'):string`**<br>returns a copy of the given `Text` in which all control characters and `Quote`s have been replaced by their corresponding escape sequences. The outcome of this function may, f.e., used to construct literal values in JSON files. `Quote` is optional and defaults to the double-quotes character
+* **`quoted (Text:string, Quote:'"' | "'" = '"'):string`**<br>returns a copy of the given `Text` (embedded within a pair of `Quote`s) in which all control characters and `Quote`s have been replaced by their corresponding escape sequences. The outcome of this function may, f.e., used to construct literal values in JSON files. `Quote` is optional and defaults to the double-quotes character<br>&nbsp;<br>
+* **`HTMLsafe (Argument:string, EOLReplacement?:string):string`**<br>returns a copy of the given `Argument` in which all control characters (except \\n) and characters with a special meaning for HTML have been replaced by their corresponding HTML entities. Any linefeed characters (\\n) will be replaced by the given `EOLReplacement` string - specification of `EOLReplacement` is optional and defaults to `<br/>`
+* **`MarkDownSafe (Argument:string, EOLReplacement?:string):string`**<br>returns a copy of the given `Argument` in which all control characters (except \\n) and characters with a special meaning for (HTML and) Markdown have been replaced by their corresponding HTML entities. Any linefeed characters (\\n) will be replaced by the given `EOLReplacement` string - specification of `EOLReplacement` is optional and defaults to `<br/>`<br>&nbsp;<br>
+* **`ValuesDiffer (thisValue:any, otherValue:any):boolean`**<br>returns `true` if `thisValue` differs from `otherValue` - or `false` otherwise. Equality is checked by inspection, i.e., `null`, `undefined`, booleans, strings and functions are checked using the JavaScript `===` operator, comparison of numbers also takes care of `NaN` and a potential deviation by `Number.EPSILON` and objects or arrays are compared element by element
+* **`ValuesAreEqual (thisValue:any, otherValue:any):boolean`**<br>returns `true` if `thisValue` equals to `otherValue` - or `false` otherwise. Equality is checked by inspection, i.e., `null`, `undefined`, booleans, strings and functions are checked using the JavaScript `===` operator, comparison of numbers also takes care of `NaN` and a potential deviation by `Number.EPSILON` and objects or arrays are compared element by element<br>&nbsp;<br>
 * **`ObjectIsEmpty (Candidate:any):boolean`**<br>
 * **`StringIsEmpty (Candidate:string):boolean`**<br>
 * **`StringIsNotEmpty (Candidate:string):boolean`**<br><br>&nbsp;<br>
