@@ -12,7 +12,7 @@ These situations are, what the `javascript-interface-library` is providing funct
 
 `javascript-interface-library` may be used as an ESM, CommonJS or AMD module or from a global variable.
 
-You may either install the package into your build environment
+You may either install the package into your build environment using [NPM](https://docs.npmjs.com/) with the command
 
 ```
 npm install javascript-interface-library
