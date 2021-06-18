@@ -66,12 +66,12 @@ The JavaScript `Object` class provides a few useful functions (or "static method
 
 `JIL` therefore contains the following functions which mimic their counterparts from the `Object` class, but succeed even if the given target object is "vanilla".
 
-* `Object_hasOwnProperty (Value:Object, PropertyName:string):boolean` <br>
-* `Object_isPrototypeOf (Value:Object, Candidate:any):boolean` <br>
-* `Object_propertyIsEnumerable (Value:Object, PropertyName:string):boolean` <br>
-* `Object_toString (Value:Object):string` <br>
-* `Object_toLocaleString (Value:Object):string` <br>
-* `Object_valueOf (Value:Object):any` <br>
+* `Object_hasOwnProperty (Value:Object, PropertyName:string):boolean` <br>This function mimics the JavaScript method [Object.hasOwnProperty](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/hasOwnProperty)
+* `Object_isPrototypeOf (Value:Object, Candidate:any):boolean` <br>This function mimics the JavaScript method [Object.isPrototypeOf](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/isPrototypeOf)
+* `Object_propertyIsEnumerable (Value:Object, PropertyName:string):boolean` <br>This function mimics the JavaScript method [Object.propertyIsEnumerable](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/propertyIsEnumerable)
+* `Object_toString (Value:Object):string` <br>This function mimics the JavaScript method [Object.toString](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/toString)
+* `Object_toLocaleString (Value:Object):string` <br>This function mimics the JavaScript method [Object.toLocaleString](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/toLocaleString)
+* `Object_valueOf (Value:Object):any` <br>This function mimics the JavaScript method [Object.valueOf](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/valueOf)
 
 #### Value Classification Functions ####
 
