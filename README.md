@@ -77,43 +77,43 @@ The JavaScript `Object` class provides a few useful functions (or "static method
 
 The following functions check whether a given argument satisfies a certain constraint (e.g., belongs to a certain category) and return either `true` (if the constrain is met) or false otherwise.
 
-* **`ValueExists (Value:any):boolean`**<br>
-* **`ValueIsMissing (Value:any):boolean`**<br>
-* **`ValueIsBoolean (Value:any):boolean`**<br>
-* **`ValueIsNumber (Value:any):boolean`**<br>
-* **`ValueIsFiniteNumber (Value:any):boolean`**<br>
-* **`ValueIsNaN (Value:any):boolean`**<br>
-* **`ValueIsNumberInRange (Value:any, minValue?:number, maxValue?:number, withMin:boolean = true, withMax:boolean = true):boolean`**<br>
-* **`ValueIsInteger (Value:any):boolean`**<br>
-* **`ValueIsIntegerInRange (Value:any, minValue?:number, maxValue?:number):boolean`**<br>
-* **`ValueIsOrdinal (Value:any):boolean`**<br>
-* **`ValueIsCardinal (Value:any):boolean`**<br>
-* **`ValueIsString (Value:any):boolean`**<br>
-* **`ValueIsNonEmptyString (Value:any):boolean`**<br>
-* **`ValueIsStringMatching (Value:any, Pattern:RegExp):boolean`**<br>
-* **`ValueIsText (Value:any):boolean`**<br>
-* **`ValueIsTextline (Value:any):boolean`**<br>
-* **`ValueIsFunction (Value:any):boolean`**<br>
-* **`ValueIsAnonymousFunction (Value:any):boolean`**<br>
-* **`ValueIsNamedFunction (Value:any):boolean`**<br>
-* **`ValueIsNativeFunction (Value:any):boolean`**<br>
-* **`ValueIsScriptedFunction (Value:any):boolean`**<br>
-* **`ValueIsObject (Value:any):boolean`**<br>
-* **`ValueIsPlainObject (Value:any):boolean`**<br>
-* **`ValueIsVanillaObject (Value:any):boolean`**<br>
-* **`ValueIsArray (Value:any):boolean`**<br>
-* **`ValueIsList (Value:any, minLength?:number, maxLength?:number):boolean`**<br>
-* **`ValueIsListSatisfying (Value:any, Validator:Function, minLength?:number, maxLength?:number):boolean`**<br>
-* **`ValueIsInstanceOf (Value:any, constructor:Function):boolean`**<br>
-* **`ValueInheritsFrom (Value:any, prototype:Object):boolean`**<br>
-* **`ValueIsDate (Value:any):boolean`**<br>
-* **`ValueIsError (Value:any):boolean`**<br>
-* **`ValueIsPromise (Value:any):boolean`**<br>
-* **`ValueIsRegExp (Value:any):boolean`**<br>
-* **`ValueIsOneOf (Value:any, ValueList:any[]):boolean`**<br>
-* **`ValueIsColor (Value:any):boolean`**<br>
-* **`ValueIsEMailAddress (Value:any):boolean`**<br>
-* **`ValueIsURL (Value:any):boolean`**<br>
+* **`ValueExists (Value:any):boolean`**<br>returns `true` if the given `Value` exists, i.e. differs from both `null` and `undefined` - or `false` otherwise
+* **`ValueIsMissing (Value:any):boolean`**<br>returns `true` if the given `Value` is either `null` or `undefined` - or `false` otherwise<br>&nbsp;<br>
+* **`ValueIsBoolean (Value:any):boolean`**<br>returns `true` if the given `Value` is either a primitive boolean value or an instance of `Boolean` - or `false` otherwise<br>&nbsp;<br>
+* **`ValueIsNumber (Value:any):boolean`**<br>returns `true` if the given `Value` is either a primitive numeric value or an instance of `Number` - or `false` otherwise
+* **`ValueIsFiniteNumber (Value:any):boolean`**<br>returns `true` if the given `Value` is a finite number, i.e. a number different from positive and negative infinity and not `NaN` - or `false` otherwise
+* **`ValueIsNaN (Value:any):boolean`**<br>returns `true` if the given `Value` is `NaN` - or `false` otherwise
+* **`ValueIsNumberInRange (Value:any, minValue?:number, maxValue?:number, withMin:boolean = true, withMax:boolean = true):boolean`**<br>returns `true` if the given `Value` is a number whose value is within the range given by `minValue` and `maxValue` - or `false` otherwise. `minValue` is optional and defaults to negative infinity, `maxValue` is also optional and defaults to positive infinity. When `true`, `withMin` indicates that `Value` may be *equal* to the lower end of the given range, otherwise it must be *greater than* the lower limit. When `true`, `withMax` indicates that `Value` may be *equal* to the upper end of the given range, otherwise it must be *lower than* the upper limit
+* **`ValueIsInteger (Value:any):boolean`**<br>returns `true` if the given `Value` is a whole number - or `false` otherwise
+* **`ValueIsIntegerInRange (Value:any, minValue?:number, maxValue?:number):boolean`**<br>returns `true` if the given `Value` is a whole number whose value is within the range given by `minValue` and `maxValue` - or `false` otherwise. `minValue` is optional and defaults to negative infinity, `maxValue` is also optional and defaults to positive infinity
+* **`ValueIsOrdinal (Value:any):boolean`**<br>returns `true` if the given `Value` is a whole number greater than or equal to zero - or `false` otherwise
+* **`ValueIsCardinal (Value:any):boolean`**<br>returns `true` if the given `Value` is a whole number greater than or equal to one - or `false` otherwise<br>&nbsp;<br>
+* **`ValueIsString (Value:any):boolean`**<br>returns `true` if the given `Value` is either a primitive literal value or an instance of `String` - or `false` otherwise
+* **`ValueIsNonEmptyString (Value:any):boolean`**<br>returns `true` if the given `Value` is a string with some content that does not just consist of white-space characters - or `false` otherwise
+* **`ValueIsStringMatching (Value:any, Pattern:RegExp):boolean`**<br>returns `true` if the given `Value` is a string whose content matches the given regular expression `RegExp` - or `false` otherwise
+* **`ValueIsText (Value:any):boolean`**<br>returns `true` if the given `Value` is a string containing "ordinary" text only (i.e., a string which lacks any kind of control characters except \\n or \\r) - or `false` otherwise
+* **`ValueIsTextline (Value:any):boolean`**<br>returns `true` if the given `Value` is a string containing a single line of "ordinary" text only (i.e., a string which lacks any kind of control characters) - or `false` otherwise<br>&nbsp;<br>
+* **`ValueIsFunction (Value:any):boolean`**<br>returns `true` if the given `Value` is a JavaScript function - or `false` otherwise
+* **`ValueIsAnonymousFunction (Value:any):boolean`**<br>returns `true` if the given `Value`is an anonymous JavaScript function (i.e., a function without a `name` property)  - or `false` otherwise
+* **`ValueIsNamedFunction (Value:any):boolean`**<br>returns `true` if the given `Value` is a "named" JavaScript function (i.e., a function with a non-empty `name` property) - or `false` otherwise
+* **`ValueIsNativeFunction (Value:any):boolean`**<br>returns `true` if the given `Value` is a native JavaScript function - or `false` otherwise
+* **`ValueIsScriptedFunction (Value:any):boolean`**<br>returns `true` if the given `Value` is a scripted JavaScript function - or `false` otherwise<br>&nbsp;<br>
+* **`ValueIsObject (Value:any):boolean`**<br>returns `true` if the given `Value` is a JavaScript object (and not `null`) - or `false` otherwise
+* **`ValueIsPlainObject (Value:any):boolean`**<br>returns `true` if the given `Value` is a JavaScript object which directly inherits from `Object` (such as a Javascript object literal) - or `false` otherwise
+* **`ValueIsVanillaObject (Value:any):boolean`**<br>returns `true` if the given `Value` s a JavaScript object which has been build using `Object.create(null)` - or `false` otherwise<br>&nbsp;<br>
+* **`ValueIsArray (Value:any):boolean`**<br>returns `true` if the given `Value` is an `Array` instance - or `false` otherwise
+* **`ValueIsList (Value:any, minLength?:number, maxLength?:number):boolean`**<br>returns `true` if the given `Value` is a "dense" JavaScript array (i.e., an array whose indices 0...n-1 all exist, where n is the `length` of the given array) - or `false` otherwise
+* **`ValueIsListSatisfying (Value:any, Validator:Function, minLength?:number, maxLength?:number):boolean`**<br>returns `true` if the given `Value` is a "dense" JavaScript array, whose elements all pass the given `Validator` - or `false` otherwise. `Validator` is a function which receives a list element as its sole argument and returns `true` if the given element is "valid" or `false` otherwise. If given, `minLength` specifies the minimal required list length and `maxLength` specifies the maximal allowed list length<br>&nbsp;<br>
+* **`ValueIsInstanceOf (Value:any, Constructor:Function):boolean`**<br>returns `true` if the given `Value` was constructed using the given `Constructor` function - or `false` otherwise
+* **`ValueInheritsFrom (Value:any, Prototype:Object):boolean`**<br>returns `true` if `Prototype` exists in the prototype chain of the given `Value` - or `false` otherwise<br>&nbsp;<br>
+* **`ValueIsDate (Value:any):boolean`**<br>returns `true` if the given `Value` is a `Date` instance - or `false` otherwise
+* **`ValueIsError (Value:any):boolean`**<br>returns `true` if the given `Value` is an `Error` instance  - or `false` otherwise
+* **`ValueIsPromise (Value:any):boolean`**<br>returns `true` if the given `Value` is a "Promise", i.e., an object with a property named `then` which contains a function - or `false` otherwise
+* **`ValueIsRegExp (Value:any):boolean`**<br>returns `true` if the given `Value` is a `RegExp` instance - or `false` otherwise<br>&nbsp;<br>
+* **`ValueIsOneOf (Value:any, ValueList:any[]):boolean`**<br>returns `true` if the given `Value` equals (at least) one of the items found in the given `ValueList` - or `false` otherwise. Equality is checked using the JavaScript `===` operator<br>&nbsp;<br>
+* **`ValueIsColor (Value:any):boolean`**<br>returns `true` if the given `Value` is a string containing a syntactically valid CSS color specification - or `false` otherwise
+* **`ValueIsEMailAddress (Value:any):boolean`**<br>returns `true` if the given `Value` is a string containing a syntactically valid EMail address - or `false` otherwise
+* **`ValueIsURL (Value:any):boolean`**<br>returns `true` if the given `Value` is a string containing a syntactically valid URL - or `false` otherwise
 
 #### Argument Validation Functions ####
 
