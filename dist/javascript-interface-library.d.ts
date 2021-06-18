@@ -42,7 +42,7 @@ export declare function ValueIsCardinal(Value: any): boolean;
 export declare function ValueIsString(Value: any): boolean;
 export declare function ValueIsNonEmptyString(Value: any): boolean;
 /**** ValueIsStringMatching ****/
-export declare function ValueIsStringMatching(Value: any, pattern: RegExp): boolean;
+export declare function ValueIsStringMatching(Value: any, Pattern: RegExp): boolean;
 export declare function ValueIsText(Value: any): boolean;
 export declare function ValueIsTextline(Value: any): boolean;
 /**** ValueIsFunction ****/
@@ -68,9 +68,9 @@ export declare function ValueIsList(Value: any, minLength?: number, maxLength?: 
 /**** ValueIsListSatisfying ****/
 export declare function ValueIsListSatisfying(Value: any, Validator: Function, minLength?: number, maxLength?: number): boolean;
 /**** ValueIsInstanceOf ****/
-export declare function ValueIsInstanceOf(Value: any, constructor: Function): boolean;
+export declare function ValueIsInstanceOf(Value: any, Constructor: Function): boolean;
 /**** ValueInheritsFrom ****/
-export declare function ValueInheritsFrom(Value: any, prototype: Object): boolean;
+export declare function ValueInheritsFrom(Value: any, Prototype: Object): boolean;
 /**** ValueIsDate ****/
 export declare function ValueIsDate(Value: any): boolean;
 /**** ValueIsError ****/
@@ -136,10 +136,10 @@ export declare const expectString: Function, expectedString: Function;
 export declare const allowNonEmptyString: Function, allowedNonEmptyString: Function;
 export declare const expectNonEmptyString: Function, expectedNonEmptyString: Function;
 /**** allow[ed]StringMatching ****/
-export declare function allowStringMatching(Description: string, Argument: any, pattern: RegExp): string | null | undefined;
+export declare function allowStringMatching(Description: string, Argument: any, Pattern: RegExp): string | null | undefined;
 export declare const allowedStringMatching: typeof allowStringMatching;
 /**** expect[ed]StringMatching ****/
-export declare function expectStringMatching(Description: string, Argument: any, pattern: RegExp): string;
+export declare function expectStringMatching(Description: string, Argument: any, Pattern: RegExp): string;
 export declare const expectedStringMatching: typeof expectStringMatching;
 /**** allow/expect[ed]Text ****/
 export declare const allowText: Function, allowedText: Function;
@@ -404,7 +404,5 @@ export declare const ColorSet: {
 export declare function HexColor(Color: string): string;
 /**** RGBAColor - converts a given color to RGBA(r,g,b,a) ****/
 export declare function RGBAColor(Color: string): string;
-/**** CSSColor - converts #RRGGBBAA into rgba(r,g,b,a) ****/
-export declare function CSSColor(Color: string): string;
-/**** shortCSSColor - converts #RRGGBBAA into #RRGGBB ****/
-export declare function shortCSSColor(Color: string): string;
+/**** shortHexColor - converts a given color into #RRGGBB ****/
+export declare function shortHexColor(Color: string): string;
