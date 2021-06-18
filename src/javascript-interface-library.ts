@@ -4,7 +4,7 @@
 
 /**** get a reference to the "global" object ****/
 
-  export const global = Function('return this')()
+  export const global = /*#__PURE__*/ Function('return this')()
 // see https://stackoverflow.com/questions/3277182/how-to-get-the-global-object-in-javascript
 
 //------------------------------------------------------------------------------
@@ -599,41 +599,41 @@
 
 /**** allow/expect[ed]Boolean ****/
 
-  export const allowBoolean = ValidatorForClassifier(
+  export const allowBoolean = /*#__PURE__*/ ValidatorForClassifier(
     ValueIsBoolean, acceptNil, 'boolean value'
   ), allowedBoolean = allowBoolean
 
-  export const expectBoolean = ValidatorForClassifier(
+  export const expectBoolean = /*#__PURE__*/ ValidatorForClassifier(
     ValueIsBoolean, rejectNil, 'boolean value'
   ), expectedBoolean = expectBoolean
 
 /**** allow/expect[ed]Number ****/
 
-  export const allowNumber = ValidatorForClassifier(
+  export const allowNumber = /*#__PURE__*/ ValidatorForClassifier(
     ValueIsNumber, acceptNil, 'numeric value'
   ), allowedNumber = allowNumber
 
-  export const expectNumber = ValidatorForClassifier(
+  export const expectNumber = /*#__PURE__*/ ValidatorForClassifier(
     ValueIsNumber, rejectNil, 'numeric value'
   ), expectedNumber = expectNumber
 
 /**** allow/expect[ed]FiniteNumber ****/
 
-  export const allowFiniteNumber = ValidatorForClassifier(
+  export const allowFiniteNumber = /*#__PURE__*/ ValidatorForClassifier(
     ValueIsFiniteNumber, acceptNil, 'finite numeric value'
   ), allowedFiniteNumber = allowFiniteNumber
 
-  export const expectFiniteNumber = ValidatorForClassifier(
+  export const expectFiniteNumber = /*#__PURE__*/ ValidatorForClassifier(
     ValueIsFiniteNumber, rejectNil, 'finite numeric value'
   ), expectedFiniteNumber = expectFiniteNumber
 
 /**** allow/expect[ed]NaN ****/
 
-  export const allowNaN = ValidatorForClassifier(
+  export const allowNaN = /*#__PURE__*/ ValidatorForClassifier(
     ValueIsNaN, acceptNil, 'NaN value'
   ), allowedNaN = allowNaN
 
-  export const expectNaN = ValidatorForClassifier(
+  export const expectNaN = /*#__PURE__*/ ValidatorForClassifier(
     ValueIsNaN, rejectNil, 'NaN value'
   ), expectedNaN = expectNaN
 
@@ -703,11 +703,11 @@
 
 /**** allow/expect[ed]Integer ****/
 
-  export const allowInteger = ValidatorForClassifier(
+  export const allowInteger = /*#__PURE__*/ ValidatorForClassifier(
     ValueIsInteger, acceptNil, 'integral numeric value'
   ), allowedInteger = allowInteger
 
-  export const expectInteger = ValidatorForClassifier(
+  export const expectInteger = /*#__PURE__*/ ValidatorForClassifier(
     ValueIsInteger, rejectNil, 'integral numeric value'
   ), expectedInteger = expectInteger
 
@@ -769,41 +769,41 @@
 
 /**** allow/expect[ed]Ordinal ****/
 
-  export const allowOrdinal = ValidatorForClassifier(
+  export const allowOrdinal = /*#__PURE__*/ ValidatorForClassifier(
     ValueIsOrdinal, acceptNil, 'ordinal number'
   ), allowedOrdinal = allowOrdinal
 
-  export const expectOrdinal = ValidatorForClassifier(
+  export const expectOrdinal = /*#__PURE__*/ ValidatorForClassifier(
     ValueIsOrdinal, rejectNil, 'ordinal number'
   ), expectedOrdinal = expectOrdinal
 
 /**** allow/expect[ed]Cardinal ****/
 
-  export const allowCardinal = ValidatorForClassifier(
+  export const allowCardinal = /*#__PURE__*/ ValidatorForClassifier(
     ValueIsCardinal, acceptNil, 'cardinal number'
   ), allowedCardinal = allowCardinal
 
-  export const expectCardinal = ValidatorForClassifier(
+  export const expectCardinal = /*#__PURE__*/ ValidatorForClassifier(
     ValueIsCardinal, rejectNil, 'cardinal number'
   ), expectedCardinal = expectCardinal
 
 /**** allow/expect[ed]String ****/
 
-  export const allowString = ValidatorForClassifier(
+  export const allowString = /*#__PURE__*/ ValidatorForClassifier(
     ValueIsString, acceptNil, 'literal string'
   ), allowedString = allowString
 
-  export const expectString = ValidatorForClassifier(
+  export const expectString = /*#__PURE__*/ ValidatorForClassifier(
     ValueIsString, rejectNil, 'literal string'
   ), expectedString = expectString
 
 /**** allow/expect[ed]NonEmptyString ****/
 
-  export const allowNonEmptyString = ValidatorForClassifier(
+  export const allowNonEmptyString = /*#__PURE__*/ ValidatorForClassifier(
     ValueIsNonEmptyString, acceptNil, 'non-empty literal string'
   ), allowedNonEmptyString = allowNonEmptyString
 
-  export const expectNonEmptyString = ValidatorForClassifier(
+  export const expectNonEmptyString = /*#__PURE__*/ ValidatorForClassifier(
     ValueIsNonEmptyString, rejectNil, 'non-empty literal string'
   ), expectedNonEmptyString = expectNonEmptyString
 
@@ -838,101 +838,101 @@
 
 /**** allow/expect[ed]Text ****/
 
-  export const allowText = ValidatorForClassifier(
+  export const allowText = /*#__PURE__*/ ValidatorForClassifier(
     ValueIsText, acceptNil, 'literal text'
   ), allowedText = allowText
 
-  export const expectText = ValidatorForClassifier(
+  export const expectText = /*#__PURE__*/ ValidatorForClassifier(
     ValueIsText, rejectNil, 'literal text'
   ), expectedText = expectText
 
 /**** allow/expect[ed]Textline ****/
 
-  export const allowTextline = ValidatorForClassifier(
+  export const allowTextline = /*#__PURE__*/ ValidatorForClassifier(
     ValueIsTextline, acceptNil, 'single line of text'
   ), allowedTextline = allowTextline
 
-  export const expectTextline = ValidatorForClassifier(
+  export const expectTextline = /*#__PURE__*/ ValidatorForClassifier(
     ValueIsTextline, rejectNil, 'single line of text'
   ), expectedTextline = expectTextline
 
 /**** allow/expect[ed]Function ****/
 
-  export const allowFunction = ValidatorForClassifier(
+  export const allowFunction = /*#__PURE__*/ ValidatorForClassifier(
     ValueIsFunction, acceptNil, 'JavaScript function'
   ), allowedFunction = allowFunction
 
-  export const expectFunction = ValidatorForClassifier(
+  export const expectFunction = /*#__PURE__*/ ValidatorForClassifier(
     ValueIsFunction, rejectNil, 'JavaScript function'
   ), expectedFunction = expectFunction
 
 /**** allow/expect[ed]AnonymousFunction ****/
 
-  export const allowAnonymousFunction = ValidatorForClassifier(
+  export const allowAnonymousFunction = /*#__PURE__*/ ValidatorForClassifier(
     ValueIsAnonymousFunction, acceptNil, 'anonymous JavaScript function'
   ), allowedAnonymousFunction = allowAnonymousFunction
 
-  export const expectAnonymousFunction = ValidatorForClassifier(
+  export const expectAnonymousFunction = /*#__PURE__*/ ValidatorForClassifier(
     ValueIsAnonymousFunction, rejectNil, 'anonymous JavaScript function'
   ), expectedAnonymousFunction = expectAnonymousFunction
 
 /**** allow/expect[ed]NamedFunction ****/
 
-  export const allowNamedFunction = ValidatorForClassifier(
+  export const allowNamedFunction = /*#__PURE__*/ ValidatorForClassifier(
     ValueIsNamedFunction, acceptNil, 'named JavaScript function'
   ), allowedNamedFunction = allowNamedFunction
 
-  export const expectNamedFunction = ValidatorForClassifier(
+  export const expectNamedFunction = /*#__PURE__*/ ValidatorForClassifier(
     ValueIsNamedFunction, rejectNil, 'named JavaScript function'
   ), expectedNamedFunction = expectNamedFunction
 
 /**** allow/expect[ed]NativeFunction ****/
 
-  export const allowNativeFunction = ValidatorForClassifier(
+  export const allowNativeFunction = /*#__PURE__*/ ValidatorForClassifier(
     ValueIsNativeFunction, acceptNil, 'native JavaScript function'
   ), allowedNativeFunction = allowNativeFunction
 
-  export const expectNativeFunction = ValidatorForClassifier(
+  export const expectNativeFunction = /*#__PURE__*/ ValidatorForClassifier(
     ValueIsNativeFunction, rejectNil, 'native JavaScript function'
   ), expectedNativeFunction = expectNativeFunction
 
 /**** allow/expect[ed]ScriptedFunction ****/
 
-  export const allowScriptedFunction = ValidatorForClassifier(
+  export const allowScriptedFunction = /*#__PURE__*/ ValidatorForClassifier(
     ValueIsScriptedFunction, acceptNil, 'scripted JavaScript function'
   ), allowedScriptedFunction = allowScriptedFunction
 
-  export const expectScriptedFunction = ValidatorForClassifier(
+  export const expectScriptedFunction = /*#__PURE__*/ ValidatorForClassifier(
     ValueIsScriptedFunction, rejectNil, 'scripted JavaScript function'
   ), expectedScriptedFunction = expectScriptedFunction
 
 /**** allow/expect[ed]Object ****/
 
-  export const allowObject = ValidatorForClassifier(
+  export const allowObject = /*#__PURE__*/ ValidatorForClassifier(
     ValueIsObject, acceptNil, 'JavaScript object'
   ), allowedObject = allowObject
 
-  export const expectObject = ValidatorForClassifier(
+  export const expectObject = /*#__PURE__*/ ValidatorForClassifier(
     ValueIsObject, rejectNil, 'JavaScript object'
   ), expectedObject = expectObject
 
 /**** allow/expect[ed]PlainObject ****/
 
-  export const allowPlainObject = ValidatorForClassifier(
+  export const allowPlainObject = /*#__PURE__*/ ValidatorForClassifier(
     ValueIsPlainObject, acceptNil, '"plain" JavaScript object'
   ), allowedPlainObject = allowPlainObject
 
-  export const expectPlainObject = ValidatorForClassifier(
+  export const expectPlainObject = /*#__PURE__*/ ValidatorForClassifier(
     ValueIsPlainObject, rejectNil, '"plain" JavaScript object'
   ), expectedPlainObject = expectPlainObject
 
 /**** allow/expect[ed]VanillaObject ****/
 
-  export const allowVanillaObject = ValidatorForClassifier(
+  export const allowVanillaObject = /*#__PURE__*/ ValidatorForClassifier(
     ValueIsVanillaObject, acceptNil, '"vanilla" JavaScript object'
   ), allowedVanillaObject = allowVanillaObject
 
-  export const expectVanillaObject = ValidatorForClassifier(
+  export const expectVanillaObject = /*#__PURE__*/ ValidatorForClassifier(
     ValueIsVanillaObject, rejectNil, '"vanilla" JavaScript object'
   ), expectedVanillaObject = expectVanillaObject
 
@@ -1103,41 +1103,41 @@
 
 /**** allow/expect[ed]Date ****/
 
-  export const allowDate = ValidatorForClassifier(
+  export const allowDate = /*#__PURE__*/ ValidatorForClassifier(
     ValueIsDate, acceptNil, 'JavaScript Date object'
   ), allowedDate = allowDate
 
-  export const expectDate = ValidatorForClassifier(
+  export const expectDate = /*#__PURE__*/ ValidatorForClassifier(
     ValueIsDate, rejectNil, 'JavaScript Date object'
   ), expectedDate = expectDate
 
 /**** allow/expect[ed]Error ****/
 
-  export const allowError = ValidatorForClassifier(
+  export const allowError = /*#__PURE__*/ ValidatorForClassifier(
     ValueIsError, acceptNil, 'JavaScript Error object'
   ), allowedError = allowError
 
-  export const expectError = ValidatorForClassifier(
+  export const expectError = /*#__PURE__*/ ValidatorForClassifier(
     ValueIsError, rejectNil, 'JavaScript Error object'
   ), expectedError = expectError
 
 /**** allow/expect[ed]Promise ****/
 
-  export const allowPromise = ValidatorForClassifier(
+  export const allowPromise = /*#__PURE__*/ ValidatorForClassifier(
     ValueIsPromise, acceptNil, 'JavaScript Promise (or "Thenable") object'
   ), allowedPromise = allowPromise
 
-  export const expectPromise = ValidatorForClassifier(
+  export const expectPromise = /*#__PURE__*/ ValidatorForClassifier(
     ValueIsPromise, rejectNil, 'JavaScript Promise (or "Thenable") object'
   ), expectedPromise = expectPromise
 
 /**** allow/expect[ed]RegExp ****/
 
-  export const allowRegExp = ValidatorForClassifier(
+  export const allowRegExp = /*#__PURE__*/ ValidatorForClassifier(
     ValueIsRegExp, acceptNil, 'JavaScript RegExp object'
   ), allowedRegExp = allowRegExp
 
-  export const expectRegExp = ValidatorForClassifier(
+  export const expectRegExp = /*#__PURE__*/ ValidatorForClassifier(
     ValueIsRegExp, rejectNil, 'JavaScript RegExp object'
   ), expectedRegExp = expectRegExp
 
@@ -1178,31 +1178,31 @@
 
 /**** allow/expect[ed]Color ****/
 
-  export const allowColor = ValidatorForClassifier(
+  export const allowColor = /*#__PURE__*/ ValidatorForClassifier(
     ValueIsColor, acceptNil, 'valid CSS color specification'
   ), allowedColor = allowColor
 
-  export const expectColor = ValidatorForClassifier(
+  export const expectColor = /*#__PURE__*/ ValidatorForClassifier(
     ValueIsColor, rejectNil, 'valid CSS color specification'
   ), expectedColor = expectColor
 
 /**** allow/expect[ed]EMailAddress ****/
 
-  export const allowEMailAddress = ValidatorForClassifier(
+  export const allowEMailAddress = /*#__PURE__*/ ValidatorForClassifier(
     ValueIsEMailAddress, acceptNil, 'valid EMail address'
   ), allowedEMailAddress = allowEMailAddress
 
-  export const expectEMailAddress = ValidatorForClassifier(
+  export const expectEMailAddress = /*#__PURE__*/ ValidatorForClassifier(
     ValueIsEMailAddress, rejectNil, 'valid EMail address'
   ), expectedEMailAddress = expectEMailAddress
 
 /**** allow/expect[ed]URL ****/
 
-  export const allowURL = ValidatorForClassifier(
+  export const allowURL = /*#__PURE__*/ ValidatorForClassifier(
     ValueIsURL, acceptNil, 'valid URL'
   ), allowedURL = allowURL
 
-  export const expectURL = ValidatorForClassifier(
+  export const expectURL = /*#__PURE__*/ ValidatorForClassifier(
     ValueIsURL, rejectNil, 'valid URL'
   ), expectedURL = expectURL
 
@@ -1609,66 +1609,4 @@
 
   export function shortHexColor (Color:string):string {
     return HexColor(Color).slice(0,7)
-  }
-
-  if (! ('JIL' in global)) {
-    global['JIL'] = {
-      global,
-      Object_hasOwnProperty, Object_isPrototypeOf, Object_propertyIsEnumerable,
-      Object_toString, Object_toLocaleString, Object_valueOf, ObjectMergedWith,
-      throwError,
-      ValueExists, ValueIsMissing, ValueIsBoolean, ValueIsNumber,
-      ValueIsFiniteNumber, ValueIsNaN, ValueIsNumberInRange, ValueIsInteger,
-      ValueIsIntegerInRange, ValueIsOrdinal, ValueIsCardinal, ValueIsString,
-      ValueIsNonEmptyString, ValueIsStringMatching, ValueIsText, ValueIsTextline,
-      ValueIsFunction, ValueIsAnonymousFunction, ValueIsNamedFunction,
-      ValueIsNativeFunction, ValueIsScriptedFunction, ValueIsObject,
-      ValueIsPlainObject, ValueIsVanillaObject, ValueIsArray, ValueIsList,
-      ValueIsListSatisfying, ValueIsInstanceOf, ValueInheritsFrom, ValueIsDate,
-      ValueIsError, ValueIsPromise, ValueIsRegExp, ValueIsOneOf, ValueIsColor,
-      ValueIsEMailAddress, ValueIsURL,
-      rejectNil, acceptNil,
-      validatedArgument, ValidatorForClassifier, FunctionWithName,
-      expectValue, expectedValue,
-      allowBoolean, allowedBoolean, expectBoolean, expectedBoolean,
-      allowNumber, allowedNumber, expectNumber, expectedNumber,
-      allowFiniteNumber, allowedFiniteNumber, expectFiniteNumber, expectedFiniteNumber,
-      allowNaN, allowedNaN, expectNaN, expectedNaN,
-      allowNumberInRange, allowedNumberInRange, expectNumberInRange, expectedNumberInRange,
-      allowInteger, allowedInteger, expectInteger, expectedInteger,
-      allowIntegerInRange, allowedIntegerInRange, expectIntegerInRange, expectedIntegerInRange,
-      allowOrdinal, allowedOrdinal, expectOrdinal, expectedOrdinal,
-      allowCardinal, allowedCardinal, expectCardinal, expectedCardinal,
-      allowString, allowedString, expectString, expectedString,
-      allowNonEmptyString, allowedNonEmptyString, expectNonEmptyString, expectedNonEmptyString,
-      allowStringMatching, allowedStringMatching, expectStringMatching, expectedStringMatching,
-      allowText, allowedText, expectText, expectedText,
-      allowTextline, allowedTextline, expectTextline, expectedTextline,
-      allowFunction, allowedFunction, expectFunction, expectedFunction,
-      allowAnonymousFunction, allowedAnonymousFunction, expectAnonymousFunction, expectedAnonymousFunction,
-      allowNamedFunction, allowedNamedFunction, expectNamedFunction, expectedNamedFunction,
-      allowNativeFunction, allowedNativeFunction, expectNativeFunction, expectedNativeFunction,
-      allowScriptedFunction, allowedScriptedFunction, expectScriptedFunction, expectedScriptedFunction,
-      allowObject, allowedObject, expectObject, expectedObject,
-      allowPlainObject, allowedPlainObject, expectPlainObject, expectedPlainObject,
-      allowVanillaObject, allowedVanillaObject, expectVanillaObject, expectedVanillaObject,
-      allowArray, allowedArray, expectArray, expectedArray,
-      allowList, allowedList, expectList, expectedList,
-      allowListSatisfying, allowedListSatisfying, expectListSatisfying, expectedListSatisfying,
-      allowInstanceOf, allowedInstanceOf, expectInstanceOf, expectedInstanceOf,
-      allowValueInheritingFrom, allowedValueInheritingFrom, expectValueInheritingFrom, expectedValueInheritingFrom,
-      allowDate, allowedDate, expectDate, expectedDate,
-      allowError, allowedError, expectError, expectedError,
-      allowPromise, allowedPromise, expectPromise, expectedPromise,
-      allowRegExp, allowedRegExp, expectRegExp, expectedRegExp,
-      allowOneOf, allowedOneOf, expectOneOf, expectedOneOf,
-      allowColor, allowedColor, expectColor, expectedColor,
-      allowEMailAddress, allowedEMailAddress, expectEMailAddress, expectedEMailAddress,
-      allowURL, allowedURL, expectURL, expectedURL,
-      escaped, unescaped, quotable, quoted,
-      HTMLsafe, MarkDownSafe,
-      ValuesDiffer, ValuesAreEqual,
-      ObjectIsEmpty, StringIsEmpty, StringIsNotEmpty,
-      ColorSet, HexColor, shortHexColor, RGBAColor
-    }
   }
