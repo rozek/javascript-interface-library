@@ -18,7 +18,10 @@
   },
   "keywords": [
     "javascript",
-    "typescript"
+    "typescript",
+    "type-checking",
+    "input-validation",
+    "utility-functions"
   ],
   "author": "Andreas Rozek <a.rozek@gmx.de> (https://www.rozek.de/)",
   "license": "MIT",
