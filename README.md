@@ -4,7 +4,7 @@ various classification, validation and utility functions for JavaScript and Type
 
 From time to time, it's necessary to classify and/or validate the values of user inputs, data read from input streams (like files or network connections) or arguments passed as part of a function call. While TypeScript type annotations already eliminate the need for many of these tests, there still exist lots of interfaces to the outer (non-TypeScript) world where value checking remains important.
 
-These situations are, what the `javascript-interface-library` is providing functions for.
+These situations are, what the `javascript-interface-library` has been made for.
 
 **NPM users**: please consider the [Github README](https://github.com/rozek/javascript-interface-library/blob/main/README.md) for the latest description of this package (as updating the docs would otherwise always require a new NPM package version)
 
