@@ -250,6 +250,8 @@ export declare function ObjectIsEmpty(Candidate: any): boolean;
 export declare function StringIsEmpty(Candidate: string): boolean;
 /**** StringIsNotEmpty ****/
 export declare function StringIsNotEmpty(Candidate: string): boolean;
+/**** constrained ****/
+export declare function constrained(Value: number, Minimum?: number, Maximum?: number): number;
 export declare const ColorSet: {
     transparent: string;
     aliceblue: string;
