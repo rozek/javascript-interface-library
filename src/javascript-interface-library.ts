@@ -1431,6 +1431,14 @@
     return ! StringIsEmpty(Candidate)
   }
 
+/**** constrained ****/
+
+  export function constrained (
+    Value:number, Minimum:number = -Infinity, Maximum:number = Infinity
+  ):number {
+    return Math.max(Minimum, Math.min(Value, Maximum))
+  }
+
 //------------------------------------------------------------------------------
 //--                             Color Utilities                              --
 //------------------------------------------------------------------------------
