@@ -1419,6 +1419,12 @@
     return true
   }
 
+/**** ObjectIsNotEmpty ****/
+
+  export function ObjectIsNotEmpty (Candidate:string):boolean {
+    return ! ObjectIsEmpty(Candidate)
+  }
+
 /**** StringIsEmpty ****/
 
   export function StringIsEmpty (Candidate:string):boolean {
