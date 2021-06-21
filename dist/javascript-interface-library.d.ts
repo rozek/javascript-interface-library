@@ -246,6 +246,8 @@ export declare function ValuesDiffer(thisValue: any, otherValue: any): boolean;
 export declare function ValuesAreEqual(thisValue: any, otherValue: any): boolean;
 /**** ObjectIsEmpty ****/
 export declare function ObjectIsEmpty(Candidate: any): boolean;
+/**** ObjectIsNotEmpty ****/
+export declare function ObjectIsNotEmpty(Candidate: string): boolean;
 /**** StringIsEmpty ****/
 export declare function StringIsEmpty(Candidate: string): boolean;
 /**** StringIsNotEmpty ****/
