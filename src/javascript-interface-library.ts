@@ -1421,7 +1421,7 @@
 
 /**** ObjectIsNotEmpty ****/
 
-  export function ObjectIsNotEmpty (Candidate:string):boolean {
+  export function ObjectIsNotEmpty (Candidate:any):boolean {
     return ! ObjectIsEmpty(Candidate)
   }
 
