@@ -8,7 +8,7 @@ These situations are, what the `javascript-interface-library` has been made for.
 
 **NPM users**: please consider the [Github README](https://github.com/rozek/javascript-interface-library/blob/main/README.md) for the latest description of this package (as updating the docs would otherwise always require a new NPM package version)
 
-### Installation ###
+## Installation ##
 
 `javascript-interface-library` may be used as an ESM, CommonJS or AMD module or from a global variable.
 
@@ -24,7 +24,7 @@ or load the plain script file directly
 <script src="https://unpkg.com/javascript-interface-library"></script>
 ```
 
-### Access ###
+## Access ##
 
 How to access the package depends on the type of module you prefer
 
@@ -34,7 +34,7 @@ How to access the package depends on the type of module you prefer
 
 Alternatively, you may access the global Variable `JIL` directly.
 
-### Usage as an ECMAscript Module ###
+## Usage as an ECMAscript Module ##
 
 ```
 console.log(ValueIsListSatisfying(
@@ -44,7 +44,7 @@ console.log(ValueIsListSatisfying(
 
 All module functions and values are exported individually, thus allowing your bundler to perform some "tree-shaking" in order to import actually used functions or values only.
 
-### Usage as a CommonJS or AMD Module (or as a global Variable) ###
+## Usage as a CommonJS or AMD Module (or as a global Variable) ##
 
 Let's assume that you already "required" or "imported" (or simply loaded) the module according to your local environment. In that case, you may use it as follows:
 
@@ -54,11 +54,11 @@ console.log(JIL.ValueIsListSatisfying(
 ))
 ```
 
-### API Reference ###
+## API Reference ##
 
 As shown above, the individual functions and values may either be accessed directly (when used as an ESM) or by prefixing them with their namespace `JIL` (in all other cases). The following documentation lists all module contents without namespace prefix only, and the shown function signatures are those used by TypeScript.
 
-#### Object Functions ####
+### Object Functions ###
 
 The JavaScript `Object` class provides a few useful functions (or "static methods") for inspecting or converting a given object. Unfortunately, these functions are often used without prior checking whether the given target object actually inherits from the `Object` protoype or was built using `Object.create(null)` - and will fail whenever such a "vanilla" object is given.
 
@@ -71,7 +71,7 @@ The JavaScript `Object` class provides a few useful functions (or "static method
 * **`Object_toLocaleString (Value:Object):string`**<br>returns a locale-specific string which represents the given `Value`. This function mimics the JavaScript method [Object.toLocaleString](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/toLocaleString)
 * **`Object_valueOf (Value:Object):any`**<br>returns the primitive value of the given `Value` object. This function mimics the JavaScript method [Object.valueOf](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/valueOf)
 
-#### Value Classification Functions ####
+### Value Classification Functions ###
 
 The following functions check whether a given argument satisfies a certain constraint (e.g., belongs to a certain category) and return either `true` (if the constrain is met) or false otherwise.
 
@@ -113,7 +113,7 @@ The following functions check whether a given argument satisfies a certain const
 * **`ValueIsEMailAddress (Value:any):boolean`**<br>returns `true` if the given `Value` is a string containing a syntactically valid EMail address - or `false` otherwise
 * **`ValueIsURL (Value:any):boolean`**<br>returns `true` if the given `Value` is a string containing a syntactically valid URL - or `false` otherwise
 
-#### Argument Validation Functions ####
+### Argument Validation Functions ###
 
 The following functions check whether a given argument satisfies a certain constraint (e.g., belongs to a certain category) and either return the given argument (sometimes after some normalization), if the constrain is met, or throw an error otherwise.
 
@@ -163,7 +163,7 @@ For the sake of clarity, however, only the first "flavour" (namely `allowXXX`) i
 * **`allowEMailAddress (Description:string, Argument:any):string|null|undefined`**<br>checks if the given `Argument` is a string containing a syntactically valid EMail address. If this is the case, the function returns the primitive value of the given `Argument`, otherwise an error is thrown whose message contains the given `Description`
 * **`allowURL (Description:string, Argument:any):string|null|undefined`**<br>checks if the given `Argument` is a string containing a syntactically valid URL. If this is the case, the function returns the primitive value of the given `Argument`, otherwise an error is thrown whose message contains the given `Description`
 
-#### Utility Functions ####
+### Utility Functions ###
 
 * **`throwError (Message:string):never`**<br>this function has been provided in order to simplify throwing "named" `Error` instances: if the given `Message` starts with a JavaScript identifier followed by a colon, identifier and colon are stripped apart and the identifier is used as the `name` property of a newly constructed `Error` instance for the remaining part of `Message`. Otherwise, this function is equivalent to `throw new Error(Message)` <br>&nbsp;<br>
 * **`ObjectMergedWith (TargetObject:object, ...otherObjectList:object[]):object`**<br>`Object.assign` can not be used to copy properties with getters and setters from one object into another - this is what `ObjectMergedWith` is good for: it copies the descriptors of all *own* properties from any object found in `otherObjectList` into the given `TargetObject` and also returns that object as its function result. Any  descriptor already existing for a given property in `TargetObject` will be overwritten<br>&nbsp;<br>
@@ -184,14 +184,14 @@ For the sake of clarity, however, only the first "flavour" (namely `allowXXX`) i
 * **`validatedArgument (Description:string, Argument:any, ValueIsValid:(Value:any) => boolean,NilIsAcceptable:boolean, Expectation:string):any|null|undefined`**<br>this function is used internally to actually validate a given `Argument` and throw an `Error` with a message containing the given `Description`, if not. `ValueIsValid` is the function used check `Argument` and should return `true` if `Argument` is "valid" or `false` if not. If set to `true`, `NilIsAcceptable` indicates that `Argument` may be missing (i.e., `null` or `undefined`), otherwise the given `Argument` is mandatory. If validation fails, an error message is constructed, which includes the given `Description` and complains about the given value not being a "valid ${Expectation}" - i.e., `Expectation` should describe the expected kind of argument<br>&nbsp;<br>
 * **`FunctionWithName (originalFunction:Function, desiredName:string|String):Function`**<br>this function is used internally to convert an anonymous function `originalFunction` into a named one - either by setting the `desiredName` for the existing function or by wrapping it into a new function with that name
 
-#### Color Utilities ####
+### Color Utilities ###
 
 * **`ColorSet`**<br>is an object, whose keys are the names of all colors known by (and built into) a web browser and the corresponding values are the RGBA specifications of these colors
 * **`HexColor (Color:string):string`**<br>converts a given `Color` string (which must be a valid CSS color specification) into the long hexadecimal format (`#rrggbbaa`)
 * **`shortHexColor (Color:string):string`**<br>converts a given `Color` string (which must be a valid CSS color specification) into the short hexadecimal format (`#rrggbb`) - such a format must be used for HTML input elements of type "color"
 * **`RGBAColor (Color:string):string`**<br>converts a given `Color` string (which must be a valid CSS color specification) into the RGBA format (`rgba(r,g,b,a)`)
 
-### Build Instructions ###
+## Build Instructions ##
 
 You may easily build this package yourself.
 
@@ -209,3 +209,7 @@ npm run agadoo
 ```
 
 in order to check if the result is still tree-shakable.
+
+## License ##
+
+[MIT License](LICENSE.md)
