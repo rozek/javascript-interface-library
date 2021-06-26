@@ -32,7 +32,7 @@ How to access the package depends on the type of module you prefer
 * CommonJS: `const JIL = require('javascript-interface-library')`
 * AMD: `require(['javascript-interface-library'], (JIL) => {...})`
 
-Alternatively, you may access the global Variable `JIL` directly.
+Alternatively, you may access the global variable `JIL` directly.
 
 ## Usage as an ECMAscript Module ##
 
