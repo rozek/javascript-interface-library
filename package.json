@@ -4,11 +4,12 @@
   "description": "various classification, validation and utility functions",
   "main": "./dist/javascript-interface-library.js",
   "module": "./dist/javascript-interface-library.esm.js",
+  "svelte": "./dist/javascript-interface-library.esm.js",
+  "types": "./dist/javascript-interface-library.d.ts",
   "exports": {
     "require": "./dist/javascript-interface-library.js",
     "import": "./dist/javascript-interface-library.esm.js"
   },
-  "types": "./dist/javascript-interface-library.d.ts",
   "scripts": {
     "build": "rimraf dist && tsc && rollup -c rollup.config.js && mv src/*.d.ts dist && rm src/*.js",
     "agadoo": "agadoo",
