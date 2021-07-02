@@ -87,6 +87,7 @@ The following functions check whether a given argument satisfies a certain const
 * **`ValueIsOrdinal (Value:any):boolean`**<br>returns `true` if the given `Value` is a whole number greater than or equal to zero - or `false` otherwise
 * **`ValueIsCardinal (Value:any):boolean`**<br>returns `true` if the given `Value` is a whole number greater than or equal to one - or `false` otherwise<br>&nbsp;<br>
 * **`ValueIsString (Value:any):boolean`**<br>returns `true` if the given `Value` is either a primitive literal value or an instance of `String` - or `false` otherwise
+* **`ValueIsEmptyString (Value:any):boolean`**<br>returns `true` if the given `Value` is a string without any characters or with some content that consists of white-space characters only - or `false` otherwise
 * **`ValueIsNonEmptyString (Value:any):boolean`**<br>returns `true` if the given `Value` is a string with some content that does not just consist of white-space characters - or `false` otherwise
 * **`ValueIsStringMatching (Value:any, Pattern:RegExp):boolean`**<br>returns `true` if the given `Value` is a string whose content matches the given regular expression `Pattern` - or `false` otherwise
 * **`ValueIsText (Value:any):boolean`**<br>returns `true` if the given `Value` is a string containing "ordinary" text only (i.e., a string which lacks any kind of control characters except \\n or \\r) - or `false` otherwise
