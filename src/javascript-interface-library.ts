@@ -258,9 +258,15 @@
     return (typeof Value === 'string') || (Value instanceof String)
   }
 
-/**** ValueIsNonEmptyString ****/
+/**** ValueIs[Non]EmptyString ****/
 
   const emptyStringPattern = /^\s*$/
+
+  export function ValueIsEmptyString (Value:any):boolean {
+    return (
+      (typeof Value === 'string') || (Value instanceof String)
+    ) && emptyStringPattern.test(Value.valueOf())
+  }
 
   export function ValueIsNonEmptyString (Value:any):boolean {
     return (
