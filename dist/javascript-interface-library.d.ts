@@ -40,6 +40,7 @@ export declare function ValueIsOrdinal(Value: any): boolean;
 export declare function ValueIsCardinal(Value: any): boolean;
 /**** ValueIsString ****/
 export declare function ValueIsString(Value: any): boolean;
+export declare function ValueIsEmptyString(Value: any): boolean;
 export declare function ValueIsNonEmptyString(Value: any): boolean;
 /**** ValueIsStringMatching ****/
 export declare function ValueIsStringMatching(Value: any, Pattern: RegExp): boolean;
