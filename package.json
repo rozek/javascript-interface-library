@@ -1,6 +1,6 @@
 {
   "name": "javascript-interface-library",
-  "version": "0.1.10",
+  "version": "0.1.11",
   "description": "various classification, validation and utility functions",
   "main": "./dist/javascript-interface-library.js",
   "module": "./dist/javascript-interface-library.esm.js",
