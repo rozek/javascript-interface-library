@@ -28,7 +28,7 @@ or load the plain script file directly
 
 How to access the package depends on the type of module you prefer
 
-* ESM: `import { ValueIsListSatisfying, ValueIsOrdinal } from 'javascript-interface-library'`
+* ESM (or Svelte): `import { ValueIsListSatisfying, ValueIsOrdinal } from 'javascript-interface-library'`
 * CommonJS: `const JIL = require('javascript-interface-library')`
 * AMD: `require(['javascript-interface-library'], (JIL) => {...})`
 
