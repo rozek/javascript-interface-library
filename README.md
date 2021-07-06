@@ -36,7 +36,7 @@ Alternatively, you may access the global variable `JIL` directly.
 
 ## Usage within Svelte ##
 
-For Svelte, it is recommended to import the module in a module context. From then on, its exports may be used as usual:
+For Svelte, it is recommended to import the package in a module context. From then on, its exports may be used as usual:
 
 ```
 <script context="module">
