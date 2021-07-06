@@ -211,6 +211,8 @@ npm run agadoo
 
 in order to check if the result is still tree-shakable.
 
+See the author's [build-configuration-study](https://github.com/rozek/build-configuration-study) for a general description of his build environment.
+
 ## License ##
 
 [MIT License](LICENSE.md)
