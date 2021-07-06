@@ -34,6 +34,9 @@ How to access the package depends on the type of module you prefer
 
 Alternatively, you may access the global variable `JIL` directly.
 
+Note for ECMAScript module users: all module functions and values are exported individually, thus allowing your bundler to perform some "tree-shaking" in order to include actually used functions or values (together with their dependencies) only.
+
+
 ## Usage within Svelte ##
 
 For Svelte, it is recommended to import the package in a module context. From then on, its exports may be used as usual:
@@ -50,17 +53,7 @@ For Svelte, it is recommended to import the package in a module context. From th
 </script>
 ```
 
-## Usage as an ECMAscript Module ##
-
-```
-console.log(ValueIsListSatisfying(
-  [1,2,3,4], ValueIsOrdinal, 1,10
-))
-```
-
-All module functions and values are exported individually, thus allowing your bundler to perform some "tree-shaking" in order to include actually used functions or values (together with their dependencies) only.
-
-## Usage as a CommonJS or AMD Module (or as a global Variable) ##
+## Usage as ECMAscript, CommonJS or AMD Module (or as a global Variable) ##
 
 Let's assume that you already "required" or "imported" (or simply loaded) the module according to your local environment. In that case, you may use it as follows:
 
