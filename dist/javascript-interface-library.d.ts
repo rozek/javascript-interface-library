@@ -242,9 +242,9 @@ export declare function HTMLsafe(Argument: string, EOLReplacement?: string): str
 /**** MarkDownSafe ****/
 export declare function MarkDownSafe(Argument: string, EOLReplacement?: string): string;
 /**** ValuesDiffer ****/
-export declare function ValuesDiffer(thisValue: any, otherValue: any): boolean;
+export declare function ValuesDiffer(thisValue: any, otherValue: any, Mode?: 'by-value' | 'by-reference' | undefined): boolean;
 /**** ValuesAreEqual ****/
-export declare function ValuesAreEqual(thisValue: any, otherValue: any): boolean;
+export declare function ValuesAreEqual(thisValue: any, otherValue: any, Mode?: 'by-value' | 'by-reference' | undefined): boolean;
 /**** ObjectIsEmpty ****/
 export declare function ObjectIsEmpty(Candidate: any): boolean;
 /**** ObjectIsNotEmpty ****/

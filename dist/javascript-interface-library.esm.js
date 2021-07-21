@@ -865,7 +865,7 @@ function MarkDownSafe(Argument, EOLReplacement) {
     return HTMLsafe(Argument, EOLReplacement).replace(/:/g, '&#58;');
 }
 /**** ValuesDiffer ****/
-function ValuesDiffer(thisValue, otherValue) {
+function ValuesDiffer(thisValue, otherValue, Mode) {
     if (thisValue === otherValue) {
         return false;
     }
@@ -874,7 +874,7 @@ function ValuesDiffer(thisValue, otherValue) {
         return true;
     }
     /**** ArraysDiffer ****/
-    function ArraysDiffer(thisArray, otherArray) {
+    function ArraysDiffer(thisArray, otherArray, Mode) {
         if (!Array.isArray(otherArray)) {
             return true;
         }
@@ -882,14 +882,14 @@ function ValuesDiffer(thisValue, otherValue) {
             return true;
         }
         for (var i = 0, l = thisArray.length; i < l; i++) {
-            if (ValuesDiffer(thisArray[i], otherArray[i])) {
+            if (ValuesDiffer(thisArray[i], otherArray[i], Mode)) {
                 return true;
             }
         }
         return false;
     }
     /**** ObjectsDiffer ****/
-    function ObjectsDiffer(thisObject, otherObject) {
+    function ObjectsDiffer(thisObject, otherObject, Mode) {
         if (Object.getPrototypeOf(thisObject) !== Object.getPrototypeOf(otherObject)) {
             return true;
         }
@@ -902,7 +902,7 @@ function ValuesDiffer(thisValue, otherValue) {
             if (!(key in thisObject)) {
                 return true;
             }
-            if (ValuesDiffer(thisObject[key], otherObject[key])) {
+            if (ValuesDiffer(thisObject[key], otherObject[key], Mode)) {
                 return true;
             }
         }
@@ -922,17 +922,24 @@ function ValuesDiffer(thisValue, otherValue) {
             if (otherValue == null) {
                 return true;
             } // since "this_value" != null!
-            if (Array.isArray(thisValue)) {
-                return ArraysDiffer(thisValue, otherValue);
+            if ((Mode === 'by-value') && ((thisValue instanceof Boolean) ||
+                (thisValue instanceof Number) ||
+                (thisValue instanceof String))) {
+                return (thisValue.valueOf() !== otherValue.valueOf());
             }
-            return ObjectsDiffer(thisValue, otherValue);
+            if (Array.isArray(thisValue)) {
+                return ArraysDiffer(thisValue, otherValue, Mode);
+            }
+            return (Mode === 'by-reference'
+                ? true // because (thisValue !== otherValue)
+                : ObjectsDiffer(thisValue, otherValue, Mode));
         default: return true; // unsupported property type
     }
     return true;
 }
 /**** ValuesAreEqual ****/
-function ValuesAreEqual(thisValue, otherValue) {
-    return !ValuesDiffer(thisValue, otherValue);
+function ValuesAreEqual(thisValue, otherValue, Mode) {
+    return !ValuesDiffer(thisValue, otherValue, Mode);
 }
 /**** ObjectIsEmpty ****/
 function ObjectIsEmpty(Candidate) {
