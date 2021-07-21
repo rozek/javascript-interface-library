@@ -1341,7 +1341,9 @@
 
 /**** ValuesDiffer ****/
 
-  export function ValuesDiffer (thisValue:any, otherValue:any):boolean {
+  export function ValuesDiffer (
+    thisValue:any, otherValue:any, Mode?:'by-value'|'by-reference'|undefined
+  ):boolean {
     if (thisValue === otherValue) { return false }
 
     let thisType = typeof thisValue
@@ -1349,13 +1351,15 @@
 
     /**** ArraysDiffer ****/
 
-      function ArraysDiffer (thisArray:any[], otherArray:any[]):boolean {
+      function ArraysDiffer (
+        thisArray:any[], otherArray:any[], Mode:'by-value'|'by-reference'|undefined
+      ):boolean {
         if (! Array.isArray(otherArray)) { return true }
 
         if (thisArray.length !== otherArray.length) { return true }
 
         for (let i = 0, l = thisArray.length; i < l; i++) {
-          if (ValuesDiffer(thisArray[i],otherArray[i])) { return true }
+          if (ValuesDiffer(thisArray[i],otherArray[i],Mode)) { return true }
         }
 
         return false
@@ -1363,7 +1367,9 @@
 
     /**** ObjectsDiffer ****/
 
-      function ObjectsDiffer (thisObject:any, otherObject:any):boolean {
+      function ObjectsDiffer (
+        thisObject:any, otherObject:any, Mode:'by-value'|'by-reference'|undefined
+      ):boolean {
         if (Object.getPrototypeOf(thisObject) !== Object.getPrototypeOf(otherObject)) {
           return true
         }
@@ -1375,7 +1381,7 @@
         for (let key in otherObject) {
           if (! (key in thisObject)) { return true }
 
-          if (ValuesDiffer(thisObject[key],otherObject[key])) {
+          if (ValuesDiffer(thisObject[key],otherObject[key],Mode)) {
             return true
           }
         }
@@ -1396,11 +1402,23 @@
         if (thisValue  == null) { return true }  // since "other_value" != null!
         if (otherValue == null) { return true }   // since "this_value" != null!
 
-        if (Array.isArray(thisValue)) {
-          return ArraysDiffer(thisValue,otherValue)
+        if ((Mode === 'by-value') && (
+          (thisValue instanceof Boolean) ||
+          (thisValue instanceof Number) ||
+          (thisValue instanceof String)
+        )) {
+          return (thisValue.valueOf() !== otherValue.valueOf())
         }
 
-        return ObjectsDiffer(thisValue,otherValue)
+        if (Array.isArray(thisValue)) {
+          return ArraysDiffer(thisValue,otherValue,Mode)
+        }
+
+        return (
+          Mode === 'by-reference'
+          ? true                           // because (thisValue !== otherValue)
+          : ObjectsDiffer(thisValue,otherValue,Mode)
+        )
       default: return true                          // unsupported property type
     }
 
@@ -1409,8 +1427,10 @@
 
 /**** ValuesAreEqual ****/
 
-  export function ValuesAreEqual (thisValue:any, otherValue:any):boolean {
-    return ! ValuesDiffer(thisValue,otherValue)
+  export function ValuesAreEqual (
+    thisValue:any, otherValue:any, Mode?:'by-value'|'by-reference'|undefined
+  ):boolean {
+    return ! ValuesDiffer(thisValue,otherValue,Mode)
   }
 
 /**** ObjectIsEmpty ****/
