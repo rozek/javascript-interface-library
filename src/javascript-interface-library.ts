@@ -102,17 +102,23 @@
     return TargetObject
   }
 
-/**** throwError - simplifies construction of named errors ****/
+/**** throwableError - simplifies construction of named errors ****/
 
-  export function throwError (Message:string):never {
+  export function throwableError (Message:string):Error {
     let Match = /^([$a-zA-Z][$a-zA-Z0-9]*):\s*(\S.+)\s*$/.exec(Message)
     if (Match == null) {
-      throw new Error(Message)
+      return new Error(Message)
     } else {
       let namedError = new Error(Match[2])
         namedError.name = Match[1]
-      throw namedError
+      return namedError
     }
+  }
+
+/**** throwError - throws a named error ****/
+
+  export function throwError (Message:string):never {
+    throw throwableError(Message)
   }
 
 //------------------------------------------------------------------------------
