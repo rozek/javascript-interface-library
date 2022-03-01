@@ -22,7 +22,7 @@ npm install javascript-interface-library
 
 or load the plain script file directly
 
-```
+```html
 <script src="https://unpkg.com/javascript-interface-library"></script>
 ```
 
@@ -43,7 +43,7 @@ Note for ECMAScript module users: all module functions and values are exported i
 
 For Svelte, it is recommended to import the package in a module context. From then on, its exports may be used as usual:
 
-```
+```html
 <script context="module">
   import { ValueIsListSatisfying, ValueIsOrdinal } from 'javascript-interface-library'
 </script>
@@ -59,7 +59,7 @@ For Svelte, it is recommended to import the package in a module context. From th
 
 Let's assume that you already "required" or "imported" (or simply loaded) the module according to your local environment. In that case, you may use it as follows:
 
-```
+```javascript
 console.log(JIL.ValueIsListSatisfying(
   [1,2,3,4], JIL.ValueIsOrdinal, 1,10
 ))
