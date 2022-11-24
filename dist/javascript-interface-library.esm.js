@@ -1085,7 +1085,7 @@ function HexColor(Color) {
             dec2hex(parseInt(Match[1], 10)) +
             dec2hex(parseInt(Match[2], 10)) +
             dec2hex(parseInt(Match[3], 10)) +
-            dec2hex(parseFloat(Match[4])));
+            dec2hex(parseFloat(Match[4]) * 255));
     }
     throwError('InvalidArgument: the given Value is not a valid CSS Color specification');
 }
