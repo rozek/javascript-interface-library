@@ -14,9 +14,7 @@ export declare function Object_toLocaleString(Value: Object): string;
 export declare function Object_valueOf(Value: Object): any;
 /**** ObjectMergedWith ****/
 export declare function ObjectMergedWith(TargetObject: object, ...otherObjectList: object[]): object;
-/**** throwableError - simplifies construction of named errors ****/
-export declare function throwableError(Message: string): Error;
-/**** throwError - throws a named error ****/
+/**** throwError - simplifies construction of named errors ****/
 export declare function throwError(Message: string): never;
 /**** ValueExists ****/
 export declare function ValueExists(Value: any): boolean;

@@ -75,21 +75,17 @@ function ObjectMergedWith(TargetObject) {
     }
     return TargetObject;
 }
-/**** throwableError - simplifies construction of named errors ****/
-function throwableError(Message) {
+/**** throwError - simplifies construction of named errors ****/
+function throwError(Message) {
     var Match = /^([$a-zA-Z][$a-zA-Z0-9]*):\s*(\S.+)\s*$/.exec(Message);
     if (Match == null) {
-        return new Error(Message);
+        throw new Error(Message);
     }
     else {
         var namedError = new Error(Match[2]);
         namedError.name = Match[1];
-        return namedError;
+        throw namedError;
     }
-}
-/**** throwError - throws a named error ****/
-function throwError(Message) {
-    throw throwableError(Message);
 }
 //------------------------------------------------------------------------------
 //--                      Value Classification Functions                      --
@@ -750,14 +746,14 @@ function expectOneOf(Description, Argument, ValueList) {
 }
 var expectedOneOf = expectOneOf;
 /**** allow/expect[ed]Color ****/
-var allowColor = /*#__PURE__*/ ValidatorForClassifier(ValueIsColor, acceptNil, 'valid CSS color specification'), allowedColor = allowColor;
-var expectColor = /*#__PURE__*/ ValidatorForClassifier(ValueIsColor, rejectNil, 'valid CSS color specification'), expectedColor = expectColor;
+var allowColor = /*#__PURE__*/ ValidatorForClassifier(ValueIsColor, acceptNil, 'CSS color specification'), allowedColor = allowColor;
+var expectColor = /*#__PURE__*/ ValidatorForClassifier(ValueIsColor, rejectNil, 'CSS color specification'), expectedColor = expectColor;
 /**** allow/expect[ed]EMailAddress ****/
-var allowEMailAddress = /*#__PURE__*/ ValidatorForClassifier(ValueIsEMailAddress, acceptNil, 'valid EMail address'), allowedEMailAddress = allowEMailAddress;
-var expectEMailAddress = /*#__PURE__*/ ValidatorForClassifier(ValueIsEMailAddress, rejectNil, 'valid EMail address'), expectedEMailAddress = expectEMailAddress;
+var allowEMailAddress = /*#__PURE__*/ ValidatorForClassifier(ValueIsEMailAddress, acceptNil, 'EMail address'), allowedEMailAddress = allowEMailAddress;
+var expectEMailAddress = /*#__PURE__*/ ValidatorForClassifier(ValueIsEMailAddress, rejectNil, 'EMail address'), expectedEMailAddress = expectEMailAddress;
 /**** allow/expect[ed]URL ****/
-var allowURL = /*#__PURE__*/ ValidatorForClassifier(ValueIsURL, acceptNil, 'valid URL'), allowedURL = allowURL;
-var expectURL = /*#__PURE__*/ ValidatorForClassifier(ValueIsURL, rejectNil, 'valid URL'), expectedURL = expectURL;
+var allowURL = /*#__PURE__*/ ValidatorForClassifier(ValueIsURL, acceptNil, 'URL'), allowedURL = allowURL;
+var expectURL = /*#__PURE__*/ ValidatorForClassifier(ValueIsURL, rejectNil, 'URL'), expectedURL = expectURL;
 /**** escaped - escapes all control characters in a given string ****/
 function escaped(Text) {
     var EscapeSequencePattern = /\\x[0-9a-zA-Z]{2}|\\u[0-9a-zA-Z]{4}|\\[0bfnrtv'"\\\/]?/g;
@@ -1132,5 +1128,5 @@ function shortHexColor(Color) {
     return HexColor(Color).slice(0, 7);
 }
 
-export { ColorSet, FunctionWithName, HTMLsafe, HexColor, MarkDownSafe, ObjectIsEmpty, ObjectIsNotEmpty, ObjectMergedWith, Object_hasOwnProperty, Object_isPrototypeOf, Object_propertyIsEnumerable, Object_toLocaleString, Object_toString, Object_valueOf, RGBAColor, StringIsEmpty, StringIsNotEmpty, ValidatorForClassifier, ValueExists, ValueInheritsFrom, ValueIsAnonymousFunction, ValueIsArray, ValueIsBoolean, ValueIsCardinal, ValueIsColor, ValueIsDate, ValueIsEMailAddress, ValueIsEmptyString, ValueIsError, ValueIsFiniteNumber, ValueIsFunction, ValueIsInstanceOf, ValueIsInteger, ValueIsIntegerInRange, ValueIsList, ValueIsListSatisfying, ValueIsMissing, ValueIsNaN, ValueIsNamedFunction, ValueIsNativeFunction, ValueIsNonEmptyString, ValueIsNumber, ValueIsNumberInRange, ValueIsObject, ValueIsOneOf, ValueIsOrdinal, ValueIsPlainObject, ValueIsPromise, ValueIsRegExp, ValueIsScriptedFunction, ValueIsString, ValueIsStringMatching, ValueIsText, ValueIsTextline, ValueIsURL, ValueIsVanillaObject, ValuesAreEqual, ValuesDiffer, acceptNil, allowAnonymousFunction, allowArray, allowBoolean, allowCardinal, allowColor, allowDate, allowEMailAddress, allowError, allowFiniteNumber, allowFunction, allowInstanceOf, allowInteger, allowIntegerInRange, allowList, allowListSatisfying, allowNaN, allowNamedFunction, allowNativeFunction, allowNonEmptyString, allowNumber, allowNumberInRange, allowObject, allowOneOf, allowOrdinal, allowPlainObject, allowPromise, allowRegExp, allowScriptedFunction, allowString, allowStringMatching, allowText, allowTextline, allowURL, allowValueInheritingFrom, allowVanillaObject, allowedAnonymousFunction, allowedArray, allowedBoolean, allowedCardinal, allowedColor, allowedDate, allowedEMailAddress, allowedError, allowedFiniteNumber, allowedFunction, allowedInstanceOf, allowedInteger, allowedIntegerInRange, allowedList, allowedListSatisfying, allowedNaN, allowedNamedFunction, allowedNativeFunction, allowedNonEmptyString, allowedNumber, allowedNumberInRange, allowedObject, allowedOneOf, allowedOrdinal, allowedPlainObject, allowedPromise, allowedRegExp, allowedScriptedFunction, allowedString, allowedStringMatching, allowedText, allowedTextline, allowedURL, allowedValueInheritingFrom, allowedVanillaObject, constrained, escaped, expectAnonymousFunction, expectArray, expectBoolean, expectCardinal, expectColor, expectDate, expectEMailAddress, expectError, expectFiniteNumber, expectFunction, expectInstanceOf, expectInteger, expectIntegerInRange, expectList, expectListSatisfying, expectNaN, expectNamedFunction, expectNativeFunction, expectNonEmptyString, expectNumber, expectNumberInRange, expectObject, expectOneOf, expectOrdinal, expectPlainObject, expectPromise, expectRegExp, expectScriptedFunction, expectString, expectStringMatching, expectText, expectTextline, expectURL, expectValue, expectValueInheritingFrom, expectVanillaObject, expectedAnonymousFunction, expectedArray, expectedBoolean, expectedCardinal, expectedColor, expectedDate, expectedEMailAddress, expectedError, expectedFiniteNumber, expectedFunction, expectedInstanceOf, expectedInteger, expectedIntegerInRange, expectedList, expectedListSatisfying, expectedNaN, expectedNamedFunction, expectedNativeFunction, expectedNonEmptyString, expectedNumber, expectedNumberInRange, expectedObject, expectedOneOf, expectedOrdinal, expectedPlainObject, expectedPromise, expectedRegExp, expectedScriptedFunction, expectedString, expectedStringMatching, expectedText, expectedTextline, expectedURL, expectedValue, expectedValueInheritingFrom, expectedVanillaObject, global, quotable, quoted, rejectNil, shortHexColor, throwError, throwableError, unescaped, validatedArgument };
+export { ColorSet, FunctionWithName, HTMLsafe, HexColor, MarkDownSafe, ObjectIsEmpty, ObjectIsNotEmpty, ObjectMergedWith, Object_hasOwnProperty, Object_isPrototypeOf, Object_propertyIsEnumerable, Object_toLocaleString, Object_toString, Object_valueOf, RGBAColor, StringIsEmpty, StringIsNotEmpty, ValidatorForClassifier, ValueExists, ValueInheritsFrom, ValueIsAnonymousFunction, ValueIsArray, ValueIsBoolean, ValueIsCardinal, ValueIsColor, ValueIsDate, ValueIsEMailAddress, ValueIsEmptyString, ValueIsError, ValueIsFiniteNumber, ValueIsFunction, ValueIsInstanceOf, ValueIsInteger, ValueIsIntegerInRange, ValueIsList, ValueIsListSatisfying, ValueIsMissing, ValueIsNaN, ValueIsNamedFunction, ValueIsNativeFunction, ValueIsNonEmptyString, ValueIsNumber, ValueIsNumberInRange, ValueIsObject, ValueIsOneOf, ValueIsOrdinal, ValueIsPlainObject, ValueIsPromise, ValueIsRegExp, ValueIsScriptedFunction, ValueIsString, ValueIsStringMatching, ValueIsText, ValueIsTextline, ValueIsURL, ValueIsVanillaObject, ValuesAreEqual, ValuesDiffer, acceptNil, allowAnonymousFunction, allowArray, allowBoolean, allowCardinal, allowColor, allowDate, allowEMailAddress, allowError, allowFiniteNumber, allowFunction, allowInstanceOf, allowInteger, allowIntegerInRange, allowList, allowListSatisfying, allowNaN, allowNamedFunction, allowNativeFunction, allowNonEmptyString, allowNumber, allowNumberInRange, allowObject, allowOneOf, allowOrdinal, allowPlainObject, allowPromise, allowRegExp, allowScriptedFunction, allowString, allowStringMatching, allowText, allowTextline, allowURL, allowValueInheritingFrom, allowVanillaObject, allowedAnonymousFunction, allowedArray, allowedBoolean, allowedCardinal, allowedColor, allowedDate, allowedEMailAddress, allowedError, allowedFiniteNumber, allowedFunction, allowedInstanceOf, allowedInteger, allowedIntegerInRange, allowedList, allowedListSatisfying, allowedNaN, allowedNamedFunction, allowedNativeFunction, allowedNonEmptyString, allowedNumber, allowedNumberInRange, allowedObject, allowedOneOf, allowedOrdinal, allowedPlainObject, allowedPromise, allowedRegExp, allowedScriptedFunction, allowedString, allowedStringMatching, allowedText, allowedTextline, allowedURL, allowedValueInheritingFrom, allowedVanillaObject, constrained, escaped, expectAnonymousFunction, expectArray, expectBoolean, expectCardinal, expectColor, expectDate, expectEMailAddress, expectError, expectFiniteNumber, expectFunction, expectInstanceOf, expectInteger, expectIntegerInRange, expectList, expectListSatisfying, expectNaN, expectNamedFunction, expectNativeFunction, expectNonEmptyString, expectNumber, expectNumberInRange, expectObject, expectOneOf, expectOrdinal, expectPlainObject, expectPromise, expectRegExp, expectScriptedFunction, expectString, expectStringMatching, expectText, expectTextline, expectURL, expectValue, expectValueInheritingFrom, expectVanillaObject, expectedAnonymousFunction, expectedArray, expectedBoolean, expectedCardinal, expectedColor, expectedDate, expectedEMailAddress, expectedError, expectedFiniteNumber, expectedFunction, expectedInstanceOf, expectedInteger, expectedIntegerInRange, expectedList, expectedListSatisfying, expectedNaN, expectedNamedFunction, expectedNativeFunction, expectedNonEmptyString, expectedNumber, expectedNumberInRange, expectedObject, expectedOneOf, expectedOrdinal, expectedPlainObject, expectedPromise, expectedRegExp, expectedScriptedFunction, expectedString, expectedStringMatching, expectedText, expectedTextline, expectedURL, expectedValue, expectedValueInheritingFrom, expectedVanillaObject, global, quotable, quoted, rejectNil, shortHexColor, throwError, unescaped, validatedArgument };
 //# sourceMappingURL=javascript-interface-library.esm.js.map
