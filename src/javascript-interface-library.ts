@@ -102,23 +102,17 @@
     return TargetObject
   }
 
-/**** throwableError - simplifies construction of named errors ****/
+/**** throwError - simplifies construction of named errors ****/
 
-  export function throwableError (Message:string):Error {
+  export function throwError (Message:string):never {
     let Match = /^([$a-zA-Z][$a-zA-Z0-9]*):\s*(\S.+)\s*$/.exec(Message)
     if (Match == null) {
-      return new Error(Message)
+      throw new Error(Message)
     } else {
       let namedError = new Error(Match[2])
         namedError.name = Match[1]
-      return namedError
+      throw namedError
     }
-  }
-
-/**** throwError - throws a named error ****/
-
-  export function throwError (Message:string):never {
-    throw throwableError(Message)
   }
 
 //------------------------------------------------------------------------------
@@ -1191,31 +1185,31 @@
 /**** allow/expect[ed]Color ****/
 
   export const allowColor = /*#__PURE__*/ ValidatorForClassifier(
-    ValueIsColor, acceptNil, 'valid CSS color specification'
+    ValueIsColor, acceptNil, 'CSS color specification'
   ), allowedColor = allowColor
 
   export const expectColor = /*#__PURE__*/ ValidatorForClassifier(
-    ValueIsColor, rejectNil, 'valid CSS color specification'
+    ValueIsColor, rejectNil, 'CSS color specification'
   ), expectedColor = expectColor
 
 /**** allow/expect[ed]EMailAddress ****/
 
   export const allowEMailAddress = /*#__PURE__*/ ValidatorForClassifier(
-    ValueIsEMailAddress, acceptNil, 'valid EMail address'
+    ValueIsEMailAddress, acceptNil, 'EMail address'
   ), allowedEMailAddress = allowEMailAddress
 
   export const expectEMailAddress = /*#__PURE__*/ ValidatorForClassifier(
-    ValueIsEMailAddress, rejectNil, 'valid EMail address'
+    ValueIsEMailAddress, rejectNil, 'EMail address'
   ), expectedEMailAddress = expectEMailAddress
 
 /**** allow/expect[ed]URL ****/
 
   export const allowURL = /*#__PURE__*/ ValidatorForClassifier(
-    ValueIsURL, acceptNil, 'valid URL'
+    ValueIsURL, acceptNil, 'URL'
   ), allowedURL = allowURL
 
   export const expectURL = /*#__PURE__*/ ValidatorForClassifier(
-    ValueIsURL, rejectNil, 'valid URL'
+    ValueIsURL, rejectNil, 'URL'
   ), expectedURL = expectURL
 
 /**** escaped - escapes all control characters in a given string ****/
