@@ -377,7 +377,7 @@ function validatedArgument(Description, Argument, ValueIsValid, NilIsAcceptable,
             return Argument;
         }
         else {
-            throwError("MissingArgument: no " + escaped(Description) + " given");
+            throwError("MissingArgument: no ".concat(escaped(Description), " given"));
         }
     }
     else {
@@ -392,7 +392,7 @@ function validatedArgument(Description, Argument, ValueIsValid, NilIsAcceptable,
             }
         }
         else {
-            throwError("InvalidArgument: the given " + escaped(Description) + " is no valid " + escaped(Expectation));
+            throwError("InvalidArgument: the given ".concat(escaped(Description), " is no valid ").concat(escaped(Expectation)));
         }
     }
 }
@@ -443,7 +443,7 @@ function FunctionWithName(originalFunction, desiredName) {
 /**** expect[ed]Value ****/
 function expectValue(Description, Argument) {
     if (Argument == null) {
-        throwError("MissingArgument: no " + escaped(Description) + " given");
+        throwError("MissingArgument: no ".concat(escaped(Description), " given"));
     }
     else {
         return Argument.valueOf();
@@ -473,7 +473,7 @@ var allowedNumberInRange = allowNumberInRange;
 function expectNumberInRange(Description, Argument, minValue, maxValue, withMin, withMax) {
     expectNumber(Description, Argument);
     if (isNaN(Argument)) {
-        throwError("InvalidArgument: the given " + escaped(Description) + " is not-a-number");
+        throwError("InvalidArgument: the given ".concat(escaped(Description), " is not-a-number"));
     }
     if (withMin == null) {
         withMin = true;
@@ -485,22 +485,22 @@ function expectNumberInRange(Description, Argument, minValue, maxValue, withMin,
         if ((maxValue != null) && isFinite(maxValue)) {
             if ((Argument < minValue) || (!withMin && (Argument === minValue)) ||
                 (Argument > maxValue) || (!withMax && (Argument === maxValue))) {
-                throw new RangeError("the given " + escaped(Description) + " (" + Argument + ") is outside " +
-                    ("the allowed range (" + minValue + "..." + maxValue + ")"));
+                throw new RangeError("the given ".concat(escaped(Description), " (").concat(Argument, ") is outside ") +
+                    "the allowed range (".concat(minValue, "...").concat(maxValue, ")"));
             }
         }
         else {
             if ((Argument < minValue) || (!withMin && (Argument === minValue))) {
-                throw new RangeError("the given " + escaped(Description) + " is below the allowed " +
-                    ("minimum (" + Argument + " " + (withMin ? '<' : '<=') + " " + minValue + ")"));
+                throw new RangeError("the given ".concat(escaped(Description), " is below the allowed ") +
+                    "minimum (".concat(Argument, " ").concat(withMin ? '<' : '<=', " ").concat(minValue, ")"));
             }
         }
     }
     else {
         if ((maxValue != null) && isFinite(maxValue)) {
             if ((Argument > maxValue) || (!withMax && (Argument === maxValue))) {
-                throw new RangeError("the given " + escaped(Description) + " exceeds the allowed " +
-                    ("maximum (" + Argument + " " + (withMax ? '>' : '>=') + " " + maxValue + ")"));
+                throw new RangeError("the given ".concat(escaped(Description), " exceeds the allowed ") +
+                    "maximum (".concat(Argument, " ").concat(withMax ? '>' : '>=', " ").concat(maxValue, ")"));
             }
         }
     }
@@ -521,27 +521,27 @@ var allowedIntegerInRange = allowIntegerInRange;
 function expectIntegerInRange(Description, Argument, minValue, maxValue) {
     expectInteger(Description, Argument);
     if (isNaN(Argument)) {
-        throwError("InvalidArgument: the given " + escaped(Description) + " is not-a-number");
+        throwError("InvalidArgument: the given ".concat(escaped(Description), " is not-a-number"));
     }
     if ((minValue != null) && isFinite(minValue)) {
         if ((maxValue != null) && isFinite(maxValue)) {
             if ((Argument < minValue) || (Argument > maxValue)) {
-                throw new RangeError("the given " + escaped(Description) + " (" + Argument + ") is outside " +
-                    ("the allowed range (" + minValue + "..." + maxValue + ")"));
+                throw new RangeError("the given ".concat(escaped(Description), " (").concat(Argument, ") is outside ") +
+                    "the allowed range (".concat(minValue, "...").concat(maxValue, ")"));
             }
         }
         else {
             if (Argument < minValue) {
-                throw new RangeError("the given " + escaped(Description) + " is below the allowed " +
-                    ("minimum (" + Argument + " < " + minValue + ")"));
+                throw new RangeError("the given ".concat(escaped(Description), " is below the allowed ") +
+                    "minimum (".concat(Argument, " < ").concat(minValue, ")"));
             }
         }
     }
     else {
         if ((maxValue != null) && isFinite(maxValue)) {
             if (Argument > maxValue) {
-                throw new RangeError("the given " + escaped(Description) + " exceeds the allowed " +
-                    ("maximum (" + Argument + " > " + maxValue + ")"));
+                throw new RangeError("the given ".concat(escaped(Description), " exceeds the allowed ") +
+                    "maximum (".concat(Argument, " > ").concat(maxValue, ")"));
             }
         }
     }
@@ -574,7 +574,7 @@ function expectStringMatching(Description, Argument, Pattern) {
         return Argument.valueOf();
     }
     else {
-        throwError("InvalidArgument: the given " + escaped(Description) + " does not match the specified pattern");
+        throwError("InvalidArgument: the given ".concat(escaped(Description), " does not match the specified pattern"));
     }
 }
 var expectedStringMatching = expectStringMatching;
@@ -618,13 +618,13 @@ var allowedArray = allowArray;
 /**** expect[ed]Array ****/
 function expectArray(Description, Argument) {
     if (Argument == null) {
-        throwError("MissingArgument: no " + escaped(Description) + " given");
+        throwError("MissingArgument: no ".concat(escaped(Description), " given"));
     }
     if (ValueIsArray(Argument)) {
         return Argument;
     }
     else {
-        throwError("InvalidArgument: the given " + escaped(Description) + " is no JavaScript array");
+        throwError("InvalidArgument: the given ".concat(escaped(Description), " is no JavaScript array"));
     }
 }
 var expectedArray = expectArray;
@@ -638,13 +638,13 @@ var allowedList = allowList;
 /**** expect[ed]List ****/
 function expectList(Description, Argument, Expectation, minLength, maxLength) {
     if (Argument == null) {
-        throwError("MissingArgument: no " + escaped(Description) + " given");
+        throwError("MissingArgument: no ".concat(escaped(Description), " given"));
     }
     if (ValueIsList(Argument, minLength, maxLength)) {
         return Argument;
     }
     else {
-        throwError("InvalidArgument: the given " + escaped(Description) + " is " + (Expectation == null
+        throwError("InvalidArgument: the given ".concat(escaped(Description), " is ") + (Expectation == null
             ? 'either not a list or contains an invalid number of elements'
             : 'no ' + escaped(Expectation)));
     }
@@ -660,13 +660,13 @@ var allowedListSatisfying = allowListSatisfying;
 /**** expect[ed]ListSatisfying ****/
 function expectListSatisfying(Description, Argument, Validator, Expectation, minLength, maxLength) {
     if (Argument == null) {
-        throwError("MissingArgument: no " + escaped(Description) + " given");
+        throwError("MissingArgument: no ".concat(escaped(Description), " given"));
     }
     if (ValueIsListSatisfying(Argument, Validator, minLength, maxLength)) {
         return Argument;
     }
     else {
-        throwError("InvalidArgument: the given " + escaped(Description) + " is " + (Expectation == null
+        throwError("InvalidArgument: the given ".concat(escaped(Description), " is ") + (Expectation == null
             ? 'either not a list or contains invalid elements'
             : 'no ' + escaped(Expectation)));
     }
@@ -682,10 +682,10 @@ var allowedInstanceOf = allowInstanceOf;
 /**** expect[ed]InstanceOf ****/
 function expectInstanceOf(Description, Argument, constructor, Expectation) {
     if (Argument == null) {
-        throwError("MissingArgument: no " + escaped(Description) + " given");
+        throwError("MissingArgument: no ".concat(escaped(Description), " given"));
     }
     if (!(Argument instanceof constructor)) {
-        throwError("InvalidArgument: the given " + escaped(Description) + " is no " + escaped(Expectation));
+        throwError("InvalidArgument: the given ".concat(escaped(Description), " is no ").concat(escaped(Expectation)));
     }
     return Argument;
 }
@@ -700,13 +700,13 @@ var allowedValueInheritingFrom = allowValueInheritingFrom;
 /**** expect[ed]ValueInheritingFrom ****/
 function expectValueInheritingFrom(Description, Argument, prototype, Expectation) {
     if (Argument == null) {
-        throwError("MissingArgument: no " + escaped(Description) + " given");
+        throwError("MissingArgument: no ".concat(escaped(Description), " given"));
     }
     if (prototype.isPrototypeOf(Argument)) {
         return Argument;
     }
     else {
-        throwError("InvalidArgument: the given " + escaped(Description) + " is no " + escaped(Expectation));
+        throwError("InvalidArgument: the given ".concat(escaped(Description), " is no ").concat(escaped(Expectation)));
     }
 }
 var expectedValueInheritingFrom = expectValueInheritingFrom;
@@ -732,7 +732,7 @@ var allowedOneOf = allowOneOf;
 /**** expect[ed]OneOf ****/
 function expectOneOf(Description, Argument, ValueList) {
     if (Argument == null) {
-        throwError("MissingArgument: no " + escaped(Description) + " given");
+        throwError("MissingArgument: no ".concat(escaped(Description), " given"));
     }
     if (ValueIsOneOf(Argument, ValueList)) {
         return ( // unboxes any primitives
@@ -741,7 +741,7 @@ function expectOneOf(Description, Argument, ValueList) {
             : Argument.valueOf());
     }
     else {
-        throwError("InvalidArgument: the given " + escaped(Description) + " is not among the supported values");
+        throwError("InvalidArgument: the given ".concat(escaped(Description), " is not among the supported values"));
     }
 }
 var expectedOneOf = expectOneOf;
