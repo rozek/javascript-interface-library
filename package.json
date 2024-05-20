@@ -10,7 +10,8 @@
   "exports": {
     ".": {
       "require": "./dist/javascript-interface-library.js",
-      "import": "./dist/javascript-interface-library.esm.js"
+      "import": "./dist/javascript-interface-library.esm.js",
+      "types": "./dist/javascript-interface-library.d.ts"
     },
     "./package.json": "./package.json"
   },
