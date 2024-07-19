@@ -284,7 +284,7 @@
 
 /**** ValueIsText ****/
 
-  const noCtrlCharsButCRLFPattern = /^[^\x00-\x09\x0B\x0C\x0E-\x1F\x7F-\x9F\u2028\u2029\uFFF9-\uFFFB]*$/
+  const noCtrlCharsButCRLFPattern = /^[^\x00-\x08\x0B\x0C\x0E-\x1F\x7F-\x9F\u2028\u2029\uFFF9-\uFFFB]*$/
 
   export function ValueIsText (Value:any):boolean {
     return ValueIsStringMatching(Value,noCtrlCharsButCRLFPattern)
