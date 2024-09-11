@@ -17,9 +17,6 @@ export default {
       file:     './dist/javascript-interface-library.esm.js',
       format:   'esm',
       sourcemap:true,
-    },{
-      file:     './dist/javascript-interface-library.iife.js',
-      format:   'iife',
     }
   ],
   plugins: [
