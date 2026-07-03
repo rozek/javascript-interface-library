@@ -80,6 +80,12 @@
         .to.equal('function')
     })
 
+    it('also copies symbol keys',() => {
+      const Key = Symbol('demo')
+      const Target = JIL.ObjectMergedWith({},{ [Key]:42 })
+      expect(Object.getOwnPropertyDescriptor(Target,Key).value).to.equal(42)
+    })
+
     it('skips nil arguments but rejects other non-objects',() => {
       expect(JIL.ObjectMergedWith({ a:1 },null,undefined)).to.deep.equal({ a:1 })
       expect(() => JIL.ObjectMergedWith({},42)).to.throw()
@@ -150,6 +156,7 @@
       expect(JIL.ValueIsNumberInRange(0,0,10,false)).to.equal(false)
       expect(JIL.ValueIsNumberInRange(11,0,10)).to.equal(false)
       expect(JIL.ValueIsNumberInRange(NaN,0,10)).to.equal(false)
+      expect(JIL.ValueIsNumberInRange(new Number(0),0,10,false)).to.equal(false)
     })
 
     it('ValueIsInteger[InRange] classifies integral numbers',() => {
@@ -209,6 +216,12 @@
       expect(JIL.ValueIsNativeFunction(scripted)).to.equal(false)
       expect(JIL.ValueIsScriptedFunction(scripted)).to.equal(true)
       expect(JIL.ValueIsScriptedFunction(Math.max)).to.equal(false)
+    })
+
+    it('bound functions do not count as "native"',() => {
+      const bound = (function () {}).bind(null)
+      expect(JIL.ValueIsNativeFunction(bound)).to.equal(false)
+      expect(JIL.ValueIsScriptedFunction(bound)).to.equal(true)
     })
 
     it('ValueIsObject rejects null and primitives',() => {
@@ -279,7 +292,9 @@
 
     it('ValueIsEMailAddress checks the address syntax',() => {
       expect(JIL.ValueIsEMailAddress('a.rozek@gmx.de')).to.equal(true)
+      expect(JIL.ValueIsEMailAddress('John.Doe@GMX.de')).to.equal(true)
       expect(JIL.ValueIsEMailAddress('no-address')).to.equal(false)
+      expect(JIL.ValueIsEMailAddress('see a@b.de inside')).to.equal(false)
     })
 
     it('ValueIsURL accepts URLs without whitespace or control chars',() => {
@@ -317,6 +332,89 @@
       ]) {
         expect(JIL.ValueIsE164PhoneNumber(Candidate),Candidate).to.equal(false)
       }
+    })
+
+    it('ValueIsBigInt/Symbol classify modern primitives',() => {
+      expect(JIL.ValueIsBigInt(10n)).to.equal(true)
+      expect(JIL.ValueIsBigInt(10)).to.equal(false)
+      expect(JIL.ValueIsSymbol(Symbol('demo'))).to.equal(true)
+      expect(JIL.ValueIsSymbol('demo')).to.equal(false)
+    })
+
+    it('ValueIsMap/Set/TypedArray/ArrayBuffer classify containers',() => {
+      expect(JIL.ValueIsMap(new Map())).to.equal(true)
+      expect(JIL.ValueIsMap({})).to.equal(false)
+      expect(JIL.ValueIsSet(new Set())).to.equal(true)
+      expect(JIL.ValueIsSet([])).to.equal(false)
+      expect(JIL.ValueIsTypedArray(new Uint8Array(4))).to.equal(true)
+      expect(JIL.ValueIsTypedArray(new DataView(new ArrayBuffer(4))))
+        .to.equal(false)
+      expect(JIL.ValueIsArrayBuffer(new ArrayBuffer(4))).to.equal(true)
+      expect(JIL.ValueIsArrayBuffer(new Uint8Array(4))).to.equal(false)
+    })
+
+    it('ValueIsUUID checks the canonical UUID format',() => {
+      expect(JIL.ValueIsUUID('123e4567-e89b-12d3-a456-426614174000'))
+        .to.equal(true)
+      expect(JIL.ValueIsUUID('123E4567-E89B-12D3-A456-426614174000'))
+        .to.equal(true)
+      expect(JIL.ValueIsUUID('no-uuid')).to.equal(false)
+    })
+
+    it('ValueIsISODate detects calendar overflows',() => {
+      expect(JIL.ValueIsISODate('2026-07-03')).to.equal(true)
+      expect(JIL.ValueIsISODate('2026-02-31')).to.equal(false)
+      expect(JIL.ValueIsISODate('2026-7-3')).to.equal(false)
+    })
+
+    it('ValueIsISOTimestamp accepts ISO 8601 timestamps',() => {
+      expect(JIL.ValueIsISOTimestamp('2026-07-03T10:56:00Z')).to.equal(true)
+      expect(JIL.ValueIsISOTimestamp('2026-07-03T10:56+02:00')).to.equal(true)
+      expect(JIL.ValueIsISOTimestamp('2026-07-03')).to.equal(false)
+      expect(JIL.ValueIsISOTimestamp('2026-07-03T25:00:00Z')).to.equal(false)
+    })
+
+    it('ValueIsIPv4Address checks dotted-quad notation',() => {
+      expect(JIL.ValueIsIPv4Address('192.168.0.1')).to.equal(true)
+      expect(JIL.ValueIsIPv4Address('256.1.1.1')).to.equal(false)
+      expect(JIL.ValueIsIPv4Address('1.2.3')).to.equal(false)
+    })
+
+    it('ValueIsIPv6Address uses the full IPv6 grammar',() => {
+      expect(JIL.ValueIsIPv6Address('::1')).to.equal(true)
+      expect(JIL.ValueIsIPv6Address('2001:db8::8a2e:370:7334')).to.equal(true)
+      expect(JIL.ValueIsIPv6Address('1.2.3.4')).to.equal(false)
+      expect(JIL.ValueIsIPv6Address('xyz')).to.equal(false)
+    })
+
+    it('ValueIsHostName follows RFC 1123',() => {
+      expect(JIL.ValueIsHostName('example.com')).to.equal(true)
+      expect(JIL.ValueIsHostName('sub-domain.example')).to.equal(true)
+      expect(JIL.ValueIsHostName('-bad-.com')).to.equal(false)
+      expect(JIL.ValueIsHostName('no_underscores.com')).to.equal(false)
+    })
+
+    it('ValueIsPortNumber accepts 1...65535',() => {
+      expect(JIL.ValueIsPortNumber(443)).to.equal(true)
+      expect(JIL.ValueIsPortNumber(0)).to.equal(false)
+      expect(JIL.ValueIsPortNumber(70000)).to.equal(false)
+      expect(JIL.ValueIsPortNumber('443')).to.equal(false)
+    })
+
+    it('ValueIsJSONString checks parseability',() => {
+      expect(JIL.ValueIsJSONString('{"a":1}')).to.equal(true)
+      expect(JIL.ValueIsJSONString('{a:1}')).to.equal(false)
+    })
+
+    it('ValueIsBase64 checks alphabet and padding',() => {
+      expect(JIL.ValueIsBase64('SGVsbG8=')).to.equal(true)
+      expect(JIL.ValueIsBase64('SGVsbG8')).to.equal(false)
+    })
+
+    it('ValueIsHexString accepts hex digits only',() => {
+      expect(JIL.ValueIsHexString('deadBEEF')).to.equal(true)
+      expect(JIL.ValueIsHexString('xyz')).to.equal(false)
+      expect(JIL.ValueIsHexString('')).to.equal(false)
     })
   })
 
@@ -525,6 +623,28 @@
       checksValidators('PhoneNumber','+4972112345','no-phone')
       checksValidators('E164PhoneNumber','+4972112345','0721 12345')
     })
+
+    it('validators for modern primitives and containers',() => {
+      checksValidators('BigInt',10n,10)
+      checksValidators('Symbol',Symbol('demo'),'demo')
+      checksValidators('Map',new Map(),{})
+      checksValidators('Set',new Set(),[])
+      checksValidators('TypedArray',new Uint8Array(4),[])
+      checksValidators('ArrayBuffer',new ArrayBuffer(4),new Uint8Array(4))
+    })
+
+    it('validators for formatted strings and numbers',() => {
+      checksValidators('UUID','123e4567-e89b-12d3-a456-426614174000','no-uuid')
+      checksValidators('ISODate','2026-07-03','2026-02-31')
+      checksValidators('ISOTimestamp','2026-07-03T10:56:00Z','2026-07-03')
+      checksValidators('IPv4Address','192.168.0.1','256.1.1.1')
+      checksValidators('IPv6Address','::1','1.2.3.4')
+      checksValidators('HostName','example.com','-bad-.com')
+      checksValidators('PortNumber',443,70000)
+      checksValidators('JSONString','{"a":1}','{a:1}')
+      checksValidators('Base64','SGVsbG8=','SGVsbG8')
+      checksValidators('HexString','deadBEEF','xyz')
+    })
   })
 
 /**** escaped, unescaped ****/
@@ -544,6 +664,11 @@
       expect(JIL.unescaped('\\xzz')).to.equal('\\xzz')
     })
 
+    it('unescaped evaluates code point escapes',() => {
+      expect(JIL.unescaped('\\u{1F600}')).to.equal(String.fromCodePoint(0x1F600))
+      expect(JIL.unescaped('\\u{110000}')).to.equal('\\u{110000}') // invalid
+    })
+
     it('escaped and unescaped are inverse of each other',() => {
       const Original = 'a\tb\nc\\d'
       expect(JIL.unescaped(JIL.escaped(Original))).to.equal(Original)
@@ -561,6 +686,14 @@
     it('quotable escapes control characters',() => {
       expect(JIL.quotable('a\nb')).to.equal('a\\nb')
       expect(JIL.quotable('a\x01b')).to.equal('a\\x01b')
+    })
+
+    it('quotable/quoted support backticks',() => {
+      const Backtick = String.fromCharCode(96)
+      expect(JIL.quotable('a'+Backtick+'b',Backtick))
+        .to.equal('a\\'+Backtick+'b')
+      expect(JIL.quotable('a${b}',Backtick)).to.equal('a\\${b}')
+      expect(JIL.quoted('x',Backtick)).to.equal(Backtick+'x'+Backtick)
     })
   })
 
@@ -582,9 +715,12 @@
 /**** MarkDownSafe ****/
 
   describe('MarkDownSafe',() => {
-    it('additionally escapes colons',() => {
+    it('escapes colons and MarkDown-relevant characters',() => {
       expect(JIL.MarkDownSafe('a:b')).to.equal('a&#58;b')
       expect(JIL.MarkDownSafe('a<b')).to.equal('a&lt;b')
+      expect(JIL.MarkDownSafe('a*b')).to.equal('a&#42;b')
+      expect(JIL.MarkDownSafe('a_b')).to.equal('a&#95;b')
+      expect(JIL.MarkDownSafe('[x]')).to.equal('&#91;x&#93;')
     })
   })
 
@@ -650,6 +786,13 @@
       const c = { v:2 }; c.self = c
       expect(equal(a,b)).to.equal(true)
       expect(equal(a,c)).to.equal(false)
+    })
+
+    it('supports an options object with a custom tolerance',() => {
+      expect(JIL.ValuesAreEqual(0.1,0.11,{ Tolerance:0.02 })).to.equal(true)
+      expect(JIL.ValuesAreEqual(0.1,0.13,{ Tolerance:0.02 })).to.equal(false)
+      expect(JIL.ValuesAreEqual({ a:1 },{ a:1 },{ Mode:'by-reference' }))
+        .to.equal(false)
     })
 
     it('supports mode "by-reference"',() => {

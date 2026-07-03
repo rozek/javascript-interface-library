@@ -6,8 +6,7 @@
 
 /**** get a reference to the "global" object ****/
 
-  export const global = /*#__PURE__*/ Function('return this')()
-// see https://stackoverflow.com/questions/3277182/how-to-get-the-global-object-in-javascript
+  export const global = globalThis
 
 //------------------------------------------------------------------------------
 //--                             Object Functions                             --
@@ -90,9 +89,10 @@
       if (otherObject == null) { continue }
 
       if (typeof otherObject === 'object') {
-        for (let Key in otherObject) {
-          let Descriptor = Object.getOwnPropertyDescriptor(otherObject,Key)
-          if (Descriptor != null) {
+        const DescriptorSet = Object.getOwnPropertyDescriptors(otherObject)
+        for (const Key of Reflect.ownKeys(DescriptorSet)) {
+          const Descriptor = (DescriptorSet as any)[Key]  // incl. symbol keys
+          if (Descriptor.enumerable) {
             Object.defineProperty(TargetObject,Key,Descriptor)
           }
         }
@@ -123,31 +123,31 @@
 
 /**** ValueExists ****/
 
-  export function ValueExists (Value:any):boolean {
+  export function ValueExists (Value:unknown):boolean {
     return (Value != null)
   }
 
 /**** ValueIsMissing ****/
 
-  export function ValueIsMissing (Value:any):boolean {
+  export function ValueIsMissing (Value:unknown):Value is null|undefined {
     return (Value == null)
   }
 
 /**** ValueIsBoolean ****/
 
-  export function ValueIsBoolean (Value:any):boolean {
+  export function ValueIsBoolean (Value:unknown):Value is boolean {
     return (typeof Value === 'boolean') || (Value instanceof Boolean)
   }
 
 /**** ValueIsNumber ****/
 
-  export function ValueIsNumber (Value:any):boolean {
+  export function ValueIsNumber (Value:unknown):Value is number {
     return (typeof Value === 'number') || (Value instanceof Number)
   }
 
 /**** ValueIsFiniteNumber (pure "isFinite" breaks on objects) ****/
 
-  export function ValueIsFiniteNumber (Value:any):boolean {
+  export function ValueIsFiniteNumber (Value:unknown):Value is number {
     return (
       (typeof Value === 'number') || (Value instanceof Number)
     ) && isFinite(Value.valueOf())
@@ -155,7 +155,7 @@
 
 /**** ValueIsNaN (numeric, but NaN - this differs from pure "isNaN") ****/
 
-  export function ValueIsNaN (Value:any):boolean {
+  export function ValueIsNaN (Value:unknown):Value is number {
     return (
       (typeof Value === 'number') || (Value instanceof Number)
     ) && isNaN(Value.valueOf())
@@ -164,27 +164,30 @@
 /**** ValueIsNumberInRange ****/
 
   export function ValueIsNumberInRange (
-    Value:any, minValue?:number, maxValue?:number,
+    Value:unknown, minValue?:number, maxValue?:number,
     withMin:boolean = true, withMax:boolean = true
-  ):boolean {
-    if (! ValueIsNumber(Value) || isNaN(Value)) { return false }
+  ):Value is number {
+    if (! ValueIsNumber(Value)) { return false }
+
+    const numValue = (Value as number|Number).valueOf() // unboxes boxed numbers
+    if (isNaN(numValue)) { return false }
 
     if (ValueIsFiniteNumber(minValue)) {    // more robust than "isFinite" alone
       if (ValueIsFiniteNumber(maxValue)) {  // more robust than "isFinite" alone
         if (
-          (Value < (minValue as Number)) || (! withMin && (Value === minValue)) ||
-          (Value > (maxValue as Number)) || (! withMax && (Value === maxValue))
+          (numValue < minValue) || (! withMin && (numValue === minValue)) ||
+          (numValue > maxValue) || (! withMax && (numValue === maxValue))
         ) {
           return false
         }
       } else {
-        if ((Value < (minValue as Number)) || (! withMin && (Value === minValue))) {
+        if ((numValue < minValue) || (! withMin && (numValue === minValue))) {
           return false
         }
       }
     } else {
       if (ValueIsFiniteNumber(maxValue)) {  // more robust than "isFinite" alone
-        if ((Value > (maxValue as Number)) || (! withMax && (Value === maxValue))) {
+        if ((numValue > maxValue) || (! withMax && (numValue === maxValue))) {
           return false
         }
       }
@@ -195,35 +198,35 @@
 
 /**** ValueIsInteger ****/
 
-  export function ValueIsInteger (Value:any):boolean {
+  export function ValueIsInteger (Value:unknown):Value is number {
     if ((typeof Value !== 'number') && ! (Value instanceof Number)) {
       return false
     }
 
-    Value = Value.valueOf()
-    return isFinite(Value) && (Math.round(Value) === Value)
+    const numValue = Value.valueOf()
+    return isFinite(numValue) && (Math.round(numValue) === numValue)
   }
 
 /**** ValueIsIntegerInRange ****/
 
   export function ValueIsIntegerInRange (
-    Value:any, minValue?:number, maxValue?:number
-  ):boolean {
+    Value:unknown, minValue?:number, maxValue?:number
+  ):Value is number {
     if (! ValueIsInteger(Value) || isNaN(Value)) { return false }
 
     if (ValueIsFiniteNumber(minValue)) {    // more robust than "isFinite" alone
       if (ValueIsFiniteNumber(maxValue)) {  // more robust than "isFinite" alone
-        if ((Value < (minValue as Number)) || (Value > (maxValue as Number))) {
+        if ((Value < minValue) || (Value > maxValue)) {
           return false
         }
       } else {
-        if (Value < (minValue as Number)) {
+        if (Value < minValue) {
           return false
         }
       }
     } else {
       if (ValueIsFiniteNumber(maxValue)) {  // more robust than "isFinite" alone
-        if (Value > (maxValue as Number)) {
+        if (Value > maxValue) {
           return false
         }
       }
@@ -234,29 +237,29 @@
 
 /**** ValueIsOrdinal ****/
 
-  export function ValueIsOrdinal (Value:any):boolean {
+  export function ValueIsOrdinal (Value:unknown):Value is number {
     if ((typeof Value !== 'number') && ! (Value instanceof Number)) {
       return false
     }
 
-    Value = Value.valueOf()
-    return isFinite(Value) && (Math.round(Value) === Value) && (Value >= 0)
+    const numValue = Value.valueOf()
+    return isFinite(numValue) && (Math.round(numValue) === numValue) && (numValue >= 0)
   }
 
 /**** ValueIsCardinal ****/
 
-  export function ValueIsCardinal (Value:any):boolean {
+  export function ValueIsCardinal (Value:unknown):Value is number {
     if ((typeof Value !== 'number') && ! (Value instanceof Number)) {
       return false
     }
 
-    Value = Value.valueOf()
-    return isFinite(Value) && (Math.round(Value) === Value) && (Value >= 1)
+    const numValue = Value.valueOf()
+    return isFinite(numValue) && (Math.round(numValue) === numValue) && (numValue >= 1)
   }
 
 /**** ValueIsString ****/
 
-  export function ValueIsString (Value:any):boolean {
+  export function ValueIsString (Value:unknown):Value is string {
     return (typeof Value === 'string') || (Value instanceof String)
   }
 
@@ -264,13 +267,13 @@
 
   const emptyStringPattern = /^\s*$/
 
-  export function ValueIsEmptyString (Value:any):boolean {
+  export function ValueIsEmptyString (Value:unknown):Value is string {
     return (
       (typeof Value === 'string') || (Value instanceof String)
     ) && emptyStringPattern.test(Value.valueOf())
   }
 
-  export function ValueIsNonEmptyString (Value:any):boolean {
+  export function ValueIsNonEmptyString (Value:unknown):Value is string {
     return (
       (typeof Value === 'string') || (Value instanceof String)
     ) && ! emptyStringPattern.test(Value.valueOf())
@@ -278,7 +281,7 @@
 
 /**** ValueIsStringMatching ****/
 
-  export function ValueIsStringMatching (Value:any, Pattern:RegExp):boolean {
+  export function ValueIsStringMatching (Value:unknown, Pattern:RegExp):Value is string {
     return (
       (typeof Value === 'string') || (Value instanceof String)
     ) && Pattern.test(Value.valueOf())
@@ -288,7 +291,7 @@
 
   const noCtrlCharsButCRLFPattern = /^[^\x00-\x09\x0B\x0C\x0E-\x1F\x7F-\x9F\u2028\u2029\uFFF9-\uFFFB]*$/
 
-  export function ValueIsText (Value:any):boolean {
+  export function ValueIsText (Value:unknown):Value is string {
     return ValueIsStringMatching(Value,noCtrlCharsButCRLFPattern)
   }
 
@@ -296,19 +299,19 @@
 
   const noCtrlCharsPattern = /^[^\x00-\x1F\x7F-\x9F\u2028\u2029\uFFF9-\uFFFB]*$/
 
-  export function ValueIsTextline (Value:any):boolean {
+  export function ValueIsTextline (Value:unknown):Value is string {
     return ValueIsStringMatching(Value,noCtrlCharsPattern)
   }
 
 /**** ValueIsFunction ****/
 
-  export function ValueIsFunction (Value:any):boolean {
+  export function ValueIsFunction (Value:unknown):Value is Function {
     return (typeof Value === 'function')
   }
 
 /**** ValueIsAnonymousFunction ****/
 
-  export function ValueIsAnonymousFunction (Value:any):boolean {
+  export function ValueIsAnonymousFunction (Value:unknown):Value is Function {
     return (
       (typeof Value === 'function') &&
       ((Value.name == null) || (Value.name === ''))
@@ -317,7 +320,7 @@
 
 /**** ValueIsNamedFunction ****/
 
-  export function ValueIsNamedFunction (Value:any):boolean {
+  export function ValueIsNamedFunction (Value:unknown):Value is Function {
     return (
       (typeof Value === 'function') &&
       (Value.name != null) && (Value.name !== '')
@@ -326,31 +329,32 @@
 
 /**** ValueIsNativeFunction ****/
 
-  export function ValueIsNativeFunction (Value:any):boolean {
+  const NativeFunctionPattern =
+    /^function\s*[^(]*\(\)\s*\{\s*\[native code\]\s*\}\s*$/
+
+  export function ValueIsNativeFunction (Value:unknown):Value is Function {
     return (
       (typeof Value === 'function') &&
-      /^function\s*[^(]*\(\)\s*\{\s*\[native code\]\s*\}\s*$/.test(Value.toString())
+      NativeFunctionPattern.test(Value.toString()) &&
+      ! Value.name.startsWith('bound ')  // "bound" functions aren't truly native
     )
   }
 
 /**** ValueIsScriptedFunction ****/
 
-  export function ValueIsScriptedFunction (Value:any):boolean {
-    return (
-      (typeof Value === 'function') &&
-      ! /^function\s*[^(]*\(\)\s*\{\s*\[native code\]\s*\}\s*$/.test(Value.toString())
-    )
+  export function ValueIsScriptedFunction (Value:unknown):Value is Function {
+    return (typeof Value === 'function') && ! ValueIsNativeFunction(Value)
   }
 
 /**** ValueIsObject ****/
 
-  export function ValueIsObject (Value:any):boolean {
+  export function ValueIsObject (Value:unknown):Value is object {
     return (Value != null) && (typeof Value === 'object')
   }
 
 /**** ValueIsPlainObject ****/
 
-  export function ValueIsPlainObject (Value:any):boolean {
+  export function ValueIsPlainObject (Value:unknown):Value is object {
     return (
       (Value != null) && (typeof Value === 'object') &&
       (Object.getPrototypeOf(Value) === Object.prototype)
@@ -359,7 +363,7 @@
 
 /**** ValueIsVanillaObject ****/
 
-  export function ValueIsVanillaObject (Value:any):boolean {
+  export function ValueIsVanillaObject (Value:unknown):Value is object {
     return (
       (Value != null) && (typeof Value === 'object') &&
       ! (Value instanceof Object)
@@ -373,8 +377,8 @@
 /**** ValueIsList ("dense" array) ****/
 
   export function ValueIsList (
-    Value:any, minLength?:number, maxLength?:number
-  ):boolean {
+    Value:unknown, minLength?:number, maxLength?:number
+  ):Value is any[] {
     if (ValueIsArray(Value)) {
       for (let i = 0, l = Value.length; i < l; i++) {
         if (Value[i] === undefined) { return false }
@@ -396,8 +400,9 @@
 /**** ValueIsListSatisfying ****/
 
   export function ValueIsListSatisfying (
-    Value:any, Validator:Function, minLength?:number, maxLength?:number
-  ):boolean {
+    Value:unknown, Validator:(Value:any) => boolean,
+    minLength?:number, maxLength?:number
+  ):Value is any[] {
     if (ValueIsArray(Value)) {
       try {
         for (let i = 0, l = Value.length; i < l; i++) {
@@ -412,7 +417,7 @@
           if (Value.length > maxLength) { return false }
         }
         return true
-      } catch (Signal) { /* nop */ }
+      } catch (Signal) { /* a throwing validator marks the list invalid */ }
     }
 
     return false
@@ -420,50 +425,52 @@
 
 /**** ValueIsInstanceOf ****/
 
-  export function ValueIsInstanceOf (Value:any, Constructor:Function):boolean {
+  export function ValueIsInstanceOf<T> (
+    Value:unknown, Constructor:abstract new (...ArgumentList:any[]) => T
+  ):Value is T {
     return (Value instanceof Constructor)
   }
 
 /**** ValueInheritsFrom ****/
 
-  export function ValueInheritsFrom (Value:any, Prototype:Object):boolean {
+  export function ValueInheritsFrom (Value:unknown, Prototype:object):boolean {
     return Object_isPrototypeOf(Prototype,Value)
   }
 
 /**** ValueIsDate ****/
 
-  export function ValueIsDate (Value:any):boolean {
+  export function ValueIsDate (Value:unknown):Value is Date {
     return (Value instanceof Date)
   }
 
 /**** ValueIsError ****/
 
-  export function ValueIsError (Value:any):boolean {
+  export function ValueIsError (Value:unknown):Value is Error {
     return (Value instanceof Error)
   }
 
 /**** ValueIsPromise ****/
 
-  export function ValueIsPromise (Value:any):boolean {
-    return (Value != null) && (typeof Value.then === 'function')
+  export function ValueIsPromise (Value:unknown):Value is Promise<any> {
+    return (Value != null) && (typeof (Value as any).then === 'function')
   }
 // see https://stackoverflow.com/questions/27746304/how-do-i-tell-if-an-object-is-a-promise
 
 /**** ValueIsRegExp ****/
 
-  export function ValueIsRegExp (Value:any):boolean {
+  export function ValueIsRegExp (Value:unknown):Value is RegExp {
     return (Value instanceof RegExp)
   }
 
 /**** ValueIsOneOf ****/
 
-  export function ValueIsOneOf (Value:any, ValueList:any[]):boolean {
-    return (ValueList.indexOf(Value) >= 0)
+  export function ValueIsOneOf<T> (Value:unknown, ValueList:T[]):Value is T {
+    return (ValueList.indexOf(Value as T) >= 0)
   }                     // no automatic unboxing of boxed values and vice-versa!
 
 /**** ValueIsColor ****/
 
-  export function ValueIsColor (Value:any):boolean {
+  export function ValueIsColor (Value:unknown):Value is string {
     if (! ValueIsString(Value)) { return false }
 
     let lowerValue = Value.valueOf().toLowerCase()   // ColorSet keys are l.c.
@@ -478,10 +485,10 @@
 
 /**** ValueIsEMailAddress ****/
 
-  const EMailAddressPattern = /(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9]))\.){3}(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9])|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])/
+  const EMailAddressPattern = /^(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9]))\.){3}(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9])|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])$/i
   // see https://stackoverflow.com/questions/201323/how-to-validate-an-email-address-using-a-regular-expression
 
-  export function ValueIsEMailAddress (Value:any):boolean {
+  export function ValueIsEMailAddress (Value:unknown):Value is string {
     return ValueIsStringMatching(Value, EMailAddressPattern)
   }
 
@@ -489,7 +496,7 @@
 
   const noCtrlCharsOrWhitespacePattern = /^[^\s\x00-\x1F\x7F-\x9F\u2028\u2029\uFFF9-\uFFFB]*$/
 
-  export function ValueIsURL (Value:any):boolean {
+  export function ValueIsURL (Value:unknown):Value is string {
     if (
       ! ValueIsStringMatching(Value, noCtrlCharsOrWhitespacePattern) ||
       (Value === '')
@@ -508,7 +515,7 @@
 
   const PhoneNumberPattern = /^\+?[0-9(][0-9 \-.\/()]*[0-9)]$/    // not perfect
 
-  export function ValueIsPhoneNumber (Value:any):boolean {
+  export function ValueIsPhoneNumber (Value:unknown):Value is string {
     if (! ValueIsString(Value)) { return false }
 
     let Candidate = Value.valueOf()
@@ -526,8 +533,167 @@
 
   const E164PhoneNumberPattern = /^\+[1-9][0-9]{6,14}$/
 
-  export function ValueIsE164PhoneNumber (Value:any):boolean {
+  export function ValueIsE164PhoneNumber (Value:unknown):Value is string {
     return ValueIsStringMatching(Value,E164PhoneNumberPattern)
+  }
+
+/**** ValueIsBigInt ****/
+
+  export function ValueIsBigInt (Value:unknown):Value is bigint {
+    return (typeof Value === 'bigint')
+  }
+
+/**** ValueIsSymbol ****/
+
+  export function ValueIsSymbol (Value:unknown):Value is symbol {
+    return (typeof Value === 'symbol')
+  }
+
+/**** ValueIsMap ****/
+
+  export function ValueIsMap (Value:unknown):Value is Map<any,any> {
+    return (Value instanceof Map)
+  }
+
+/**** ValueIsSet ****/
+
+  export function ValueIsSet (Value:unknown):Value is Set<any> {
+    return (Value instanceof Set)
+  }
+
+/**** ValueIsTypedArray ****/
+
+  export type TypedArray =
+    Int8Array|Uint8Array|Uint8ClampedArray|Int16Array|Uint16Array|
+    Int32Array|Uint32Array|Float32Array|Float64Array|
+    BigInt64Array|BigUint64Array
+
+  export function ValueIsTypedArray (Value:unknown):Value is TypedArray {
+    return ArrayBuffer.isView(Value) && ! (Value instanceof DataView)
+  }
+
+/**** ValueIsArrayBuffer ****/
+
+  export function ValueIsArrayBuffer (Value:unknown):Value is ArrayBuffer {
+    return (Value instanceof ArrayBuffer)
+  }
+
+/**** ValueIsUUID ****/
+
+  const UUIDPattern =
+    /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+
+  export function ValueIsUUID (Value:unknown):Value is string {
+    return ValueIsStringMatching(Value,UUIDPattern)
+  }
+
+/**** ValueIsISODate (a calendar date like "2026-07-03") ****/
+
+  const ISODatePattern = /^([0-9]{4})-([0-9]{2})-([0-9]{2})$/
+
+  export function ValueIsISODate (Value:unknown):Value is string {
+    if (! ValueIsString(Value)) { return false }
+
+    const Match = ISODatePattern.exec(Value.valueOf())
+    if (Match == null) { return false }
+
+    const [ Year,Month,Day ] = [ Match[1],Match[2],Match[3] ].map(Number)
+    const Timestamp = new Date(Date.UTC(Year,Month-1,Day))
+    return (                                    // detects overflows like 02-31
+      (Timestamp.getUTCFullYear() === Year) &&
+      (Timestamp.getUTCMonth() === Month-1) && (Timestamp.getUTCDate() === Day)
+    )
+  }
+
+/**** ValueIsISOTimestamp (like "2026-07-03T10:56:00Z") ****/
+
+  const ISOTimestampPattern = new RegExp(
+    '^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}' +
+    '(:[0-9]{2}([.][0-9]+)?)?(Z|[+-][0-9]{2}:[0-9]{2})?$'
+  )
+
+  export function ValueIsISOTimestamp (Value:unknown):Value is string {
+    return (
+      ValueIsStringMatching(Value,ISOTimestampPattern) &&
+      ! isNaN(Date.parse(Value.valueOf()))
+    )
+  }
+
+/**** ValueIsIPv4Address ****/
+
+  const IPv4AddressPattern = new RegExp(
+    '^((25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])[.]){3}' +
+    '(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])$'
+  )
+
+  export function ValueIsIPv4Address (Value:unknown):Value is string {
+    return ValueIsStringMatching(Value,IPv4AddressPattern)
+  }
+
+/**** ValueIsIPv6Address ****/
+
+  const IPv6CharSetPattern = /^[0-9a-fA-F:.]+$/
+
+  export function ValueIsIPv6Address (Value:unknown):Value is string {
+    if (
+      ! ValueIsString(Value) || ! IPv6CharSetPattern.test(Value.valueOf())
+    ) { return false }
+
+    try {                        // URL parsing implements the full IPv6 grammar
+      new URL('http://[' + Value.valueOf() + ']/')
+      return true
+    } catch (Signal) {
+      return false
+    }
+  }
+
+/**** ValueIsHostName (according to RFC 1123) ****/
+
+  const HostNamePattern = new RegExp(
+    '^(?=.{1,253}$)' +
+    '[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?' +
+    '([.][a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?)*$', 'i'
+  )
+
+  export function ValueIsHostName (Value:unknown):Value is string {
+    return ValueIsStringMatching(Value,HostNamePattern)
+  }
+
+/**** ValueIsPortNumber ****/
+
+  export function ValueIsPortNumber (Value:unknown):Value is number {
+    return ValueIsIntegerInRange(Value,1,65535)
+  }
+
+/**** ValueIsJSONString ****/
+
+  export function ValueIsJSONString (Value:unknown):Value is string {
+    if (! ValueIsString(Value)) { return false }
+
+    try {
+      JSON.parse(Value.valueOf())
+      return true
+    } catch (Signal) {
+      return false
+    }
+  }
+
+/**** ValueIsBase64 (standard alphabet, correctly padded) ****/
+
+  const Base64Pattern = new RegExp(
+    '^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$'
+  )
+
+  export function ValueIsBase64 (Value:unknown):Value is string {
+    return ValueIsStringMatching(Value,Base64Pattern)
+  }
+
+/**** ValueIsHexString ****/
+
+  const HexStringPattern = /^[0-9a-fA-F]+$/
+
+  export function ValueIsHexString (Value:unknown):Value is string {
+    return ValueIsStringMatching(Value,HexStringPattern)
   }
 
 //------------------------------------------------------------------------------
@@ -569,10 +735,16 @@
 
 /**** ValidatorForClassifier ****/
 
+  export function ValidatorForClassifier<T> (
+    Classifier:(Value:any) => boolean, NilIsAcceptable:true, Expectation:string
+  ):(Description:string, Argument:any) => T|null|undefined
+  export function ValidatorForClassifier<T> (
+    Classifier:(Value:any) => boolean, NilIsAcceptable:false, Expectation:string
+  ):(Description:string, Argument:any) => T
   export function ValidatorForClassifier (
     Classifier:(Value:any) => boolean, NilIsAcceptable:boolean,
     Expectation:string
-  ):Function {
+  ):any {
     let Validator = function (Description:string, Argument:any):any {
       return validatedArgument(
         Description, Argument, Classifier, NilIsAcceptable, Expectation
@@ -590,7 +762,7 @@
     }
   }
 
-/**** FunctionWithName (works with older JS engines as well) ****/
+/**** FunctionWithName ****/
 
   export function FunctionWithName (
     originalFunction:Function, desiredName:string|String
@@ -611,18 +783,11 @@
 
     if (originalFunction.name === desiredName) { return originalFunction }
 
-    try {
-      Object.defineProperty(originalFunction, 'name', { value:desiredName })
-      if (originalFunction.name === desiredName) { return originalFunction }
-    } catch (signal) { /* ok - let's take the hard way */ }
-
-    let renamed = new Function(
-      'originalFunction', 'return function ' + desiredName + ' () {' +
-        'return originalFunction.apply(this,Array.prototype.slice.apply(arguments))' +
-      '}'
-    )
-    return renamed(originalFunction)
-  }                                  // also works with older JavaScript engines
+    Object.defineProperty(originalFunction, 'name', {
+      value:desiredName.valueOf()
+    })
+    return originalFunction
+  }
 
 /**** expect[ed]Value ****/
 
@@ -644,41 +809,41 @@
 
 /**** allow/expect[ed]Boolean ****/
 
-  export const allowBoolean = /*#__PURE__*/ ValidatorForClassifier(
+  export const allowBoolean = /*#__PURE__*/ ValidatorForClassifier<boolean>(
     ValueIsBoolean, acceptNil, 'boolean value'
   ), allowedBoolean = allowBoolean
 
-  export const expectBoolean = /*#__PURE__*/ ValidatorForClassifier(
+  export const expectBoolean = /*#__PURE__*/ ValidatorForClassifier<boolean>(
     ValueIsBoolean, rejectNil, 'boolean value'
   ), expectedBoolean = expectBoolean
 
 /**** allow/expect[ed]Number ****/
 
-  export const allowNumber = /*#__PURE__*/ ValidatorForClassifier(
+  export const allowNumber = /*#__PURE__*/ ValidatorForClassifier<number>(
     ValueIsNumber, acceptNil, 'numeric value'
   ), allowedNumber = allowNumber
 
-  export const expectNumber = /*#__PURE__*/ ValidatorForClassifier(
+  export const expectNumber = /*#__PURE__*/ ValidatorForClassifier<number>(
     ValueIsNumber, rejectNil, 'numeric value'
   ), expectedNumber = expectNumber
 
 /**** allow/expect[ed]FiniteNumber ****/
 
-  export const allowFiniteNumber = /*#__PURE__*/ ValidatorForClassifier(
+  export const allowFiniteNumber = /*#__PURE__*/ ValidatorForClassifier<number>(
     ValueIsFiniteNumber, acceptNil, 'finite numeric value'
   ), allowedFiniteNumber = allowFiniteNumber
 
-  export const expectFiniteNumber = /*#__PURE__*/ ValidatorForClassifier(
+  export const expectFiniteNumber = /*#__PURE__*/ ValidatorForClassifier<number>(
     ValueIsFiniteNumber, rejectNil, 'finite numeric value'
   ), expectedFiniteNumber = expectFiniteNumber
 
 /**** allow/expect[ed]NaN ****/
 
-  export const allowNaN = /*#__PURE__*/ ValidatorForClassifier(
+  export const allowNaN = /*#__PURE__*/ ValidatorForClassifier<number>(
     ValueIsNaN, acceptNil, 'NaN value'
   ), allowedNaN = allowNaN
 
-  export const expectNaN = /*#__PURE__*/ ValidatorForClassifier(
+  export const expectNaN = /*#__PURE__*/ ValidatorForClassifier<number>(
     ValueIsNaN, rejectNil, 'NaN value'
   ), expectedNaN = expectNaN
 
@@ -748,11 +913,11 @@
 
 /**** allow/expect[ed]Integer ****/
 
-  export const allowInteger = /*#__PURE__*/ ValidatorForClassifier(
+  export const allowInteger = /*#__PURE__*/ ValidatorForClassifier<number>(
     ValueIsInteger, acceptNil, 'integral numeric value'
   ), allowedInteger = allowInteger
 
-  export const expectInteger = /*#__PURE__*/ ValidatorForClassifier(
+  export const expectInteger = /*#__PURE__*/ ValidatorForClassifier<number>(
     ValueIsInteger, rejectNil, 'integral numeric value'
   ), expectedInteger = expectInteger
 
@@ -814,41 +979,41 @@
 
 /**** allow/expect[ed]Ordinal ****/
 
-  export const allowOrdinal = /*#__PURE__*/ ValidatorForClassifier(
+  export const allowOrdinal = /*#__PURE__*/ ValidatorForClassifier<number>(
     ValueIsOrdinal, acceptNil, 'ordinal number'
   ), allowedOrdinal = allowOrdinal
 
-  export const expectOrdinal = /*#__PURE__*/ ValidatorForClassifier(
+  export const expectOrdinal = /*#__PURE__*/ ValidatorForClassifier<number>(
     ValueIsOrdinal, rejectNil, 'ordinal number'
   ), expectedOrdinal = expectOrdinal
 
 /**** allow/expect[ed]Cardinal ****/
 
-  export const allowCardinal = /*#__PURE__*/ ValidatorForClassifier(
+  export const allowCardinal = /*#__PURE__*/ ValidatorForClassifier<number>(
     ValueIsCardinal, acceptNil, 'cardinal number'
   ), allowedCardinal = allowCardinal
 
-  export const expectCardinal = /*#__PURE__*/ ValidatorForClassifier(
+  export const expectCardinal = /*#__PURE__*/ ValidatorForClassifier<number>(
     ValueIsCardinal, rejectNil, 'cardinal number'
   ), expectedCardinal = expectCardinal
 
 /**** allow/expect[ed]String ****/
 
-  export const allowString = /*#__PURE__*/ ValidatorForClassifier(
+  export const allowString = /*#__PURE__*/ ValidatorForClassifier<string>(
     ValueIsString, acceptNil, 'literal string'
   ), allowedString = allowString
 
-  export const expectString = /*#__PURE__*/ ValidatorForClassifier(
+  export const expectString = /*#__PURE__*/ ValidatorForClassifier<string>(
     ValueIsString, rejectNil, 'literal string'
   ), expectedString = expectString
 
 /**** allow/expect[ed]NonEmptyString ****/
 
-  export const allowNonEmptyString = /*#__PURE__*/ ValidatorForClassifier(
+  export const allowNonEmptyString = /*#__PURE__*/ ValidatorForClassifier<string>(
     ValueIsNonEmptyString, acceptNil, 'non-empty literal string'
   ), allowedNonEmptyString = allowNonEmptyString
 
-  export const expectNonEmptyString = /*#__PURE__*/ ValidatorForClassifier(
+  export const expectNonEmptyString = /*#__PURE__*/ ValidatorForClassifier<string>(
     ValueIsNonEmptyString, rejectNil, 'non-empty literal string'
   ), expectedNonEmptyString = expectNonEmptyString
 
@@ -883,101 +1048,101 @@
 
 /**** allow/expect[ed]Text ****/
 
-  export const allowText = /*#__PURE__*/ ValidatorForClassifier(
+  export const allowText = /*#__PURE__*/ ValidatorForClassifier<string>(
     ValueIsText, acceptNil, 'literal text'
   ), allowedText = allowText
 
-  export const expectText = /*#__PURE__*/ ValidatorForClassifier(
+  export const expectText = /*#__PURE__*/ ValidatorForClassifier<string>(
     ValueIsText, rejectNil, 'literal text'
   ), expectedText = expectText
 
 /**** allow/expect[ed]Textline ****/
 
-  export const allowTextline = /*#__PURE__*/ ValidatorForClassifier(
+  export const allowTextline = /*#__PURE__*/ ValidatorForClassifier<string>(
     ValueIsTextline, acceptNil, 'single line of text'
   ), allowedTextline = allowTextline
 
-  export const expectTextline = /*#__PURE__*/ ValidatorForClassifier(
+  export const expectTextline = /*#__PURE__*/ ValidatorForClassifier<string>(
     ValueIsTextline, rejectNil, 'single line of text'
   ), expectedTextline = expectTextline
 
 /**** allow/expect[ed]Function ****/
 
-  export const allowFunction = /*#__PURE__*/ ValidatorForClassifier(
+  export const allowFunction = /*#__PURE__*/ ValidatorForClassifier<Function>(
     ValueIsFunction, acceptNil, 'JavaScript function'
   ), allowedFunction = allowFunction
 
-  export const expectFunction = /*#__PURE__*/ ValidatorForClassifier(
+  export const expectFunction = /*#__PURE__*/ ValidatorForClassifier<Function>(
     ValueIsFunction, rejectNil, 'JavaScript function'
   ), expectedFunction = expectFunction
 
 /**** allow/expect[ed]AnonymousFunction ****/
 
-  export const allowAnonymousFunction = /*#__PURE__*/ ValidatorForClassifier(
+  export const allowAnonymousFunction = /*#__PURE__*/ ValidatorForClassifier<Function>(
     ValueIsAnonymousFunction, acceptNil, 'anonymous JavaScript function'
   ), allowedAnonymousFunction = allowAnonymousFunction
 
-  export const expectAnonymousFunction = /*#__PURE__*/ ValidatorForClassifier(
+  export const expectAnonymousFunction = /*#__PURE__*/ ValidatorForClassifier<Function>(
     ValueIsAnonymousFunction, rejectNil, 'anonymous JavaScript function'
   ), expectedAnonymousFunction = expectAnonymousFunction
 
 /**** allow/expect[ed]NamedFunction ****/
 
-  export const allowNamedFunction = /*#__PURE__*/ ValidatorForClassifier(
+  export const allowNamedFunction = /*#__PURE__*/ ValidatorForClassifier<Function>(
     ValueIsNamedFunction, acceptNil, 'named JavaScript function'
   ), allowedNamedFunction = allowNamedFunction
 
-  export const expectNamedFunction = /*#__PURE__*/ ValidatorForClassifier(
+  export const expectNamedFunction = /*#__PURE__*/ ValidatorForClassifier<Function>(
     ValueIsNamedFunction, rejectNil, 'named JavaScript function'
   ), expectedNamedFunction = expectNamedFunction
 
 /**** allow/expect[ed]NativeFunction ****/
 
-  export const allowNativeFunction = /*#__PURE__*/ ValidatorForClassifier(
+  export const allowNativeFunction = /*#__PURE__*/ ValidatorForClassifier<Function>(
     ValueIsNativeFunction, acceptNil, 'native JavaScript function'
   ), allowedNativeFunction = allowNativeFunction
 
-  export const expectNativeFunction = /*#__PURE__*/ ValidatorForClassifier(
+  export const expectNativeFunction = /*#__PURE__*/ ValidatorForClassifier<Function>(
     ValueIsNativeFunction, rejectNil, 'native JavaScript function'
   ), expectedNativeFunction = expectNativeFunction
 
 /**** allow/expect[ed]ScriptedFunction ****/
 
-  export const allowScriptedFunction = /*#__PURE__*/ ValidatorForClassifier(
+  export const allowScriptedFunction = /*#__PURE__*/ ValidatorForClassifier<Function>(
     ValueIsScriptedFunction, acceptNil, 'scripted JavaScript function'
   ), allowedScriptedFunction = allowScriptedFunction
 
-  export const expectScriptedFunction = /*#__PURE__*/ ValidatorForClassifier(
+  export const expectScriptedFunction = /*#__PURE__*/ ValidatorForClassifier<Function>(
     ValueIsScriptedFunction, rejectNil, 'scripted JavaScript function'
   ), expectedScriptedFunction = expectScriptedFunction
 
 /**** allow/expect[ed]Object ****/
 
-  export const allowObject = /*#__PURE__*/ ValidatorForClassifier(
+  export const allowObject = /*#__PURE__*/ ValidatorForClassifier<object>(
     ValueIsObject, acceptNil, 'JavaScript object'
   ), allowedObject = allowObject
 
-  export const expectObject = /*#__PURE__*/ ValidatorForClassifier(
+  export const expectObject = /*#__PURE__*/ ValidatorForClassifier<object>(
     ValueIsObject, rejectNil, 'JavaScript object'
   ), expectedObject = expectObject
 
 /**** allow/expect[ed]PlainObject ****/
 
-  export const allowPlainObject = /*#__PURE__*/ ValidatorForClassifier(
+  export const allowPlainObject = /*#__PURE__*/ ValidatorForClassifier<object>(
     ValueIsPlainObject, acceptNil, '"plain" JavaScript object'
   ), allowedPlainObject = allowPlainObject
 
-  export const expectPlainObject = /*#__PURE__*/ ValidatorForClassifier(
+  export const expectPlainObject = /*#__PURE__*/ ValidatorForClassifier<object>(
     ValueIsPlainObject, rejectNil, '"plain" JavaScript object'
   ), expectedPlainObject = expectPlainObject
 
 /**** allow/expect[ed]VanillaObject ****/
 
-  export const allowVanillaObject = /*#__PURE__*/ ValidatorForClassifier(
+  export const allowVanillaObject = /*#__PURE__*/ ValidatorForClassifier<object>(
     ValueIsVanillaObject, acceptNil, '"vanilla" JavaScript object'
   ), allowedVanillaObject = allowVanillaObject
 
-  export const expectVanillaObject = /*#__PURE__*/ ValidatorForClassifier(
+  export const expectVanillaObject = /*#__PURE__*/ ValidatorForClassifier<object>(
     ValueIsVanillaObject, rejectNil, '"vanilla" JavaScript object'
   ), expectedVanillaObject = expectVanillaObject
 
@@ -1148,41 +1313,41 @@
 
 /**** allow/expect[ed]Date ****/
 
-  export const allowDate = /*#__PURE__*/ ValidatorForClassifier(
+  export const allowDate = /*#__PURE__*/ ValidatorForClassifier<Date>(
     ValueIsDate, acceptNil, 'JavaScript Date object'
   ), allowedDate = allowDate
 
-  export const expectDate = /*#__PURE__*/ ValidatorForClassifier(
+  export const expectDate = /*#__PURE__*/ ValidatorForClassifier<Date>(
     ValueIsDate, rejectNil, 'JavaScript Date object'
   ), expectedDate = expectDate
 
 /**** allow/expect[ed]Error ****/
 
-  export const allowError = /*#__PURE__*/ ValidatorForClassifier(
+  export const allowError = /*#__PURE__*/ ValidatorForClassifier<Error>(
     ValueIsError, acceptNil, 'JavaScript Error object'
   ), allowedError = allowError
 
-  export const expectError = /*#__PURE__*/ ValidatorForClassifier(
+  export const expectError = /*#__PURE__*/ ValidatorForClassifier<Error>(
     ValueIsError, rejectNil, 'JavaScript Error object'
   ), expectedError = expectError
 
 /**** allow/expect[ed]Promise ****/
 
-  export const allowPromise = /*#__PURE__*/ ValidatorForClassifier(
+  export const allowPromise = /*#__PURE__*/ ValidatorForClassifier<Promise<any>>(
     ValueIsPromise, acceptNil, 'JavaScript Promise (or "Thenable") object'
   ), allowedPromise = allowPromise
 
-  export const expectPromise = /*#__PURE__*/ ValidatorForClassifier(
+  export const expectPromise = /*#__PURE__*/ ValidatorForClassifier<Promise<any>>(
     ValueIsPromise, rejectNil, 'JavaScript Promise (or "Thenable") object'
   ), expectedPromise = expectPromise
 
 /**** allow/expect[ed]RegExp ****/
 
-  export const allowRegExp = /*#__PURE__*/ ValidatorForClassifier(
+  export const allowRegExp = /*#__PURE__*/ ValidatorForClassifier<RegExp>(
     ValueIsRegExp, acceptNil, 'JavaScript RegExp object'
   ), allowedRegExp = allowRegExp
 
-  export const expectRegExp = /*#__PURE__*/ ValidatorForClassifier(
+  export const expectRegExp = /*#__PURE__*/ ValidatorForClassifier<RegExp>(
     ValueIsRegExp, rejectNil, 'JavaScript RegExp object'
   ), expectedRegExp = expectRegExp
 
@@ -1226,75 +1391,236 @@
 
 /**** allow/expect[ed]Color ****/
 
-  export const allowColor = /*#__PURE__*/ ValidatorForClassifier(
+  export const allowColor = /*#__PURE__*/ ValidatorForClassifier<string>(
     ValueIsColor, acceptNil, 'CSS color specification'
   ), allowedColor = allowColor
 
-  export const expectColor = /*#__PURE__*/ ValidatorForClassifier(
+  export const expectColor = /*#__PURE__*/ ValidatorForClassifier<string>(
     ValueIsColor, rejectNil, 'CSS color specification'
   ), expectedColor = expectColor
 
 /**** allow/expect[ed]EMailAddress ****/
 
-  export const allowEMailAddress = /*#__PURE__*/ ValidatorForClassifier(
+  export const allowEMailAddress = /*#__PURE__*/ ValidatorForClassifier<string>(
     ValueIsEMailAddress, acceptNil, 'EMail address'
   ), allowedEMailAddress = allowEMailAddress
 
-  export const expectEMailAddress = /*#__PURE__*/ ValidatorForClassifier(
+  export const expectEMailAddress = /*#__PURE__*/ ValidatorForClassifier<string>(
     ValueIsEMailAddress, rejectNil, 'EMail address'
   ), expectedEMailAddress = expectEMailAddress
 
 /**** allow/expect[ed]URL ****/
 
-  export const allowURL = /*#__PURE__*/ ValidatorForClassifier(
+  export const allowURL = /*#__PURE__*/ ValidatorForClassifier<string>(
     ValueIsURL, acceptNil, 'URL'
   ), allowedURL = allowURL
 
-  export const expectURL = /*#__PURE__*/ ValidatorForClassifier(
+  export const expectURL = /*#__PURE__*/ ValidatorForClassifier<string>(
     ValueIsURL, rejectNil, 'URL'
   ), expectedURL = expectURL
 
 /**** allow/expect[ed]PhoneNumber ****/
 
-  export const allowPhoneNumber = /*#__PURE__*/ ValidatorForClassifier(
+  export const allowPhoneNumber = /*#__PURE__*/ ValidatorForClassifier<string>(
     ValueIsPhoneNumber, acceptNil, 'phone number'
   ), allowedPhoneNumber = allowPhoneNumber
 
-  export const expectPhoneNumber = /*#__PURE__*/ ValidatorForClassifier(
+  export const expectPhoneNumber = /*#__PURE__*/ ValidatorForClassifier<string>(
     ValueIsPhoneNumber, rejectNil, 'phone number'
   ), expectedPhoneNumber = expectPhoneNumber
 
 /**** allow/expect[ed]E164PhoneNumber ****/
 
-  export const allowE164PhoneNumber = /*#__PURE__*/ ValidatorForClassifier(
+  export const allowE164PhoneNumber = /*#__PURE__*/ ValidatorForClassifier<string>(
     ValueIsE164PhoneNumber, acceptNil, 'phone number in E.164 format'
   ), allowedE164PhoneNumber = allowE164PhoneNumber
 
-  export const expectE164PhoneNumber = /*#__PURE__*/ ValidatorForClassifier(
+  export const expectE164PhoneNumber = /*#__PURE__*/ ValidatorForClassifier<string>(
     ValueIsE164PhoneNumber, rejectNil, 'phone number in E.164 format'
   ), expectedE164PhoneNumber = expectE164PhoneNumber
 
+/**** allow/expect[ed]BigInt ****/
+
+  export const allowBigInt = /*#__PURE__*/ ValidatorForClassifier<bigint>(
+    ValueIsBigInt, acceptNil, 'BigInt value'
+  ), allowedBigInt = allowBigInt
+
+  export const expectBigInt = /*#__PURE__*/ ValidatorForClassifier<bigint>(
+    ValueIsBigInt, rejectNil, 'BigInt value'
+  ), expectedBigInt = expectBigInt
+
+/**** allow/expect[ed]Symbol ****/
+
+  export const allowSymbol = /*#__PURE__*/ ValidatorForClassifier<symbol>(
+    ValueIsSymbol, acceptNil, 'symbol'
+  ), allowedSymbol = allowSymbol
+
+  export const expectSymbol = /*#__PURE__*/ ValidatorForClassifier<symbol>(
+    ValueIsSymbol, rejectNil, 'symbol'
+  ), expectedSymbol = expectSymbol
+
+/**** allow/expect[ed]Map ****/
+
+  export const allowMap = /*#__PURE__*/ ValidatorForClassifier<Map<any,any>>(
+    ValueIsMap, acceptNil, 'JavaScript Map'
+  ), allowedMap = allowMap
+
+  export const expectMap = /*#__PURE__*/ ValidatorForClassifier<Map<any,any>>(
+    ValueIsMap, rejectNil, 'JavaScript Map'
+  ), expectedMap = expectMap
+
+/**** allow/expect[ed]Set ****/
+
+  export const allowSet = /*#__PURE__*/ ValidatorForClassifier<Set<any>>(
+    ValueIsSet, acceptNil, 'JavaScript Set'
+  ), allowedSet = allowSet
+
+  export const expectSet = /*#__PURE__*/ ValidatorForClassifier<Set<any>>(
+    ValueIsSet, rejectNil, 'JavaScript Set'
+  ), expectedSet = expectSet
+
+/**** allow/expect[ed]TypedArray ****/
+
+  export const allowTypedArray = /*#__PURE__*/ ValidatorForClassifier<TypedArray>(
+    ValueIsTypedArray, acceptNil, 'typed array'
+  ), allowedTypedArray = allowTypedArray
+
+  export const expectTypedArray = /*#__PURE__*/ ValidatorForClassifier<TypedArray>(
+    ValueIsTypedArray, rejectNil, 'typed array'
+  ), expectedTypedArray = expectTypedArray
+
+/**** allow/expect[ed]ArrayBuffer ****/
+
+  export const allowArrayBuffer = /*#__PURE__*/ ValidatorForClassifier<ArrayBuffer>(
+    ValueIsArrayBuffer, acceptNil, 'ArrayBuffer'
+  ), allowedArrayBuffer = allowArrayBuffer
+
+  export const expectArrayBuffer = /*#__PURE__*/ ValidatorForClassifier<ArrayBuffer>(
+    ValueIsArrayBuffer, rejectNil, 'ArrayBuffer'
+  ), expectedArrayBuffer = expectArrayBuffer
+
+/**** allow/expect[ed]UUID ****/
+
+  export const allowUUID = /*#__PURE__*/ ValidatorForClassifier<string>(
+    ValueIsUUID, acceptNil, 'UUID'
+  ), allowedUUID = allowUUID
+
+  export const expectUUID = /*#__PURE__*/ ValidatorForClassifier<string>(
+    ValueIsUUID, rejectNil, 'UUID'
+  ), expectedUUID = expectUUID
+
+/**** allow/expect[ed]ISODate ****/
+
+  export const allowISODate = /*#__PURE__*/ ValidatorForClassifier<string>(
+    ValueIsISODate, acceptNil, 'ISO 8601 date'
+  ), allowedISODate = allowISODate
+
+  export const expectISODate = /*#__PURE__*/ ValidatorForClassifier<string>(
+    ValueIsISODate, rejectNil, 'ISO 8601 date'
+  ), expectedISODate = expectISODate
+
+/**** allow/expect[ed]ISOTimestamp ****/
+
+  export const allowISOTimestamp = /*#__PURE__*/ ValidatorForClassifier<string>(
+    ValueIsISOTimestamp, acceptNil, 'ISO 8601 timestamp'
+  ), allowedISOTimestamp = allowISOTimestamp
+
+  export const expectISOTimestamp = /*#__PURE__*/ ValidatorForClassifier<string>(
+    ValueIsISOTimestamp, rejectNil, 'ISO 8601 timestamp'
+  ), expectedISOTimestamp = expectISOTimestamp
+
+/**** allow/expect[ed]IPv4Address ****/
+
+  export const allowIPv4Address = /*#__PURE__*/ ValidatorForClassifier<string>(
+    ValueIsIPv4Address, acceptNil, 'IPv4 address'
+  ), allowedIPv4Address = allowIPv4Address
+
+  export const expectIPv4Address = /*#__PURE__*/ ValidatorForClassifier<string>(
+    ValueIsIPv4Address, rejectNil, 'IPv4 address'
+  ), expectedIPv4Address = expectIPv4Address
+
+/**** allow/expect[ed]IPv6Address ****/
+
+  export const allowIPv6Address = /*#__PURE__*/ ValidatorForClassifier<string>(
+    ValueIsIPv6Address, acceptNil, 'IPv6 address'
+  ), allowedIPv6Address = allowIPv6Address
+
+  export const expectIPv6Address = /*#__PURE__*/ ValidatorForClassifier<string>(
+    ValueIsIPv6Address, rejectNil, 'IPv6 address'
+  ), expectedIPv6Address = expectIPv6Address
+
+/**** allow/expect[ed]HostName ****/
+
+  export const allowHostName = /*#__PURE__*/ ValidatorForClassifier<string>(
+    ValueIsHostName, acceptNil, 'host name'
+  ), allowedHostName = allowHostName
+
+  export const expectHostName = /*#__PURE__*/ ValidatorForClassifier<string>(
+    ValueIsHostName, rejectNil, 'host name'
+  ), expectedHostName = expectHostName
+
+/**** allow/expect[ed]PortNumber ****/
+
+  export const allowPortNumber = /*#__PURE__*/ ValidatorForClassifier<number>(
+    ValueIsPortNumber, acceptNil, 'port number'
+  ), allowedPortNumber = allowPortNumber
+
+  export const expectPortNumber = /*#__PURE__*/ ValidatorForClassifier<number>(
+    ValueIsPortNumber, rejectNil, 'port number'
+  ), expectedPortNumber = expectPortNumber
+
+/**** allow/expect[ed]JSONString ****/
+
+  export const allowJSONString = /*#__PURE__*/ ValidatorForClassifier<string>(
+    ValueIsJSONString, acceptNil, 'JSON string'
+  ), allowedJSONString = allowJSONString
+
+  export const expectJSONString = /*#__PURE__*/ ValidatorForClassifier<string>(
+    ValueIsJSONString, rejectNil, 'JSON string'
+  ), expectedJSONString = expectJSONString
+
+/**** allow/expect[ed]Base64 ****/
+
+  export const allowBase64 = /*#__PURE__*/ ValidatorForClassifier<string>(
+    ValueIsBase64, acceptNil, 'Base64-encoded string'
+  ), allowedBase64 = allowBase64
+
+  export const expectBase64 = /*#__PURE__*/ ValidatorForClassifier<string>(
+    ValueIsBase64, rejectNil, 'Base64-encoded string'
+  ), expectedBase64 = expectBase64
+
+/**** allow/expect[ed]HexString ****/
+
+  export const allowHexString = /*#__PURE__*/ ValidatorForClassifier<string>(
+    ValueIsHexString, acceptNil, 'hexadecimal string'
+  ), allowedHexString = allowHexString
+
+  export const expectHexString = /*#__PURE__*/ ValidatorForClassifier<string>(
+    ValueIsHexString, rejectNil, 'hexadecimal string'
+  ), expectedHexString = expectHexString
+
 /**** escaped - escapes all control characters in a given string ****/
 
-  export function escaped (Text:string):string {
-    const EscapeSequencePattern = /\\x[0-9a-fA-F]{2}|\\u[0-9a-fA-F]{4}|\\[0bfnrtv'"\\\/]?/g
-    const CtrlCharCodePattern  = /[\x00-\x1f\x7f-\x9f]/g
+  const EscSequenceScanPattern =
+    /\\x[0-9a-fA-F]{2}|\\u[0-9a-fA-F]{4}|\\u\{[0-9a-fA-F]+\}|\\[0bfnrtv'"\\\/]?/g
+  const CtrlCharCodePattern = /[\x00-\x1f\x7f-\x9f]/g
 
+  export function escaped (Text:string):string {
     return Text
-      .replace(EscapeSequencePattern, function (Match:string):string {
-        return (Match === '\\' ? '\\\\' : Match)
-      })
-      .replace(CtrlCharCodePattern, function (Match:string):string {
+      .replace(EscSequenceScanPattern, (Match) => (
+        Match === '\\' ? '\\\\' : Match
+      ))
+      .replace(CtrlCharCodePattern, (Match) => {
         switch (Match) {
-          case '\0':  return '\\0'
-          case '\b':  return '\\b'
-          case '\f':  return '\\f'
-          case '\n':  return '\\n'
-          case '\r':  return '\\r'
-          case '\t':  return '\\t'
-          case '\v':  return '\\v'
+          case '\0': return '\\0'
+          case '\b': return '\\b'
+          case '\f': return '\\f'
+          case '\n': return '\\n'
+          case '\r': return '\\r'
+          case '\t': return '\\t'
+          case '\v': return '\\v'
           default: {
-            let HexCode = Match.charCodeAt(0).toString(16)
+            const HexCode = Match.charCodeAt(0).toString(16)
             return '\\x' + '00'.slice(HexCode.length) + HexCode
           }
         }
@@ -1303,11 +1629,12 @@
 
 /**** unescaped - evaluates all escape sequences in a given string ****/
 
-  export function unescaped (Text:string):string {
-    const EscapeSequencePattern = /\\[0bfnrtv'"\\\/]|\\x[0-9a-fA-F]{2}|\\u[0-9a-fA-F]{4}/g
+  const EscSequenceEvalPattern =
+    /\\[0bfnrtv'"\\\/]|\\x[0-9a-fA-F]{2}|\\u[0-9a-fA-F]{4}|\\u\{[0-9a-fA-F]+\}/g
 
+  export function unescaped (Text:string):string {
     return Text
-      .replace(EscapeSequencePattern, function (Match:string):string {
+      .replace(EscSequenceEvalPattern, (Match) => {
         switch (Match) {
           case '\\0':  return '\0'
           case '\\b':  return '\b'
@@ -1316,47 +1643,62 @@
           case '\\r':  return '\r'
           case '\\t':  return '\t'
           case '\\v':  return '\v'
-          case '\\\'': return "'"
+          case "\\'":  return "'"
           case '\\"':  return '"'
-          case '\\\\': return "\\"
+          case '\\\\': return '\\'
           default: {
-            let CharCode = parseInt(Match.slice(2),16)
-            return String.fromCharCode(CharCode)
+            const CodePoint = (
+              Match.charAt(2) === '{'
+              ? parseInt(Match.slice(3,-1),16)      // handles "\u{...}" escapes
+              : parseInt(Match.slice(2),16)      // handles "\xNN" and "\uNNNN"
+            )
+            return (
+              CodePoint <= 0x10FFFF ? String.fromCodePoint(CodePoint) : Match
+            )                      // leaves invalid code point escapes untouched
           }
         }
-    })
+      })
   }
 
-/**** quotable - makes a given string ready to be put in single/double quotes ****/
+/**** quotable - makes a given string ready to be put in quotes ****/
 
-  export function quotable (Text:string, Quote:'"' | "'" = '"'):string {
-    const EscSeqOrSglQuotePattern = /\\x[0-9a-fA-F]{2}|\\u[0-9a-fA-F]{4}|\\[0bfnrtv'"\\\/]?|'/g
-    const EscSeqOrDblQuotePattern = /\\x[0-9a-fA-F]{2}|\\u[0-9a-fA-F]{4}|\\[0bfnrtv'"\\\/]?|"/g
-    const CtrlCharCodePattern     = /[\x00-\x1f\x7f-\x9f]/g
+  const EscSeqOrSglQuotePattern =
+    /\\x[0-9a-fA-F]{2}|\\u[0-9a-fA-F]{4}|\\u\{[0-9a-fA-F]+\}|\\[0bfnrtv'"\\\/]?|'/g
+  const EscSeqOrDblQuotePattern =
+    /\\x[0-9a-fA-F]{2}|\\u[0-9a-fA-F]{4}|\\u\{[0-9a-fA-F]+\}|\\[0bfnrtv'"\\\/]?|"/g
+  const EscSeqOrBackQuotePattern =
+    /\\x[0-9a-fA-F]{2}|\\u[0-9a-fA-F]{4}|\\u\{[0-9a-fA-F]+\}|\\[0bfnrtv'"\\\/]?|`|\$\{/g
 
+  export type QuoteCharacter = '"' | "'" | '`'
+
+  export function quotable (Text:string, Quote:QuoteCharacter = '"'):string {
+    const QuotePattern = (
+      Quote === "'"
+      ? EscSeqOrSglQuotePattern
+      : (Quote === '`' ? EscSeqOrBackQuotePattern : EscSeqOrDblQuotePattern)
+    )
     return Text
-      .replace(
-        Quote === "'" ? EscSeqOrSglQuotePattern : EscSeqOrDblQuotePattern,
-        function (Match:string):string {
-          switch (Match) {
-            case "'":  return "\\'"
-            case '"':  return '\\"'
-            case '\\': return '\\\\'
-            default:   return Match
-          }
-        }
-      )
-      .replace(CtrlCharCodePattern, function (Match:string):string {
+      .replace(QuotePattern, (Match) => {
         switch (Match) {
-          case '\0':  return '\\0'
-          case '\b':  return '\\b'
-          case '\f':  return '\\f'
-          case '\n':  return '\\n'
-          case '\r':  return '\\r'
-          case '\t':  return '\\t'
-          case '\v':  return '\\v'
+          case "'":  return "\\'"
+          case '"':  return '\\"'
+          case '`':  return '\\`'
+          case '${': return '\\${'
+          case '\\': return '\\\\'
+          default:   return Match
+        }
+      })
+      .replace(CtrlCharCodePattern, (Match) => {
+        switch (Match) {
+          case '\0': return '\\0'
+          case '\b': return '\\b'
+          case '\f': return '\\f'
+          case '\n': return '\\n'
+          case '\r': return '\\r'
+          case '\t': return '\\t'
+          case '\v': return '\\v'
           default: {
-            let HexCode = Match.charCodeAt(0).toString(16)
+            const HexCode = Match.charCodeAt(0).toString(16)
             return '\\x' + '00'.slice(HexCode.length) + HexCode
           }
         }
@@ -1365,49 +1707,74 @@
 
 /**** quoted ****/
 
-  export function quoted (Text:string, Quote:'"' | "'" = '"'):string {
+  export function quoted (Text:string, Quote:QuoteCharacter = '"'):string {
     return Quote + quotable(Text,Quote) + Quote
   }
 
 /**** HTMLsafe ****/
+// warning: any "EOLReplacement" is inserted as given - it must be trusted HTML!
+
+  const HTMLSpecialsPattern = /[&<>"'\x00-\x1F\x7F-\x9F\\]/g
 
   export function HTMLsafe (Argument:string, EOLReplacement?:string):string {
     EOLReplacement = (EOLReplacement || '').trim() || '<br/>'
-    return Argument.replace(
-      /[&<>"'\x00-\x1F\x7F-\x9F\\]/g, function (Match:string):string {
-        switch (Match) {
-          case '&':  return '&amp;'
-          case '<':  return '&lt;'
-          case '>':  return '&gt;'
-          case '"':  return '&quot;'
-          case "'":  return '&apos;'
-          case '\b': return '&#92;b'
-          case '\f': return '&#92;f'
-          case '\n': return EOLReplacement as string
-          case '\r': return '&#92;r'
-          case '\t': return '&#92;t'
-          case '\v': return '&#92;v'
-          case '\\': return '&#92;'
-          default:   let Result = Match.charCodeAt(0).toString(16)
-                     return '&#x0000'.substring(0,7-Result.length) + Result + ';'
+    return Argument.replace(HTMLSpecialsPattern, (Match) => {
+      switch (Match) {
+        case '&':  return '&amp;'
+        case '<':  return '&lt;'
+        case '>':  return '&gt;'
+        case '"':  return '&quot;'
+        case "'":  return '&apos;'
+        case '\b': return '&#92;b'
+        case '\f': return '&#92;f'
+        case '\n': return EOLReplacement as string
+        case '\r': return '&#92;r'
+        case '\t': return '&#92;t'
+        case '\v': return '&#92;v'
+        case '\\': return '&#92;'
+        default: {
+          const Result = Match.charCodeAt(0).toString(16)
+          return '&#x0000'.substring(0,7-Result.length) + Result + ';'
         }
       }
-    )
+    })
   }
 
 /**** MarkDownSafe ****/
+// warning: any "EOLReplacement" is inserted as given - it must be trusted HTML
+// and must not contain any MarkDown-relevant characters!
+
+  const MarkDownSpecialsPattern = /[:`*_\[\]#|~]/g
 
   export function MarkDownSafe (Argument:string, EOLReplacement?:string):string {
-    return HTMLsafe(Argument, EOLReplacement).replace(/:/g,'&#58;')
+    return HTMLsafe(Argument, EOLReplacement).replace(
+      MarkDownSpecialsPattern, (Match) => '&#' + Match.charCodeAt(0) + ';'
+    )
   }
 
 /**** ValuesDiffer ****/
 
+  export type ValuesDifferMode = 'by-value'|'by-reference'
+                       // mode 'by-value' is deprecated (and behaves as default)
+  export interface ValuesDifferOptions {
+    Mode?:ValuesDifferMode
+    Tolerance?:number              // absolute tolerance for number comparisons
+  }
+
   export function ValuesDiffer (
-    thisValue:any, otherValue:any, Mode?:'by-value'|'by-reference'|undefined,
+    thisValue:any, otherValue:any,
+    ModeOrOptions?:ValuesDifferMode|ValuesDifferOptions,
     visitedPairs?:WeakMap<object,WeakSet<object>>     // for internal use only
   ):boolean {
     if (thisValue === otherValue) { return false }
+
+    let Mode:ValuesDifferMode|undefined = undefined
+    let Tolerance:number|undefined      = undefined
+    if ((ModeOrOptions != null) && (typeof ModeOrOptions === 'object')) {
+      Mode = ModeOrOptions.Mode; Tolerance = ModeOrOptions.Tolerance
+    } else {
+      Mode = ModeOrOptions
+    }
 
     let thisType = typeof thisValue
     if (thisType !== typeof otherValue) { return true }
@@ -1416,7 +1783,7 @@
 
       function ArraysDiffer (
         thisArray:any[], otherArray:any[],
-        Mode:'by-value'|'by-reference'|undefined,
+        ModeOrOptions:ValuesDifferMode|ValuesDifferOptions|undefined,
         visitedPairs:WeakMap<object,WeakSet<object>>
       ):boolean {
         if (! Array.isArray(otherArray)) { return true }
@@ -1424,7 +1791,7 @@
         if (thisArray.length !== otherArray.length) { return true }
 
         for (let i = 0, l = thisArray.length; i < l; i++) {
-          if (ValuesDiffer(thisArray[i],otherArray[i],Mode,visitedPairs)) {
+          if (ValuesDiffer(thisArray[i],otherArray[i],ModeOrOptions,visitedPairs)) {
             return true
           }
         }
@@ -1436,7 +1803,7 @@
 
       function MapsDiffer (
         thisMap:Map<any,any>, otherMap:any,
-        Mode:'by-value'|'by-reference'|undefined,
+        ModeOrOptions:ValuesDifferMode|ValuesDifferOptions|undefined,
         visitedPairs:WeakMap<object,WeakSet<object>>
       ):boolean {
         if (! (otherMap instanceof Map))    { return true }
@@ -1447,7 +1814,7 @@
           if (! Difference) {
             Difference = (
               ! otherMap.has(Key) ||
-              ValuesDiffer(Value,otherMap.get(Key),Mode,visitedPairs)
+              ValuesDiffer(Value,otherMap.get(Key),ModeOrOptions,visitedPairs)
             )
           }
         })
@@ -1493,7 +1860,7 @@
 
       function ObjectsDiffer (
         thisObject:any, otherObject:any,
-        Mode:'by-value'|'by-reference'|undefined,
+        ModeOrOptions:ValuesDifferMode|ValuesDifferOptions|undefined,
         visitedPairs:WeakMap<object,WeakSet<object>>
       ):boolean {
         if (Object.getPrototypeOf(thisObject) !== Object.getPrototypeOf(otherObject)) {
@@ -1507,7 +1874,7 @@
         for (let key in otherObject) {
           if (! (key in thisObject)) { return true }
 
-          if (ValuesDiffer(thisObject[key],otherObject[key],Mode,visitedPairs)) {
+          if (ValuesDiffer(thisObject[key],otherObject[key],ModeOrOptions,visitedPairs)) {
             return true
           }
         }
@@ -1520,14 +1887,20 @@
       case 'undefined':
       case 'boolean':
       case 'string':
+      case 'bigint':
+      case 'symbol':
       case 'function': return true   // most primitives are compared using "==="
       case 'number': {
         if (isNaN(thisValue) !== isNaN(otherValue)) { return true }
 
-        let Tolerance = Number.EPSILON * Math.max(    // relative, not absolute!
+        if (Tolerance != null) {                  // explicit absolute tolerance
+          return (Math.abs(thisValue-otherValue) > Tolerance)
+        }
+
+        const relTolerance = Number.EPSILON * Math.max( // default is relative!
           1, Math.abs(thisValue), Math.abs(otherValue)
         )
-        return (Math.abs(thisValue-otherValue) > Tolerance)
+        return (Math.abs(thisValue-otherValue) > relTolerance)
       }
       case 'object':
         if (thisValue  == null) { return true }  // since "other_value" != null!
@@ -1576,12 +1949,12 @@
         visitedPartners.add(otherValue)
 
         if (Array.isArray(thisValue)) {
-          return ArraysDiffer(thisValue,otherValue,Mode,visitedPairs)
+          return ArraysDiffer(thisValue,otherValue,ModeOrOptions,visitedPairs)
         }
 
         if (thisValue instanceof Map) {
           if (Mode === 'by-reference') { return true }
-          return MapsDiffer(thisValue,otherValue,Mode,visitedPairs)
+          return MapsDiffer(thisValue,otherValue,ModeOrOptions,visitedPairs)
         }
 
         if (thisValue instanceof Set) {
@@ -1597,7 +1970,7 @@
         return (
           Mode === 'by-reference'
           ? true                           // because (thisValue !== otherValue)
-          : ObjectsDiffer(thisValue,otherValue,Mode,visitedPairs)
+          : ObjectsDiffer(thisValue,otherValue,ModeOrOptions,visitedPairs)
         )
       default: return true                          // unsupported property type
     }
@@ -1606,9 +1979,10 @@
 /**** ValuesAreEqual ****/
 
   export function ValuesAreEqual (
-    thisValue:any, otherValue:any, Mode?:'by-value'|'by-reference'|undefined
+    thisValue:any, otherValue:any,
+    ModeOrOptions?:ValuesDifferMode|ValuesDifferOptions
   ):boolean {
-    return ! ValuesDiffer(thisValue,otherValue,Mode)
+    return ! ValuesDiffer(thisValue,otherValue,ModeOrOptions)
   }
 
 /**** ObjectIsEmpty ****/
@@ -1655,7 +2029,7 @@
 
 // built-in color names (see http://www.w3.org/TR/SVG/types.html#ColorKeywords) ----
 
-  export const ColorSet = {
+  export const ColorSet = /*#__PURE__*/ Object.freeze({
            transparent:'rgba(0,0,0,0.0)',
              aliceblue:'rgba(240,248,255,1.0)',         lightpink:'rgba(255,182,193,1.0)',
           antiquewhite:'rgba(250,235,215,1.0)',       lightsalmon:'rgba(255,160,122,1.0)',
@@ -1731,7 +2105,7 @@
              lightgray:'rgba(211,211,211,1.0)',            yellow:'rgba(255,255,0,1.0)',
             lightgreen:'rgba(144,238,144,1.0)',       yellowgreen:'rgba(154,205,50,1.0)',
              lightgrey:'rgba(211,211,211,1.0)',
-  }
+  })
 
 /**** HexColor - converts a given color to #rrggbbaa ****/
 
