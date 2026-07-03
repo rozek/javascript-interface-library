@@ -1,5 +1,7 @@
 # javascript-interface-library #
 
+[![CI](https://github.com/rozek/javascript-interface-library/actions/workflows/ci.yml/badge.svg)](https://github.com/rozek/javascript-interface-library/actions/workflows/ci.yml)
+
 various classification, validation and utility functions for JavaScript and TypeScript
 
 From time to time, it's necessary to classify and/or validate the values of user inputs, data read from input streams (like files or network connections) or arguments passed as part of a function call. While TypeScript type annotations already eliminate the need for many of these tests, there still exist lots of interfaces to the outer (non-TypeScript) world where value checking remains important.
@@ -8,11 +10,9 @@ These situations are, what the `javascript-interface-library` has been made for.
 
 **NPM users**: please consider the [Github README](https://github.com/rozek/javascript-interface-library/blob/main/README.md) for the latest description of this package (as updating the docs would otherwise always require a new NPM package version)
 
-> Just a small note: if you like this module and plan to use it, consider "starring" this repository (you will find the "Star" button on the top right of this page), so that I know which of my repositories to take most care of.
-
 ## Installation ##
 
-`javascript-interface-library` may be used as an ECMAScript module (ESM), a CommonJS or AMD module or from a global variable.
+Since v1.1.0, `javascript-interface-library` is a pure ECMAScript module (ESM) - UMD, CommonJS and AMD builds (and the global variable `JIL`) are no longer provided.
 
 You may either install the package into your build environment using [NPM](https://docs.npmjs.com/) with the command
 
@@ -20,23 +20,41 @@ You may either install the package into your build environment using [NPM](https
 npm install javascript-interface-library
 ```
 
-or load the plain script file directly
+and bundle it with your application - in that case, no code needs to be loaded from any third party at runtime.
+
+For buildless setups, it is recommended to **host the module yourself**: simply download the ready-made file [javascript-interface-library.esm.js](https://raw.githubusercontent.com/rozek/javascript-interface-library/main/dist/javascript-interface-library.esm.js) (a single ESM file without any dependencies) and serve it from your own web server:
 
 ```html
-<script src="https://unpkg.com/javascript-interface-library"></script>
+<script type="module">
+  import { ValueIsOrdinal } from '/js/javascript-interface-library.esm.js'
+</script>
 ```
+
+Serving the file from your own origin keeps your visitors' IP addresses away from third-party servers - which **may be relevant for GDPR compliance**: loading assets from public CDNs (such as unpkg, jsDelivr or cdnjs) or other third-party hosts discloses visitor IPs to those parties and may require consent. For quick experiments, however, importing the module directly is still the fastest way to get started:
+
+```html
+<script type="module">
+  import { ValueIsOrdinal } from 'https://rozek.github.io/javascript-interface-library/dist/javascript-interface-library.esm.js'
+</script>
+```
+
+(please keep in mind that the latter also applies to imports from `rozek.github.io` - GitHub Pages is a third-party host as well)
 
 ## Access ##
 
-How to access the package depends on the type of module you prefer
+Import the functions and values you actually need
 
-* ESM (or Svelte): `import { ValueIsListSatisfying, ValueIsOrdinal } from 'javascript-interface-library'`
-* CommonJS: `const JIL = require('javascript-interface-library')`
-* AMD: `require(['javascript-interface-library'], (JIL) => {...})`
+```javascript
+import { ValueIsListSatisfying, ValueIsOrdinal } from 'javascript-interface-library'
+```
 
-Alternatively, you may access the global variable `JIL` directly.
+or import the complete module as a namespace
 
-Note for ECMAScript module users: all module functions and values are exported individually, thus allowing your bundler to perform some "tree-shaking" in order to include actually used functions or values (together with their dependencies) only.
+```javascript
+import * as JIL from 'javascript-interface-library'
+```
+
+All module functions and values are exported individually, thus allowing your bundler to perform some "tree-shaking" in order to include actually used functions or values (together with their dependencies) only.
 
 
 ## Usage within Svelte ##
@@ -55,11 +73,11 @@ For Svelte, it is recommended to import the package in a module context. From th
 </script>
 ```
 
-## Usage as ECMAscript, CommonJS or AMD Module (or as a global Variable) ##
-
-Let's assume that you already "required" or "imported" (or simply loaded) the module according to your local environment. In that case, you may use it as follows:
+## Usage as ECMAScript Module ##
 
 ```javascript
+import * as JIL from 'javascript-interface-library'
+
 console.log(JIL.ValueIsListSatisfying(
   [1,2,3,4], JIL.ValueIsOrdinal, 1,10
 ))
@@ -111,7 +129,7 @@ The following functions check whether a given argument satisfies a certain const
 * **`ValueIsObject (Value:any):boolean`**<br>returns `true` if the given `Value` is a JavaScript object (and not `null`) - or `false` otherwise
 * **`ValueIsPlainObject (Value:any):boolean`**<br>returns `true` if the given `Value` is a JavaScript object (different from `null`) which directly inherits from `Object` (such as a Javascript object literal) - or `false` otherwise
 * **`ValueIsVanillaObject (Value:any):boolean`**<br>returns `true` if the given `Value` is a JavaScript object which has been built using `Object.create(null)` - or `false` otherwise<br>&nbsp;<br>
-* **`ValueIsArray (Value:any):boolean`**<br>returns `true` if the given `Value` is an `Array` instance - or `false` otherwise. If given, `minLength` specifies the minimal required list length and `maxLength` specifies the maximal allowed list length
+* **`ValueIsArray (Value:any):boolean`**<br>returns `true` if the given `Value` is an `Array` instance - or `false` otherwise
 * **`ValueIsList (Value:any, minLength?:number, maxLength?:number):boolean`**<br>returns `true` if the given `Value` is a "dense" JavaScript array (i.e., an array whose indices 0...n-1 all exist, where n is the `length` of the given array) - or `false` otherwise
 * **`ValueIsListSatisfying (Value:any, Validator:Function, minLength?:number, maxLength?:number):boolean`**<br>returns `true` if the given `Value` is a "dense" JavaScript array, whose elements all pass the given `Validator` - or `false` otherwise. `Validator` is a function which receives a list element as its sole argument and returns `true` if the given element is "valid" or `false` otherwise. If given, `minLength` specifies the minimal required list length and `maxLength` specifies the maximal allowed list length<br>&nbsp;<br>
 * **`ValueIsInstanceOf (Value:any, Constructor:Function):boolean`**<br>returns `true` if the given `Value` was constructed using the given `Constructor` function - or `false` otherwise
@@ -121,9 +139,11 @@ The following functions check whether a given argument satisfies a certain const
 * **`ValueIsPromise (Value:any):boolean`**<br>returns `true` if the given `Value` is a "Promise", i.e., an object with a property named `then` which contains a function - or `false` otherwise
 * **`ValueIsRegExp (Value:any):boolean`**<br>returns `true` if the given `Value` is a `RegExp` instance - or `false` otherwise<br>&nbsp;<br>
 * **`ValueIsOneOf (Value:any, ValueList:any[]):boolean`**<br>returns `true` if the given `Value` equals (at least) one of the items found in the given `ValueList` - or `false` otherwise. Equality is checked using the JavaScript `===` operator<br>&nbsp;<br>
-* **`ValueIsColor (Value:any):boolean`**<br>returns `true` if the given `Value` is a string containing a syntactically valid CSS color specification - or `false` otherwise
+* **`ValueIsColor (Value:any):boolean`**<br>returns `true` if the given `Value` is a string containing a syntactically valid CSS color specification (checked case-insensitively) - or `false` otherwise
 * **`ValueIsEMailAddress (Value:any):boolean`**<br>returns `true` if the given `Value` is a string containing a syntactically valid EMail address - or `false` otherwise
-* **`ValueIsURL (Value:any):boolean`**<br>returns `true` if the given `Value` is a string containing a syntactically valid URL - or `false` otherwise
+* **`ValueIsURL (Value:any):boolean`**<br>returns `true` if the given `Value` is a string containing a syntactically valid URL - or `false` otherwise<br>&nbsp;<br>
+* **`ValueIsPhoneNumber (Value:any):boolean`**<br>returns `true` if the given `Value` is a string containing a syntactically plausible phone number in a common national or international notation (digits with the format characters space, `-`, `.`, `/` and parentheses, optionally led by a `+`). With a leading `+`, the digits must follow E.164 rules (7-15 digits, no leading zero), otherwise 3-16 digits are accepted. Please note: this is a plausibility check only - it does not verify that prefixes or number lengths actually exist
+* **`ValueIsE164PhoneNumber (Value:any):boolean`**<br>returns `true` if the given `Value` is a string containing a phone number in the canonical [E.164](https://en.wikipedia.org/wiki/E.164) format (a `+` followed by 7-15 digits without leading zero and without any formatting characters, e.g., `+4972112345`) - or `false` otherwise
 
 ### Argument Validation Functions ###
 
@@ -132,7 +152,7 @@ The following functions check whether a given argument satisfies a certain const
 Unless stated otherwise, these functions exist in four different "flavours", as indicated by their name prefixes:
 
 * `allowXXX`<br>validates the given argument and returns it, if it is either missing (i.e., equals `null` or `undefined`) or meets the condition defined for `XXX` - or throws an exception otherwise
-* `allwedXXX`<br>synonym for `allowXXX`, looks better when used as an expression
+* `allowedXXX`<br>synonym for `allowXXX`, looks better when used as an expression
 * `expectXXX`<br>validates the given argument and returns it, if it exists (i.e., differs both from `null` and `undefined`) and meets the condition defined for `XXX` - or throws an exception otherwise  
 * `expectedXXX`<br>synonym for `expectXXX`, looks better when used as an expression
 
@@ -173,11 +193,12 @@ For the sake of clarity, however, only the first "flavour" (namely `allowXXX`) i
 * **`allowOneOf (Description:string, Argument:any, ValueList:any[]):any|null|undefined`**<br>checks if the given `Argument` (if it exists) equals (at least) one of the items found in the given `ValueList`. If this is the case (or `Argument` is missing), the function returns the given `Argument`, otherwise an error is thrown whose message contains the given `Description`. Equality is checked using the JavaScript `===` operator<br>&nbsp;<br>
 * **`allowColor (Description:string, Argument:any):string|null|undefined`**<br>checks if the given `Argument` (if it exists) is a string containing a syntactically valid CSS color specification. If this is the case (or `Argument` is missing), the function returns the primitive value of the given `Argument`, otherwise an error is thrown whose message contains the given `Description`
 * **`allowEMailAddress (Description:string, Argument:any):string|null|undefined`**<br>checks if the given `Argument` (if it exists) is a string containing a syntactically valid EMail address. If this is the case (or `Argument` is missing), the function returns the primitive value of the given `Argument`, otherwise an error is thrown whose message contains the given `Description`
-* **`allowURL (Description:string, Argument:any):string|null|undefined`**<br>checks if the given `Argument` (if it exists) is a string containing a syntactically valid URL. If this is the case (or `Argument` is missing), the function returns the primitive value of the given `Argument`, otherwise an error is thrown whose message contains the given `Description`
+* **`allowURL (Description:string, Argument:any):string|null|undefined`**<br>checks if the given `Argument` (if it exists) is a string containing a syntactically valid URL. If this is the case (or `Argument` is missing), the function returns the primitive value of the given `Argument`, otherwise an error is thrown whose message contains the given `Description`<br>&nbsp;<br>
+* **`allowPhoneNumber (Description:string, Argument:any):string|null|undefined`**<br>checks if the given `Argument` (if it exists) is a string containing a syntactically plausible phone number in a common national or international notation (see `ValueIsPhoneNumber`). If this is the case (or `Argument` is missing), the function returns the primitive value of the given `Argument`, otherwise an error is thrown whose message contains the given `Description`
+* **`allowE164PhoneNumber (Description:string, Argument:any):string|null|undefined`**<br>checks if the given `Argument` (if it exists) is a string containing a phone number in the canonical E.164 format (see `ValueIsE164PhoneNumber`). If this is the case (or `Argument` is missing), the function returns the primitive value of the given `Argument`, otherwise an error is thrown whose message contains the given `Description`
 
 ### Utility Functions ###
 
-* **`throwableError (Message:string):Error`**<br>this function has been provided in order to simplify the construction of "named" `Error` instances: if the given `Message` starts with a JavaScript identifier followed by a colon, identifier and colon are stripped apart and the identifier is used as the `name` property of a newly constructed `Error` instance for the remaining part of `Message`. Otherwise, this function is equivalent to `new Error(Message)`
 * **`throwError (Message:string):never`**<br>this function has been provided in order to simplify throwing "named" `Error` instances: if the given `Message` starts with a JavaScript identifier followed by a colon, identifier and colon are stripped apart and the identifier is used as the `name` property of a newly constructed `Error` instance for the remaining part of `Message`. Otherwise, this function is equivalent to `throw new Error(Message)` <br>&nbsp;<br>
 * **`ObjectMergedWith (TargetObject:object, ...otherObjectList:object[]):object`**<br>`Object.assign` can not be used to copy properties with getters and setters from one object into another - this is what `ObjectMergedWith` is good for: it copies the descriptors of all *own* properties from any object found in `otherObjectList` into the given `TargetObject` and also returns that object as its function result. Any  descriptor already existing for a given property in `TargetObject` will be overwritten<br>&nbsp;<br>
 * **`constrained (Value:number, Minimum:number = -Infinity, Maximum:number = Infinity):number`**<br>limits the given `Value` to the range specified by `Minimum` and `Maximum` - i.e., the function returns `Minimum` if `Value` is less than (or equal to) `Minimum`, `Maximum` if `Value` is greater than (or equal to) `Maximum`, or `Value` itself otherwise. `Minimum` and `Maximum` are optional and default to `-Infinity` or `+Infinity`, resp.<br>&nbsp;<br>
@@ -187,8 +208,8 @@ For the sake of clarity, however, only the first "flavour" (namely `allowXXX`) i
 * **`quoted (Text:string, Quote:'"' | "'" = '"'):string`**<br>returns a copy of the given `Text` (embedded within a pair of `Quote`s) in which all control characters and `Quote`s have been replaced by their corresponding escape sequences. The outcome of this function may, f.e., used to construct literal values in JSON files. `Quote` is optional and defaults to the double-quotes character<br>&nbsp;<br>
 * **`HTMLsafe (Argument:string, EOLReplacement?:string):string`**<br>returns a copy of the given `Argument` in which all control characters (except `\n`) and characters with a special meaning for HTML have been replaced by their corresponding HTML entities. Any linefeed characters (`\n`) will be replaced by the given `EOLReplacement` string - specification of `EOLReplacement` is optional and defaults to `<br/>`
 * **`MarkDownSafe (Argument:string, EOLReplacement?:string):string`**<br>returns a copy of the given `Argument` in which all control characters (except `\n`) and characters with a special meaning for (HTML and) Markdown have been replaced by their corresponding HTML entities. Any linefeed characters (`\n`) will be replaced by the given `EOLReplacement` string - specification of `EOLReplacement` is optional and defaults to `<br/>`<br>&nbsp;<br>
-* **`ValuesDiffer (thisValue:any, otherValue:any, Mode?:'by-value'|'by-reference'|undefined):boolean`**<br>returns `true` if `thisValue` differs from `otherValue` - or `false` otherwise. Equality is checked by inspection, i.e., `null`, `undefined`, booleans, strings and functions are checked using the JavaScript `===` operator, comparison of numbers also takes care of `NaN` and a potential deviation by `Number.EPSILON` and objects or arrays are (by default) compared element by element. If the optional `Mode` is set to `by-reference`, Objects are always compared by reference, if set to `by-value`, instances of `Boolean`, `Number` and `String` are always compared by their primitive value
-* **`ValuesAreEqual (thisValue:any, otherValue:any, Mode?:'by-value'|'by-reference'|undefined):boolean`**<br>returns `true` if `thisValue` equals to `otherValue` - or `false` otherwise. Equality is checked by inspection, i.e., `null`, `undefined`, booleans, strings and functions are checked using the JavaScript `===` operator, comparison of numbers also takes care of `NaN` and a potential deviation by `Number.EPSILON` and objects or arrays are (by default) compared element by element. If the optional `Mode` is set to `by-reference`, Objects are always compared by reference, if set to `by-value`, instances of `Boolean`, `Number` and `String` are always compared by their primitive value<br>&nbsp;<br>
+* **`ValuesDiffer (thisValue:any, otherValue:any, Mode?:'by-value'|'by-reference'|undefined):boolean`**<br>returns `true` if `thisValue` differs from `otherValue` - or `false` otherwise. Equality is checked by inspection: `null`, `undefined`, booleans, strings and functions are compared using the JavaScript `===` operator; numbers are compared taking care of `NaN` (two `NaN` values are considered equal) and allowing for a small *relative* deviation (based on `Number.EPSILON`); instances of `Boolean`, `Number` and `String` are compared by their primitive values; `Date` instances are compared by their timestamps (two "invalid" dates are considered equal); `RegExp` instances are compared by their sources and flags; `Map`s are compared by size and their (identity-matched) keys with recursively compared values; `Set`s are compared by size and identity-matched elements; typed arrays (and `DataView`s) are compared byte-wise; all other objects and arrays are compared element by element (with cycle detection - matching circular references are considered equal). If the optional `Mode` is set to `by-reference`, objects (except arrays, whose elements are still compared individually) are compared by reference instead
+* **`ValuesAreEqual (thisValue:any, otherValue:any, Mode?:'by-value'|'by-reference'|undefined):boolean`**<br>returns `true` if `thisValue` equals `otherValue` - or `false` otherwise. `ValuesAreEqual` is the exact negation of `ValuesDiffer` (see there for the comparison rules)<br>&nbsp;<br>
 * **`ObjectIsEmpty (Candidate:any):boolean`**<br>returns true if the given `Candidate` is an empty object (i.e., an object without any *own* properties) - or `false` otherwise
 * **`ObjectIsNotEmpty (Candidate:any):boolean`**<br>returns true if the given `Candidate` is a non-empty empty object (i.e., an object with at least one *own* property) - or `false` otherwise
 * **`StringIsEmpty (Candidate:string):boolean`**<br>returns true if the given `Candidate` is an empty string (i.e., a string which either contains no characters at all or only whitespace characters) - or `false` otherwise
@@ -213,17 +234,9 @@ Just install [NPM](https://docs.npmjs.com/) according to the instructions for yo
 1. either clone this repository using [git](https://git-scm.com/) or [download a ZIP archive](https://github.com/rozek/javascript-interface-library/archive/refs/heads/main.zip) with its contents to your disk and unpack it there 
 2. open a shell and navigate to the root directory of this repository
 3. run `npm install` in order to install the complete build environment
-4. execute `npm run build` to create a new build
+4. execute `npm run build` to create a new build (using [Vite](https://vite.dev/) and [vite-plugin-dts](https://github.com/qmhc/vite-plugin-dts) for the bundled type declarations)
 
-If you made some changes to the source code, you may also try
-
-```
-npm run agadoo
-```
-
-in order to check if the result is still tree-shakable.
-
-You may also look into the author's [build-configuration-study](https://github.com/rozek/build-configuration-study) for a general description of his build environment.
+The package comes with a complete test suite (based on [Vitest](https://vitest.dev/)): run `npm test` for watch mode or `npm run test:run` for a single pass. Both testing and building also run automatically in GitHub Actions on every push and pull request - and `npm run agadoo` checks whether the build result is still tree-shakeable.
 
 ## License ##
 

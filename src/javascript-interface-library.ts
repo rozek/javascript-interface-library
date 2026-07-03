@@ -1,6 +1,8 @@
-//----------------------------------------------------------------------------//
-//                        JavaScript Interface Library                        //
-//----------------------------------------------------------------------------//
+/*******************************************************************************
+*                                                                              *
+*                      JavaScript Interface Library (JIL)                      *
+*                                                                              *
+*******************************************************************************/
 
 /**** get a reference to the "global" object ****/
 
@@ -63,8 +65,8 @@
       (Value == null) ||              // let this method crash like its original
       ('toLocaleString' in Value) && (typeof Value.toLocaleString === 'function')
       ? Value.toLocaleString()
-      : Object.prototype.toString.call(Value)
-    ) // a missing "toLocaleString" method will crash Object.prototype.toLocaleString
+      : Object_toString(Value)  // "toLocaleString" delegates to "toString", too
+    )
   }
 
 /**** Object_valueOf ****/
@@ -284,7 +286,7 @@
 
 /**** ValueIsText ****/
 
-  const noCtrlCharsButCRLFPattern = /^[^\x00-\x08\x0B\x0C\x0E-\x1F\x7F-\x9F\u2028\u2029\uFFF9-\uFFFB]*$/
+  const noCtrlCharsButCRLFPattern = /^[^\x00-\x09\x0B\x0C\x0E-\x1F\x7F-\x9F\u2028\u2029\uFFF9-\uFFFB]*$/
 
   export function ValueIsText (Value:any):boolean {
     return ValueIsStringMatching(Value,noCtrlCharsButCRLFPattern)
@@ -366,7 +368,7 @@
 
 /**** ValueIsArray ****/
 
-  export let ValueIsArray = Array.isArray
+  export const ValueIsArray = Array.isArray
 
 /**** ValueIsList ("dense" array) ****/
 
@@ -399,7 +401,7 @@
     if (ValueIsArray(Value)) {
       try {
         for (let i = 0, l = Value.length; i < l; i++) {
-          if (Validator(Value[i]) == false) { return false }
+          if (! Validator(Value[i])) { return false }
         }
 
         if (minLength != null) {
@@ -462,12 +464,15 @@
 /**** ValueIsColor ****/
 
   export function ValueIsColor (Value:any):boolean {
-    return ValueIsString(Value) && (
-      ColorSet.hasOwnProperty (Value) ||
-      /^#[a-fA-F0-9]{6}$/.test(Value) ||
-      /^#[a-fA-F0-9]{8}$/.test(Value) ||
-      /^rgb\([0-9]+,\s*[0-9]+,\s*[0-9]+\)$/.test(Value) ||        // not perfect
-      /^rgba\([0-9]+,\s*[0-9]+,\s*[0-9]+,([01]|[0]?[.][0-9]+)\)$/.test(Value) // dto.
+    if (! ValueIsString(Value)) { return false }
+
+    let lowerValue = Value.valueOf().toLowerCase()   // ColorSet keys are l.c.
+    return (
+      ColorSet.hasOwnProperty(lowerValue) ||
+      /^#[a-fA-F0-9]{6}$/.test(lowerValue) ||
+      /^#[a-fA-F0-9]{8}$/.test(lowerValue) ||
+      /^rgb\([0-9]+,\s*[0-9]+,\s*[0-9]+\)$/.test(lowerValue) ||   // not perfect
+      /^rgba\([0-9]+,\s*[0-9]+,\s*[0-9]+,\s*([01]|[01]?[.][0-9]+)\)$/.test(lowerValue) // dto.
     )
   }
 
@@ -496,6 +501,33 @@
     } catch (Signal) {
       return false
     }
+  }
+
+/**** ValueIsPhoneNumber ****/
+// plausibility check only - neither prefixes nor lengths are actually verified!
+
+  const PhoneNumberPattern = /^\+?[0-9(][0-9 \-.\/()]*[0-9)]$/    // not perfect
+
+  export function ValueIsPhoneNumber (Value:any):boolean {
+    if (! ValueIsString(Value)) { return false }
+
+    let Candidate = Value.valueOf()
+    if (! PhoneNumberPattern.test(Candidate)) { return false }
+
+    let Digits = Candidate.replace(/[^0-9]/g,'')
+    return (
+      Candidate.charAt(0) === '+'
+      ? /^[1-9][0-9]{6,14}$/.test(Digits) // E.164: 7-15 digits, no leading zero
+      : (Digits.length >= 3) && (Digits.length <= 16)
+    )
+  }
+
+/**** ValueIsE164PhoneNumber (canonical machine-readable format) ****/
+
+  const E164PhoneNumberPattern = /^\+[1-9][0-9]{6,14}$/
+
+  export function ValueIsE164PhoneNumber (Value:any):boolean {
+    return ValueIsStringMatching(Value,E164PhoneNumberPattern)
   }
 
 //------------------------------------------------------------------------------
@@ -598,7 +630,14 @@
     if (Argument == null) {
       throwError(`MissingArgument: no ${escaped(Description)} given`)
     } else {
-      return Argument.valueOf()
+      switch (true) {              // unboxes primitives - but nothing else, as
+        case Argument instanceof Boolean:  // "valueOf" may return other values
+        case Argument instanceof Number:      // for other objects (e.g. Dates)
+        case Argument instanceof String:
+          return Argument.valueOf()
+        default:
+          return Argument
+      }
     }
   }
   export const expectedValue = expectValue
@@ -1169,11 +1208,14 @@
     }
 
     if (ValueIsOneOf(Argument,ValueList)) {
-      return (                                         // unboxes any primitives
-        (Argument == null) || (typeof Argument.valueOf !== 'function')
-        ? Argument
-        : Argument.valueOf()
-      )
+      switch (true) {               // unboxes primitives - but nothing else, as
+        case Argument instanceof Boolean:   // "valueOf" may return other values
+        case Argument instanceof Number:       // for other objects (e.g. Dates)
+        case Argument instanceof String:
+          return Argument.valueOf()
+        default:
+          return Argument
+      }
     } else {
       throwError(
         `InvalidArgument: the given ${escaped(Description)} is not among the supported values`
@@ -1212,10 +1254,30 @@
     ValueIsURL, rejectNil, 'URL'
   ), expectedURL = expectURL
 
+/**** allow/expect[ed]PhoneNumber ****/
+
+  export const allowPhoneNumber = /*#__PURE__*/ ValidatorForClassifier(
+    ValueIsPhoneNumber, acceptNil, 'phone number'
+  ), allowedPhoneNumber = allowPhoneNumber
+
+  export const expectPhoneNumber = /*#__PURE__*/ ValidatorForClassifier(
+    ValueIsPhoneNumber, rejectNil, 'phone number'
+  ), expectedPhoneNumber = expectPhoneNumber
+
+/**** allow/expect[ed]E164PhoneNumber ****/
+
+  export const allowE164PhoneNumber = /*#__PURE__*/ ValidatorForClassifier(
+    ValueIsE164PhoneNumber, acceptNil, 'phone number in E.164 format'
+  ), allowedE164PhoneNumber = allowE164PhoneNumber
+
+  export const expectE164PhoneNumber = /*#__PURE__*/ ValidatorForClassifier(
+    ValueIsE164PhoneNumber, rejectNil, 'phone number in E.164 format'
+  ), expectedE164PhoneNumber = expectE164PhoneNumber
+
 /**** escaped - escapes all control characters in a given string ****/
 
   export function escaped (Text:string):string {
-    const EscapeSequencePattern = /\\x[0-9a-zA-Z]{2}|\\u[0-9a-zA-Z]{4}|\\[0bfnrtv'"\\\/]?/g
+    const EscapeSequencePattern = /\\x[0-9a-fA-F]{2}|\\u[0-9a-fA-F]{4}|\\[0bfnrtv'"\\\/]?/g
     const CtrlCharCodePattern  = /[\x00-\x1f\x7f-\x9f]/g
 
     return Text
@@ -1242,7 +1304,7 @@
 /**** unescaped - evaluates all escape sequences in a given string ****/
 
   export function unescaped (Text:string):string {
-    const EscapeSequencePattern = /\\[0bfnrtv'"\\\/]|\\x[0-9a-zA-Z]{2}|\\u[0-9a-zA-Z]{4}/g
+    const EscapeSequencePattern = /\\[0bfnrtv'"\\\/]|\\x[0-9a-fA-F]{2}|\\u[0-9a-fA-F]{4}/g
 
     return Text
       .replace(EscapeSequencePattern, function (Match:string):string {
@@ -1268,8 +1330,8 @@
 /**** quotable - makes a given string ready to be put in single/double quotes ****/
 
   export function quotable (Text:string, Quote:'"' | "'" = '"'):string {
-    const EscSeqOrSglQuotePattern = /\\x[0-9a-zA-Z]{2}|\\u[0-9a-zA-Z]{4}|\\[0bfnrtv'"\\\/]?|'/g
-    const EscSeqOrDblQuotePattern = /\\x[0-9a-zA-Z]{2}|\\u[0-9a-zA-Z]{4}|\\[0bfnrtv'"\\\/]?|"/g
+    const EscSeqOrSglQuotePattern = /\\x[0-9a-fA-F]{2}|\\u[0-9a-fA-F]{4}|\\[0bfnrtv'"\\\/]?|'/g
+    const EscSeqOrDblQuotePattern = /\\x[0-9a-fA-F]{2}|\\u[0-9a-fA-F]{4}|\\[0bfnrtv'"\\\/]?|"/g
     const CtrlCharCodePattern     = /[\x00-\x1f\x7f-\x9f]/g
 
     return Text
@@ -1312,7 +1374,7 @@
   export function HTMLsafe (Argument:string, EOLReplacement?:string):string {
     EOLReplacement = (EOLReplacement || '').trim() || '<br/>'
     return Argument.replace(
-      /[&<>"'\u0000-\u001F\u007F-\u009F\\]/g, function (Match:string):string {
+      /[&<>"'\x00-\x1F\x7F-\x9F\\]/g, function (Match:string):string {
         switch (Match) {
           case '&':  return '&amp;'
           case '<':  return '&lt;'
@@ -1327,7 +1389,7 @@
           case '\v': return '&#92;v'
           case '\\': return '&#92;'
           default:   let Result = Match.charCodeAt(0).toString(16)
-                     return '&#x0000'.substring(3,7-Result.length) + Result + ';'
+                     return '&#x0000'.substring(0,7-Result.length) + Result + ';'
         }
       }
     )
@@ -1342,7 +1404,8 @@
 /**** ValuesDiffer ****/
 
   export function ValuesDiffer (
-    thisValue:any, otherValue:any, Mode?:'by-value'|'by-reference'|undefined
+    thisValue:any, otherValue:any, Mode?:'by-value'|'by-reference'|undefined,
+    visitedPairs?:WeakMap<object,WeakSet<object>>     // for internal use only
   ):boolean {
     if (thisValue === otherValue) { return false }
 
@@ -1352,23 +1415,86 @@
     /**** ArraysDiffer ****/
 
       function ArraysDiffer (
-        thisArray:any[], otherArray:any[], Mode:'by-value'|'by-reference'|undefined
+        thisArray:any[], otherArray:any[],
+        Mode:'by-value'|'by-reference'|undefined,
+        visitedPairs:WeakMap<object,WeakSet<object>>
       ):boolean {
         if (! Array.isArray(otherArray)) { return true }
 
         if (thisArray.length !== otherArray.length) { return true }
 
         for (let i = 0, l = thisArray.length; i < l; i++) {
-          if (ValuesDiffer(thisArray[i],otherArray[i],Mode)) { return true }
+          if (ValuesDiffer(thisArray[i],otherArray[i],Mode,visitedPairs)) {
+            return true
+          }
         }
 
+        return false
+      }
+
+    /**** MapsDiffer - keys are matched by identity, values recursively ****/
+
+      function MapsDiffer (
+        thisMap:Map<any,any>, otherMap:any,
+        Mode:'by-value'|'by-reference'|undefined,
+        visitedPairs:WeakMap<object,WeakSet<object>>
+      ):boolean {
+        if (! (otherMap instanceof Map))    { return true }
+        if (thisMap.size !== otherMap.size) { return true }
+
+        let Difference = false
+        thisMap.forEach(function (Value:any, Key:any) {
+          if (! Difference) {
+            Difference = (
+              ! otherMap.has(Key) ||
+              ValuesDiffer(Value,otherMap.get(Key),Mode,visitedPairs)
+            )
+          }
+        })
+        return Difference
+      }
+
+    /**** SetsDiffer - elements are matched by identity ****/
+
+      function SetsDiffer (thisSet:Set<any>, otherSet:any):boolean {
+        if (! (otherSet instanceof Set))    { return true }
+        if (thisSet.size !== otherSet.size) { return true }
+
+        let Difference = false
+        thisSet.forEach(function (Value:any) {
+          if (! Difference && ! otherSet.has(Value)) { Difference = true }
+        })
+        return Difference
+      }
+
+    /**** TypedArraysDiffer - typed arrays are compared byte-wise ****/
+
+      function TypedArraysDiffer (thisArray:any, otherArray:any):boolean {
+        if (
+          Object.getPrototypeOf(thisArray) !== Object.getPrototypeOf(otherArray)
+        ) { return true }
+
+        if (thisArray.byteLength !== otherArray.byteLength) { return true }
+
+        let thisView = new Uint8Array(
+          thisArray.buffer, thisArray.byteOffset, thisArray.byteLength
+        )
+        let otherView = new Uint8Array(
+          otherArray.buffer, otherArray.byteOffset, otherArray.byteLength
+        )
+
+        for (let i = 0, l = thisView.length; i < l; i++) {
+          if (thisView[i] !== otherView[i]) { return true }
+        }
         return false
       }
 
     /**** ObjectsDiffer ****/
 
       function ObjectsDiffer (
-        thisObject:any, otherObject:any, Mode:'by-value'|'by-reference'|undefined
+        thisObject:any, otherObject:any,
+        Mode:'by-value'|'by-reference'|undefined,
+        visitedPairs:WeakMap<object,WeakSet<object>>
       ):boolean {
         if (Object.getPrototypeOf(thisObject) !== Object.getPrototypeOf(otherObject)) {
           return true
@@ -1381,7 +1507,7 @@
         for (let key in otherObject) {
           if (! (key in thisObject)) { return true }
 
-          if (ValuesDiffer(thisObject[key],otherObject[key],Mode)) {
+          if (ValuesDiffer(thisObject[key],otherObject[key],Mode,visitedPairs)) {
             return true
           }
         }
@@ -1389,40 +1515,92 @@
         return false
       }
 
+
     switch (thisType) {
       case 'undefined':
       case 'boolean':
       case 'string':
       case 'function': return true   // most primitives are compared using "==="
-      case 'number':   return (
-                         (isNaN(thisValue) !== isNaN(otherValue)) ||
-                         (Math.abs(thisValue-otherValue) > Number.EPSILON)
-                       )
+      case 'number': {
+        if (isNaN(thisValue) !== isNaN(otherValue)) { return true }
+
+        let Tolerance = Number.EPSILON * Math.max(    // relative, not absolute!
+          1, Math.abs(thisValue), Math.abs(otherValue)
+        )
+        return (Math.abs(thisValue-otherValue) > Tolerance)
+      }
       case 'object':
         if (thisValue  == null) { return true }  // since "other_value" != null!
         if (otherValue == null) { return true }   // since "this_value" != null!
 
-        if ((Mode === 'by-value') && (
+        if (                    // boxed primitives are compared by their values
           (thisValue instanceof Boolean) ||
           (thisValue instanceof Number) ||
           (thisValue instanceof String)
-        )) {
-          return (thisValue.valueOf() !== otherValue.valueOf())
+        ) {
+          if (Mode === 'by-reference') { return true }  // s.a. thisValue !== otherValue
+          return (
+            (Object.getPrototypeOf(thisValue) !== Object.getPrototypeOf(otherValue)) ||
+            (thisValue.valueOf() !== otherValue.valueOf())
+          )
         }
 
+        if (thisValue instanceof Date) {   // Dates are compared by their times
+          if (Mode === 'by-reference')        { return true }
+          if (! (otherValue instanceof Date)) { return true }
+
+          let thisTime = thisValue.getTime(), otherTime = otherValue.getTime()
+          return (
+            (thisTime !== otherTime) && ! (isNaN(thisTime) && isNaN(otherTime))
+          )                          // two "invalid" Dates are considered equal
+        }
+
+        if (thisValue instanceof RegExp) {   // RegExps: compare source + flags
+          if (Mode === 'by-reference') { return true }
+          return (
+            ! (otherValue instanceof RegExp) ||
+            (thisValue.source !== otherValue.source) ||
+            (thisValue.flags  !== otherValue.flags)
+          )
+        }
+
+      /**** cycle detection - matching cycles are considered "equal" ****/
+
+        if (visitedPairs == null) { visitedPairs = new WeakMap() }
+
+        let visitedPartners = visitedPairs.get(thisValue)
+        if (visitedPartners == null) {
+          visitedPairs.set(thisValue, visitedPartners = new WeakSet())
+        }
+        if (visitedPartners.has(otherValue)) { return false }
+        visitedPartners.add(otherValue)
+
         if (Array.isArray(thisValue)) {
-          return ArraysDiffer(thisValue,otherValue,Mode)
+          return ArraysDiffer(thisValue,otherValue,Mode,visitedPairs)
+        }
+
+        if (thisValue instanceof Map) {
+          if (Mode === 'by-reference') { return true }
+          return MapsDiffer(thisValue,otherValue,Mode,visitedPairs)
+        }
+
+        if (thisValue instanceof Set) {
+          if (Mode === 'by-reference') { return true }
+          return SetsDiffer(thisValue,otherValue)
+        }
+
+        if (ArrayBuffer.isView(thisValue)) {    // typed arrays incl. DataViews
+          if (Mode === 'by-reference') { return true }
+          return TypedArraysDiffer(thisValue,otherValue)
         }
 
         return (
           Mode === 'by-reference'
           ? true                           // because (thisValue !== otherValue)
-          : ObjectsDiffer(thisValue,otherValue,Mode)
+          : ObjectsDiffer(thisValue,otherValue,Mode,visitedPairs)
         )
       default: return true                          // unsupported property type
     }
-
-    return true
   }
 
 /**** ValuesAreEqual ****/
@@ -1478,7 +1656,7 @@
 // built-in color names (see http://www.w3.org/TR/SVG/types.html#ColorKeywords) ----
 
   export const ColorSet = {
-           transparent:'rgba(0,0,0,0,0.0)',
+           transparent:'rgba(0,0,0,0.0)',
              aliceblue:'rgba(240,248,255,1.0)',         lightpink:'rgba(255,182,193,1.0)',
           antiquewhite:'rgba(250,235,215,1.0)',       lightsalmon:'rgba(255,160,122,1.0)',
                   aqua:'rgba(0,255,255,1.0)',       lightseagreen:'rgba(32,178,170,1.0)',
@@ -1574,7 +1752,7 @@
 
     const HexDigit = '0123456789ABCDEF'
     function dec2hex (Value:number):string {
-      if (Value > 255) { Value = 255 }
+      Value = Math.max(0, Math.min(255, Math.round(Value)))
       return HexDigit[Math.trunc(Value / 16)] + HexDigit[Value % 16]
     }
 
@@ -1589,7 +1767,7 @@
       )
     }
 
-    const RGBAPattern = /^rgba\(([(0-9]+),\s*([0-9]+),\s*([0-9]+),\s*([01]?[.][0-9]+|[01])\)$/i // not perfect
+    const RGBAPattern = /^rgba\(([0-9]+),\s*([0-9]+),\s*([0-9]+),\s*([01]?[.][0-9]+|[01])\)$/i // not perfect
 
     Match = RGBAPattern.exec(Color)
     if (Match != null) {
@@ -1617,7 +1795,7 @@
       return ('rgba(' +
         parseInt(Color.slice(1,3),16) + ',' +
         parseInt(Color.slice(3,5),16) + ',' +
-        parseInt(Color.slice(5,7),16) + ', 1' +
+        parseInt(Color.slice(5,7),16) + ',1' +
       ')')
     }
 
@@ -1637,7 +1815,7 @@
       return Color.slice(0,Color.length-1) + ',1)'
     }
 
-    const RGBAPattern = /^rgba\(([(0-9]+),\s*([0-9]+),\s*([0-9]+),\s*([0]?[.][0-9]+|[01])\)$/i // not perfect
+    const RGBAPattern = /^rgba\(([0-9]+),\s*([0-9]+),\s*([0-9]+),\s*([01]?[.][0-9]+|[01])\)$/i // not perfect
 
     Match = RGBAPattern.exec(Color)
     if (Match != null) { return Color }

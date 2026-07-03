@@ -1,0 +1,32 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: check out repository
+        uses: actions/checkout@v4
+
+      - name: set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: install dependencies              # no "npm ci" - the lock file
+        run: npm install --no-audit --no-fund   # is deliberately not committed
+
+      - name: run test suite
+        run: npm run test:run
+
+      - name: build library
+        run: npm run build
+
+      - name: check tree-shakeability
+        run: npm run agadoo
