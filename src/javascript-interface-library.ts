@@ -696,6 +696,14 @@
     return ValueIsStringMatching(Value,HexStringPattern)
   }
 
+/**** ValueIsIdentifier ****/
+
+  const IdentifierPattern = /^[\p{ID_Start}_$][\p{ID_Continue}_$\u200C\u200D]*$/u
+
+  export function ValueIsIdentifier (Value:unknown):Value is string {
+    return ValueIsStringMatching(Value,IdentifierPattern)
+  }
+
 //------------------------------------------------------------------------------
 //--                      Argument Validation Functions                       --
 //------------------------------------------------------------------------------
@@ -1598,6 +1606,16 @@
   export const expectHexString = /*#__PURE__*/ ValidatorForClassifier<string>(
     ValueIsHexString, rejectNil, 'hexadecimal string'
   ), expectedHexString = expectHexString
+
+/**** allow/expect[ed]Identifier ****/
+
+  export const allowIdentifier = /*#__PURE__*/ ValidatorForClassifier<string>(
+    ValueIsIdentifier, acceptNil, 'JavaScript identifier'
+  ), allowedIdentifier = allowIdentifier
+
+  export const expectIdentifier = /*#__PURE__*/ ValidatorForClassifier<string>(
+    ValueIsIdentifier, rejectNil, 'JavaScript identifier'
+  ), expectedIdentifier = expectIdentifier
 
 /**** escaped - escapes all control characters in a given string ****/
 

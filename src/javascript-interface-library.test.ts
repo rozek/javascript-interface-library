@@ -416,6 +416,19 @@
       expect(JIL.ValueIsHexString('xyz')).to.equal(false)
       expect(JIL.ValueIsHexString('')).to.equal(false)
     })
+
+    it('ValueIsIdentifier checks syntactically valid JavaScript identifiers',() => {
+      expect(JIL.ValueIsIdentifier('myVar')).to.equal(true)
+      expect(JIL.ValueIsIdentifier('_privateVar')).to.equal(true)
+      expect(JIL.ValueIsIdentifier('$element')).to.equal(true)
+      expect(JIL.ValueIsIdentifier('café')).to.equal(true)
+      expect(JIL.ValueIsIdentifier('αβγ')).to.equal(true)
+      expect(JIL.ValueIsIdentifier('')).to.equal(false)
+      expect(JIL.ValueIsIdentifier('123abc')).to.equal(false)
+      expect(JIL.ValueIsIdentifier('my-var')).to.equal(false)
+      expect(JIL.ValueIsIdentifier('my var')).to.equal(false)
+      expect(JIL.ValueIsIdentifier('class')).to.equal(true) // keyword check is
+    })                              // deliberately not part of this classifier
   })
 
 /**** argument validation functions ****/
@@ -644,6 +657,7 @@
       checksValidators('JSONString','{"a":1}','{a:1}')
       checksValidators('Base64','SGVsbG8=','SGVsbG8')
       checksValidators('HexString','deadBEEF','xyz')
+      checksValidators('Identifier','foo','1abc')
     })
   })
 

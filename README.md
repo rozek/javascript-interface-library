@@ -160,6 +160,7 @@ The following functions check whether a given argument satisfies a certain const
 * **`ValueIsJSONString (Value:unknown):boolean`**<br>returns `true` if the given `Value` is a string which can be parsed with `JSON.parse` - or `false` otherwise
 * **`ValueIsBase64 (Value:unknown):boolean`**<br>returns `true` if the given `Value` is a non-empty, correctly padded Base64-encoded string (using the standard alphabet) - or an empty string - and `false` otherwise
 * **`ValueIsHexString (Value:unknown):boolean`**<br>returns `true` if the given `Value` is a non-empty string consisting of hexadecimal digits only - or `false` otherwise
+* **`ValueIsIdentifier (Value:unknown):boolean`**<br>returns `true` if the given `Value` is a string containing a syntactically valid JavaScript identifier (checked against the full Unicode grammar, i.e., `ID_Start` followed by `ID_Continue` characters, incl. `$`, `_`, ZWNJ and ZWJ - reserved words are *not* rejected) - or `false` otherwise
 
 ### Argument Validation Functions ###
 
@@ -213,7 +214,7 @@ For the sake of clarity, however, only the first "flavour" (namely `allowXXX`) i
 * **`allowPhoneNumber (Description:string, Argument:any):string|null|undefined`**<br>checks if the given `Argument` (if it exists) is a string containing a syntactically plausible phone number in a common national or international notation (see `ValueIsPhoneNumber`). If this is the case (or `Argument` is missing), the function returns the primitive value of the given `Argument`, otherwise an error is thrown whose message contains the given `Description`
 * **`allowE164PhoneNumber (Description:string, Argument:any):string|null|undefined`**<br>checks if the given `Argument` (if it exists) is a string containing a phone number in the canonical E.164 format (see `ValueIsE164PhoneNumber`). If this is the case (or `Argument` is missing), the function returns the primitive value of the given `Argument`, otherwise an error is thrown whose message contains the given `Description`<br>&nbsp;<br>
 * **`allowBigInt`**, **`allowSymbol`**, **`allowMap`**, **`allowSet`**, **`allowTypedArray`**, **`allowArrayBuffer`**<br>validate the given `Argument` using `ValueIsBigInt`, `ValueIsSymbol`, `ValueIsMap`, `ValueIsSet`, `ValueIsTypedArray` or `ValueIsArrayBuffer`, resp., and behave like any other `allowXXX` function described above (incl. their `allowedXXX`, `expectXXX` and `expectedXXX` flavours)
-* **`allowUUID`**, **`allowISODate`**, **`allowISOTimestamp`**, **`allowIPv4Address`**, **`allowIPv6Address`**, **`allowHostName`**, **`allowPortNumber`**, **`allowJSONString`**, **`allowBase64`**, **`allowHexString`**<br>validate the given `Argument` using the corresponding `ValueIsXXX` classifier and behave like any other `allowXXX` function described above (incl. their `allowedXXX`, `expectXXX` and `expectedXXX` flavours)
+* **`allowUUID`**, **`allowISODate`**, **`allowISOTimestamp`**, **`allowIPv4Address`**, **`allowIPv6Address`**, **`allowHostName`**, **`allowPortNumber`**, **`allowJSONString`**, **`allowBase64`**, **`allowHexString`**, **`allowIdentifier`**<br>validate the given `Argument` using the corresponding `ValueIsXXX` classifier and behave like any other `allowXXX` function described above (incl. their `allowedXXX`, `expectXXX` and `expectedXXX` flavours)
 
 ### Utility Functions ###
 

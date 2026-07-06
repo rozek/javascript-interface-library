@@ -53,6 +53,8 @@ export declare const allowedHexString: (Description: string, Argument: any) => s
 
 export declare const allowedHostName: (Description: string, Argument: any) => string | null | undefined;
 
+export declare const allowedIdentifier: (Description: string, Argument: any) => string | null | undefined;
+
 export declare const allowedInstanceOf: typeof allowInstanceOf;
 
 export declare const allowedInteger: (Description: string, Argument: any) => number | null | undefined;
@@ -138,6 +140,8 @@ export declare const allowFunction: (Description: string, Argument: any) => Func
 export declare const allowHexString: (Description: string, Argument: any) => string | null | undefined;
 
 export declare const allowHostName: (Description: string, Argument: any) => string | null | undefined;
+
+export declare const allowIdentifier: (Description: string, Argument: any) => string | null | undefined;
 
 /**** allow[ed]InstanceOf ****/
 export declare function allowInstanceOf(Description: string, Argument: any, constructor: Function, Expectation: string): any | null | undefined;
@@ -430,6 +434,8 @@ export declare const expectedHexString: (Description: string, Argument: any) => 
 
 export declare const expectedHostName: (Description: string, Argument: any) => string;
 
+export declare const expectedIdentifier: (Description: string, Argument: any) => string;
+
 export declare const expectedInstanceOf: typeof expectInstanceOf;
 
 export declare const expectedInteger: (Description: string, Argument: any) => number;
@@ -517,6 +523,8 @@ export declare const expectFunction: (Description: string, Argument: any) => Fun
 export declare const expectHexString: (Description: string, Argument: any) => string;
 
 export declare const expectHostName: (Description: string, Argument: any) => string;
+
+export declare const expectIdentifier: (Description: string, Argument: any) => string;
 
 /**** expect[ed]InstanceOf ****/
 export declare function expectInstanceOf(Description: string, Argument: any, constructor: Function, Expectation: string): any;
@@ -730,6 +738,8 @@ export declare function ValueIsFunction(Value: unknown): Value is Function;
 export declare function ValueIsHexString(Value: unknown): Value is string;
 
 export declare function ValueIsHostName(Value: unknown): Value is string;
+
+export declare function ValueIsIdentifier(Value: unknown): Value is string;
 
 /**** ValueIsInstanceOf ****/
 export declare function ValueIsInstanceOf<T>(Value: unknown, Constructor: abstract new (...ArgumentList: any[]) => T): Value is T;
