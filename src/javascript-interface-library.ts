@@ -1694,21 +1694,21 @@
 
 /**** allow/expect[ed]SerializableValue ****/
 
-  export const allowSerializableValue = ValidatorForClassifier(
+  export const allowSerializableValue = /*#__PURE__*/ ValidatorForClassifier(
     ValueIsSerializableValue, acceptNil, 'serializable value'
   ), allowedSerializableValue = allowSerializableValue
 
-  export const expectSerializableValue = ValidatorForClassifier(
+  export const expectSerializableValue = /*#__PURE__*/ ValidatorForClassifier(
     ValueIsSerializableValue, rejectNil, 'serializable value'
   ), expectedSerializableValue = expectSerializableValue
 
 /**** allow/expect[ed]SerializableObject ****/
 
-  export const allowSerializableObject = ValidatorForClassifier(
+  export const allowSerializableObject = /*#__PURE__*/ ValidatorForClassifier(
     ValueIsSerializableObject, acceptNil, 'serializable object'
   ), allowedSerializableObject = allowSerializableObject
 
-  export const expectSerializableObject = ValidatorForClassifier(
+  export const expectSerializableObject = /*#__PURE__*/ ValidatorForClassifier(
     ValueIsSerializableObject, rejectNil, 'serializable object'
   ), expectedSerializableObject = expectSerializableObject
 
