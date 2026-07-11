@@ -423,6 +423,12 @@
     return false
   }
 
+/**** ValueIsListOf ****/
+
+  export function ValueIsListOf (Value:any, ValueList:any[]):boolean {
+    return ValueIsListSatisfying(Value,(Value:any) => ValueIsOneOf(Value,ValueList))
+  }
+
 /**** ValueIsInstanceOf ****/
 
   export function ValueIsInstanceOf<T> (
@@ -665,6 +671,67 @@
     return ValueIsIntegerInRange(Value,1,65535)
   }
 
+/**** serializable types ****/
+
+  export type serializableValue  = null | boolean | number | string |
+                                   serializableObject | serializableArray
+  export type serializableObject = { [Key:string]:serializableValue }
+  export type serializableArray  = serializableValue[]
+
+/**** ValueIsSerializableValue ****/
+
+  export function ValueIsSerializableValue (
+    Value:any, visitedObjects:WeakSet<object> = new WeakSet()
+  ):boolean {
+    switch (true) {
+      case (Value == null):                // deliberately also allows undefined
+      case ValueIsBoolean(Value):
+      case ValueIsFiniteNumber(Value):  // NaN/Infinity are not serializable
+      case ValueIsString(Value):
+        return true
+      case ValueIsList(Value):
+        if (visitedObjects.has(Value)) { return false }     // recursion detected
+        visitedObjects.add(Value)
+        try {
+          return ValueIsListSatisfying(
+            Value, (Item:any) => {
+              if (Item === undefined) { return false }  // JSON would make "null" of it
+              return ValueIsSerializableValue(Item,visitedObjects)
+            }
+          )
+        } finally { visitedObjects.delete(Value) }
+      case ValueIsPlainObject(Value):
+        if (visitedObjects.has(Value)) { return false }     // recursion detected
+        visitedObjects.add(Value)
+        try {
+          for (let Property in Value) {
+            if (
+              Value.hasOwnProperty(Property) &&
+              ! ValueIsSerializableValue((Value as any)[Property],visitedObjects)
+            ) { return false }
+          }
+          return true
+        } finally { visitedObjects.delete(Value) }
+    }
+    return false
+  }
+
+/**** ValueIsSerializableObject ****/
+
+  export function ValueIsSerializableObject (Value:any):boolean {
+    if (ValueIsPlainObject(Value)) {
+      for (let Property in Value) {
+        if (
+          Value.hasOwnProperty(Property) &&
+          ! ValueIsSerializableValue((Value as any)[Property])
+        ) { return false }
+      }
+      return true
+    } else {
+      return false
+    }
+  }
+
 /**** ValueIsJSONString ****/
 
   export function ValueIsJSONString (Value:unknown):Value is string {
@@ -797,20 +864,41 @@
     return originalFunction
   }
 
+/**** allow[ed]Value ****/
+
+  export function allowValue (
+    Description:string, Argument:any, Validator?:Function
+  ):any {
+    return (Argument == null
+      ? undefined
+      : expectedValue(Description,Argument,Validator)
+    )
+  }
+  export const allowedValue = allowValue
+
 /**** expect[ed]Value ****/
 
-  export function expectValue (Description:string, Argument:any):any {
+  export function expectValue (
+    Description:string, Argument:any, Validator?:Function
+  ):any {
     if (Argument == null) {
       throwError(`MissingArgument: no ${escaped(Description)} given`)
+    }
+
+    let Value:any
+    switch (true) {              // unboxes primitives - but nothing else, as
+      case Argument instanceof Boolean:  // "valueOf" may return other values
+      case Argument instanceof Number:      // for other objects (e.g. Dates)
+      case Argument instanceof String:
+        Value = Argument.valueOf(); break
+      default:
+        Value = Argument
+    }
+
+    if ((Validator == null) || (Validator(Value) === true)) {
+      return Value
     } else {
-      switch (true) {              // unboxes primitives - but nothing else, as
-        case Argument instanceof Boolean:  // "valueOf" may return other values
-        case Argument instanceof Number:      // for other objects (e.g. Dates)
-        case Argument instanceof String:
-          return Argument.valueOf()
-        default:
-          return Argument
-      }
+      throwError(`InvalidArgument: the given ${escaped(Description)} is invalid`)
     }
   }
   export const expectedValue = expectValue
@@ -1257,6 +1345,33 @@
   }
   export const expectedListSatisfying = expectListSatisfying
 
+/**** allow/expect[ed]ListOf ****/
+
+  export function allowListOf (
+    Description:string, Argument:any, ValueList:any[]
+  ):any[]|null|undefined {
+    return (Argument == null
+      ? Argument
+      : expectedListOf(Description, Argument, ValueList)
+    )
+  }
+  export const allowedListOf = allowListOf
+
+  export function expectListOf (
+    Description:string, Argument:any, ValueList:any[]
+  ):any[] {
+    if (Argument == null) {
+      throwError(`MissingArgument: no ${escaped(Description)} given`)
+    } else {
+      if (ValueIsListSatisfying(Argument,(Value:any) => ValueIsOneOf(Value,ValueList))) {
+        return Argument
+      } else {
+        throwError(`InvalidArgument: the given value is no ${escaped(Description)}`)
+      }
+    }
+  }
+  export const expectedListOf = expectListOf
+
 /**** allow[ed]InstanceOf ****/
 
   export function allowInstanceOf (
@@ -1576,6 +1691,26 @@
   export const expectPortNumber = /*#__PURE__*/ ValidatorForClassifier<number>(
     ValueIsPortNumber, rejectNil, 'port number'
   ), expectedPortNumber = expectPortNumber
+
+/**** allow/expect[ed]SerializableValue ****/
+
+  export const allowSerializableValue = ValidatorForClassifier(
+    ValueIsSerializableValue, acceptNil, 'serializable value'
+  ), allowedSerializableValue = allowSerializableValue
+
+  export const expectSerializableValue = ValidatorForClassifier(
+    ValueIsSerializableValue, rejectNil, 'serializable value'
+  ), expectedSerializableValue = expectSerializableValue
+
+/**** allow/expect[ed]SerializableObject ****/
+
+  export const allowSerializableObject = ValidatorForClassifier(
+    ValueIsSerializableObject, acceptNil, 'serializable object'
+  ), allowedSerializableObject = allowSerializableObject
+
+  export const expectSerializableObject = ValidatorForClassifier(
+    ValueIsSerializableObject, rejectNil, 'serializable object'
+  ), expectedSerializableObject = expectSerializableObject
 
 /**** allow/expect[ed]JSONString ****/
 

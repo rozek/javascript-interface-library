@@ -73,6 +73,8 @@ export declare const allowedJSONString: (Description: string, Argument: any) => 
 
 export declare const allowedList: typeof allowList;
 
+export declare const allowedListOf: typeof allowListOf;
+
 export declare const allowedListSatisfying: typeof allowListSatisfying;
 
 export declare const allowedMap: (Description: string, Argument: any) => Map<any, any> | null | undefined;
@@ -107,6 +109,10 @@ export declare const allowedRegExp: (Description: string, Argument: any) => RegE
 
 export declare const allowedScriptedFunction: (Description: string, Argument: any) => Function | null | undefined;
 
+export declare const allowedSerializableObject: (Description: string, Argument: any) => unknown;
+
+export declare const allowedSerializableValue: (Description: string, Argument: any) => unknown;
+
 export declare const allowedSet: (Description: string, Argument: any) => Set<any> | null | undefined;
 
 export declare const allowedString: (Description: string, Argument: any) => string | null | undefined;
@@ -124,6 +130,8 @@ export declare const allowedTypedArray: (Description: string, Argument: any) => 
 export declare const allowedURL: (Description: string, Argument: any) => string | null | undefined;
 
 export declare const allowedUUID: (Description: string, Argument: any) => string | null | undefined;
+
+export declare const allowedValue: typeof allowValue;
 
 export declare const allowedValueInheritingFrom: typeof allowValueInheritingFrom;
 
@@ -164,6 +172,9 @@ export declare const allowJSONString: (Description: string, Argument: any) => st
 /**** allow[ed]List ****/
 export declare function allowList(Description: string, Argument: any, Expectation?: string, minLength?: number, maxLength?: number): any[] | null | undefined;
 
+/**** allow/expect[ed]ListOf ****/
+export declare function allowListOf(Description: string, Argument: any, ValueList: any[]): any[] | null | undefined;
+
 /**** allow[ed]ListSatisfying ****/
 export declare function allowListSatisfying(Description: string, Argument: any, Validator: (Value: any) => boolean, Expectation?: string, minLength?: number, maxLength?: number): any[] | null | undefined;
 
@@ -201,6 +212,10 @@ export declare const allowRegExp: (Description: string, Argument: any) => RegExp
 
 export declare const allowScriptedFunction: (Description: string, Argument: any) => Function | null | undefined;
 
+export declare const allowSerializableObject: (Description: string, Argument: any) => unknown;
+
+export declare const allowSerializableValue: (Description: string, Argument: any) => unknown;
+
 export declare const allowSet: (Description: string, Argument: any) => Set<any> | null | undefined;
 
 export declare const allowString: (Description: string, Argument: any) => string | null | undefined;
@@ -219,6 +234,9 @@ export declare const allowTypedArray: (Description: string, Argument: any) => Ty
 export declare const allowURL: (Description: string, Argument: any) => string | null | undefined;
 
 export declare const allowUUID: (Description: string, Argument: any) => string | null | undefined;
+
+/**** allow[ed]Value ****/
+export declare function allowValue(Description: string, Argument: any, Validator?: Function): any;
 
 /**** allow[ed]ValueInheritingFrom ****/
 export declare function allowValueInheritingFrom(Description: string, Argument: any, prototype: any, Expectation: string): any | null | undefined;
@@ -454,6 +472,8 @@ export declare const expectedJSONString: (Description: string, Argument: any) =>
 
 export declare const expectedList: typeof expectList;
 
+export declare const expectedListOf: typeof expectListOf;
+
 export declare const expectedListSatisfying: typeof expectListSatisfying;
 
 export declare const expectedMap: (Description: string, Argument: any) => Map<any, any>;
@@ -487,6 +507,10 @@ export declare const expectedPromise: (Description: string, Argument: any) => Pr
 export declare const expectedRegExp: (Description: string, Argument: any) => RegExp;
 
 export declare const expectedScriptedFunction: (Description: string, Argument: any) => Function;
+
+export declare const expectedSerializableObject: (Description: string, Argument: any) => unknown;
+
+export declare const expectedSerializableValue: (Description: string, Argument: any) => unknown;
 
 export declare const expectedSet: (Description: string, Argument: any) => Set<any>;
 
@@ -547,6 +571,8 @@ export declare const expectJSONString: (Description: string, Argument: any) => s
 /**** expect[ed]List ****/
 export declare function expectList(Description: string, Argument: any, Expectation?: string, minLength?: number, maxLength?: number): any[];
 
+export declare function expectListOf(Description: string, Argument: any, ValueList: any[]): any[];
+
 /**** expect[ed]ListSatisfying ****/
 export declare function expectListSatisfying(Description: string, Argument: any, Validator: (Value: any) => boolean, Expectation?: string, minLength?: number, maxLength?: number): any[];
 
@@ -584,6 +610,10 @@ export declare const expectRegExp: (Description: string, Argument: any) => RegEx
 
 export declare const expectScriptedFunction: (Description: string, Argument: any) => Function;
 
+export declare const expectSerializableObject: (Description: string, Argument: any) => unknown;
+
+export declare const expectSerializableValue: (Description: string, Argument: any) => unknown;
+
 export declare const expectSet: (Description: string, Argument: any) => Set<any>;
 
 export declare const expectString: (Description: string, Argument: any) => string;
@@ -604,7 +634,7 @@ export declare const expectURL: (Description: string, Argument: any) => string;
 export declare const expectUUID: (Description: string, Argument: any) => string;
 
 /**** expect[ed]Value ****/
-export declare function expectValue(Description: string, Argument: any): any;
+export declare function expectValue(Description: string, Argument: any, Validator?: Function): any;
 
 /**** expect[ed]ValueInheritingFrom ****/
 export declare function expectValueInheritingFrom(Description: string, Argument: any, prototype: any, Expectation: string): any;
@@ -662,6 +692,15 @@ export declare const rejectNil = false;
 
 /**** RGBAColor - converts a given color to RGBA(r,g,b,a) ****/
 export declare function RGBAColor(Color: string): string;
+
+export declare type serializableArray = serializableValue[];
+
+export declare type serializableObject = {
+    [Key: string]: serializableValue;
+};
+
+/**** serializable types ****/
+export declare type serializableValue = null | boolean | number | string | serializableObject | serializableArray;
 
 /**** shortHexColor - converts a given color into #RRGGBB ****/
 export declare function shortHexColor(Color: string): string;
@@ -764,6 +803,9 @@ export declare function ValueIsJSONString(Value: unknown): Value is string;
 /**** ValueIsList ("dense" array) ****/
 export declare function ValueIsList(Value: unknown, minLength?: number, maxLength?: number): Value is any[];
 
+/**** ValueIsListOf ****/
+export declare function ValueIsListOf(Value: any, ValueList: any[]): boolean;
+
 /**** ValueIsListSatisfying ****/
 export declare function ValueIsListSatisfying(Value: unknown, Validator: (Value: any) => boolean, minLength?: number, maxLength?: number): Value is any[];
 
@@ -814,6 +856,12 @@ export declare function ValueIsRegExp(Value: unknown): Value is RegExp;
 
 /**** ValueIsScriptedFunction ****/
 export declare function ValueIsScriptedFunction(Value: unknown): Value is Function;
+
+/**** ValueIsSerializableObject ****/
+export declare function ValueIsSerializableObject(Value: any): boolean;
+
+/**** ValueIsSerializableValue ****/
+export declare function ValueIsSerializableValue(Value: any, visitedObjects?: WeakSet<object>): boolean;
 
 /**** ValueIsSet ****/
 export declare function ValueIsSet(Value: unknown): Value is Set<any>;
