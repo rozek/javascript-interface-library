@@ -54,7 +54,7 @@ or import the complete module as a namespace
 import * as JIL from 'javascript-interface-library'
 ```
 
-All module functions and values are exported individually, thus allowing your bundler to perform some "tree-shaking" in order to include actually used functions or values (together with their dependencies) only.
+All module functions and values are exported individually, thus allowing your bundler to perform some "tree-shaking" in order to include actually used functions or values (together with their dependencies) only. The package also declares itself free of side effects (`"sideEffects": false` in its `package.json`), so bundlers may safely drop any unused parts of it.
 
 
 ## Usage within Svelte ##
