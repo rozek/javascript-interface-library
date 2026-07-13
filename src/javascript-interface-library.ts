@@ -13,49 +13,42 @@
 //------------------------------------------------------------------------------
 // allow methods from Object.prototype to be applied to "vanilla" objects
 
+/**** ObjectMethodFor - "Object.prototype" methods for "vanilla" objects ****/
+
+  function ObjectMethodFor (MethodName:string):Function {
+    return FunctionWithName(function (Value:Object, ...ArgumentList:any[]):any {
+      return (
+        (Value == null) ||       // let these methods crash like their originals
+        (MethodName in Value) && (typeof (Value as any)[MethodName] === 'function')
+        ? (Value as any)[MethodName](...ArgumentList)
+        : (Object.prototype as any)[MethodName].apply(Value,ArgumentList)
+      )
+    }, 'Object_' + MethodName)
+  }
+
 /**** Object_hasOwnProperty ****/
 
-  export function Object_hasOwnProperty (Value:Object, PropertyName:string):boolean {
-    return (
-      (Value == null) ||              // let this method crash like its original
-      ('hasOwnProperty' in Value) && (typeof Value.hasOwnProperty === 'function')
-      ? Value.hasOwnProperty(PropertyName)
-      : Object.prototype.hasOwnProperty.call(Value,PropertyName)
-    )
-  }
+  export const Object_hasOwnProperty = /*#__PURE__*/ ObjectMethodFor(
+    'hasOwnProperty'
+  ) as (Value:Object, PropertyName:string) => boolean
 
 /**** Object_isPrototypeOf ****/
 
-  export function Object_isPrototypeOf (Value:Object, Candidate:any):boolean {
-    return (
-      (Value == null) ||              // let this method crash like its original
-      ('isPrototypeOf' in Value) && (typeof Value.isPrototypeOf === 'function')
-      ? Value.isPrototypeOf(Candidate)
-      : Object.prototype.isPrototypeOf.call(Value,Candidate)
-    )
-  }
+  export const Object_isPrototypeOf = /*#__PURE__*/ ObjectMethodFor(
+    'isPrototypeOf'
+  ) as (Value:Object, Candidate:any) => boolean
 
 /**** Object_propertyIsEnumerable ****/
 
-  export function Object_propertyIsEnumerable (Value:Object, PropertyName:string):boolean {
-    return (
-      (Value == null) ||              // let this method crash like its original
-      ('propertyIsEnumerable' in Value) && (typeof Value.propertyIsEnumerable === 'function')
-      ? Value.propertyIsEnumerable(PropertyName)
-      : Object.prototype.propertyIsEnumerable.call(Value,PropertyName)
-    )
-  }
+  export const Object_propertyIsEnumerable = /*#__PURE__*/ ObjectMethodFor(
+    'propertyIsEnumerable'
+  ) as (Value:Object, PropertyName:string) => boolean
 
 /**** Object_toString ****/
 
-  export function Object_toString (Value:Object):string {
-    return (
-      (Value == null) ||              // let this method crash like its original
-      ('toString' in Value) && (typeof Value.toString === 'function')
-      ? Value.toString()
-      : Object.prototype.toString.call(Value)
-    )
-  }
+  export const Object_toString = /*#__PURE__*/ ObjectMethodFor(
+    'toString'
+  ) as (Value:Object) => string
 
 /**** Object_toLocaleString ****/
 
@@ -70,14 +63,9 @@
 
 /**** Object_valueOf ****/
 
-  export function Object_valueOf (Value:Object):any {
-    return (
-      (Value == null) ||              // let this method crash like its original
-      ('valueOf' in Value) && (typeof Value.valueOf === 'function')
-      ? Value.valueOf()
-      : Object.prototype.valueOf.call(Value)
-    )
-  }
+  export const Object_valueOf = /*#__PURE__*/ ObjectMethodFor(
+    'valueOf'
+  ) as (Value:Object) => any
 
 /**** ObjectMergedWith ****/
 
@@ -117,6 +105,12 @@
     }
   }
 
+/**** missingArgument - throws the standard "MissingArgument" error ****/
+
+  function missingArgument (Description:string):never {
+    throwError(`MissingArgument: no ${escaped(Description)} given`)
+  }
+
 //------------------------------------------------------------------------------
 //--                      Value Classification Functions                      --
 //------------------------------------------------------------------------------
@@ -148,17 +142,13 @@
 /**** ValueIsFiniteNumber (pure "isFinite" breaks on objects) ****/
 
   export function ValueIsFiniteNumber (Value:unknown):Value is number {
-    return (
-      (typeof Value === 'number') || (Value instanceof Number)
-    ) && isFinite(Value.valueOf())
+    return ValueIsNumber(Value) && isFinite(Value.valueOf())
   }
 
 /**** ValueIsNaN (numeric, but NaN - this differs from pure "isNaN") ****/
 
   export function ValueIsNaN (Value:unknown):Value is number {
-    return (
-      (typeof Value === 'number') || (Value instanceof Number)
-    ) && isNaN(Value.valueOf())
+    return ValueIsNumber(Value) && isNaN(Value.valueOf())
   }
 
 /**** ValueIsNumberInRange ****/
@@ -172,36 +162,18 @@
     const numValue = (Value as number|Number).valueOf() // unboxes boxed numbers
     if (isNaN(numValue)) { return false }
 
-    if (ValueIsFiniteNumber(minValue)) {    // more robust than "isFinite" alone
-      if (ValueIsFiniteNumber(maxValue)) {  // more robust than "isFinite" alone
-        if (
-          (numValue < minValue) || (! withMin && (numValue === minValue)) ||
-          (numValue > maxValue) || (! withMax && (numValue === maxValue))
-        ) {
-          return false
-        }
-      } else {
-        if ((numValue < minValue) || (! withMin && (numValue === minValue))) {
-          return false
-        }
-      }
-    } else {
-      if (ValueIsFiniteNumber(maxValue)) {  // more robust than "isFinite" alone
-        if ((numValue > maxValue) || (! withMax && (numValue === maxValue))) {
-          return false
-        }
-      }
-    }
-
-    return true
+    return ! (           // "ValueIsFiniteNumber" is more robust than "isFinite"
+      (ValueIsFiniteNumber(minValue) &&
+        ((numValue < minValue) || (! withMin && (numValue === minValue)))) ||
+      (ValueIsFiniteNumber(maxValue) &&
+        ((numValue > maxValue) || (! withMax && (numValue === maxValue))))
+    )
   }
 
 /**** ValueIsInteger ****/
 
   export function ValueIsInteger (Value:unknown):Value is number {
-    if ((typeof Value !== 'number') && ! (Value instanceof Number)) {
-      return false
-    }
+    if (! ValueIsNumber(Value)) { return false }
 
     const numValue = Value.valueOf()
     return isFinite(numValue) && (Math.round(numValue) === numValue)
@@ -212,49 +184,25 @@
   export function ValueIsIntegerInRange (
     Value:unknown, minValue?:number, maxValue?:number
   ):Value is number {
-    if (! ValueIsInteger(Value) || isNaN(Value)) { return false }
+    if (! ValueIsInteger(Value)) { return false }
 
-    if (ValueIsFiniteNumber(minValue)) {    // more robust than "isFinite" alone
-      if (ValueIsFiniteNumber(maxValue)) {  // more robust than "isFinite" alone
-        if ((Value < minValue) || (Value > maxValue)) {
-          return false
-        }
-      } else {
-        if (Value < minValue) {
-          return false
-        }
-      }
-    } else {
-      if (ValueIsFiniteNumber(maxValue)) {  // more robust than "isFinite" alone
-        if (Value > maxValue) {
-          return false
-        }
-      }
-    }
-
-    return true
+    const numValue = Value.valueOf()
+    return ! (           // "ValueIsFiniteNumber" is more robust than "isFinite"
+      (ValueIsFiniteNumber(minValue) && (numValue < minValue)) ||
+      (ValueIsFiniteNumber(maxValue) && (numValue > maxValue))
+    )
   }
 
 /**** ValueIsOrdinal ****/
 
   export function ValueIsOrdinal (Value:unknown):Value is number {
-    if ((typeof Value !== 'number') && ! (Value instanceof Number)) {
-      return false
-    }
-
-    const numValue = Value.valueOf()
-    return isFinite(numValue) && (Math.round(numValue) === numValue) && (numValue >= 0)
+    return ValueIsInteger(Value) && (Value.valueOf() >= 0)
   }
 
 /**** ValueIsCardinal ****/
 
   export function ValueIsCardinal (Value:unknown):Value is number {
-    if ((typeof Value !== 'number') && ! (Value instanceof Number)) {
-      return false
-    }
-
-    const numValue = Value.valueOf()
-    return isFinite(numValue) && (Math.round(numValue) === numValue) && (numValue >= 1)
+    return ValueIsInteger(Value) && (Value.valueOf() >= 1)
   }
 
 /**** ValueIsString ****/
@@ -268,15 +216,11 @@
   const emptyStringPattern = /^\s*$/
 
   export function ValueIsEmptyString (Value:unknown):Value is string {
-    return (
-      (typeof Value === 'string') || (Value instanceof String)
-    ) && emptyStringPattern.test(Value.valueOf())
+    return ValueIsStringMatching(Value,emptyStringPattern)
   }
 
   export function ValueIsNonEmptyString (Value:unknown):Value is string {
-    return (
-      (typeof Value === 'string') || (Value instanceof String)
-    ) && ! emptyStringPattern.test(Value.valueOf())
+    return ValueIsString(Value) && ! emptyStringPattern.test(Value.valueOf())
   }
 
 /**** ValueIsStringMatching ****/
@@ -312,19 +256,13 @@
 /**** ValueIsAnonymousFunction ****/
 
   export function ValueIsAnonymousFunction (Value:unknown):Value is Function {
-    return (
-      (typeof Value === 'function') &&
-      ((Value.name == null) || (Value.name === ''))
-    )
+    return (typeof Value === 'function') && ((Value.name ?? '') === '')
   }
 
 /**** ValueIsNamedFunction ****/
 
   export function ValueIsNamedFunction (Value:unknown):Value is Function {
-    return (
-      (typeof Value === 'function') &&
-      (Value.name != null) && (Value.name !== '')
-    )
+    return (typeof Value === 'function') && ! ValueIsAnonymousFunction(Value)
   }
 
 /**** ValueIsNativeFunction ****/
@@ -379,22 +317,9 @@
   export function ValueIsList (
     Value:unknown, minLength?:number, maxLength?:number
   ):Value is any[] {
-    if (ValueIsArray(Value)) {
-      for (let i = 0, l = Value.length; i < l; i++) {
-        if (Value[i] === undefined) { return false }
-      }
-
-      if (minLength != null) {
-        if (Value.length < minLength) { return false }
-      }
-
-      if (maxLength != null) {
-        if (Value.length > maxLength) { return false }
-      }
-      return true
-    }
-
-    return false
+    return ValueIsListSatisfying(
+      Value, (Item:any) => (Item !== undefined), minLength,maxLength
+    )
   }
 
 /**** ValueIsListSatisfying ****/
@@ -403,24 +328,20 @@
     Value:unknown, Validator:(Value:any) => boolean,
     minLength?:number, maxLength?:number
   ):Value is any[] {
-    if (ValueIsArray(Value)) {
-      try {
-        for (let i = 0, l = Value.length; i < l; i++) {
-          if (! Validator(Value[i])) { return false }
-        }
+    if (! ValueIsArray(Value)) { return false }
 
-        if (minLength != null) {
-          if (Value.length < minLength) { return false }
-        }
+    try {
+      for (let i = 0, l = Value.length; i < l; i++) {
+        if (! Validator(Value[i])) { return false }
+      }
 
-        if (maxLength != null) {
-          if (Value.length > maxLength) { return false }
-        }
-        return true
-      } catch (Signal) { /* a throwing validator marks the list invalid */ }
+      if ((minLength != null) && (Value.length < minLength)) { return false }
+      if ((maxLength != null) && (Value.length > maxLength)) { return false }
+
+      return true
+    } catch (Signal) {           // a throwing validator marks the list invalid
+      return false
     }
-
-    return false
   }
 
 /**** ValueIsListOf ****/
@@ -482,10 +403,8 @@
     let lowerValue = Value.valueOf().toLowerCase()   // ColorSet keys are l.c.
     return (
       ColorSet.hasOwnProperty(lowerValue) ||
-      /^#[a-fA-F0-9]{6}$/.test(lowerValue) ||
-      /^#[a-fA-F0-9]{8}$/.test(lowerValue) ||
-      /^rgb\([0-9]+,\s*[0-9]+,\s*[0-9]+\)$/.test(lowerValue) ||   // not perfect
-      /^rgba\([0-9]+,\s*[0-9]+,\s*[0-9]+,\s*([01]|[01]?[.][0-9]+)\)$/.test(lowerValue) // dto.
+      HexColor6Pattern.test(lowerValue) || HexColor8Pattern.test(lowerValue) ||
+      RGBColorPattern.test(lowerValue)  || RGBAColorPattern.test(lowerValue)
     )
   }
 
@@ -498,22 +417,52 @@
     return ValueIsStringMatching(Value, EMailAddressPattern)
   }
 
-/**** ValueIsURL ****/
+/**** ValueIsURL - absolute or relative, strictly following RFC 3986 ****/
 
-  const noCtrlCharsOrWhitespacePattern = /^[^\s\x00-\x1F\x7F-\x9F\u2028\u2029\uFFF9-\uFFFB]*$/
+  const URLCharacterPattern =                  // URL characters after RFC 3986
+    /^[A-Za-z0-9\-._~:\/?#\[\]@!$&'()*+,;=%]+$/      // i.e., no raw IRIs either
+  const brokenPercentEncodingPattern = /%(?![0-9A-Fa-f]{2})/
 
   export function ValueIsURL (Value:unknown):Value is string {
+    if (! ValueIsString(Value)) { return false }
+
+    const Candidate = Value.valueOf()
     if (
-      ! ValueIsStringMatching(Value, noCtrlCharsOrWhitespacePattern) ||
-      (Value === '')
+      ! URLCharacterPattern.test(Candidate) ||  // also rejects '' + whitespace
+      brokenPercentEncodingPattern.test(Candidate)
     ) { return false }
 
     try {
-      new URL(Value, 'file://')
+      new URL(Candidate, 'file://')
       return true
     } catch (Signal) {
       return false
     }
+  }
+
+/**** ValueIsAbsoluteURL ****/
+
+  function normalizedProtocol (Protocol:string):string {
+    return Protocol.toLowerCase().replace(/:?$/,':') // appends missing colons
+  }
+
+  export function ValueIsAbsoluteURL (
+    Value:unknown, allowedProtocols?:string[]
+  ):Value is string {
+    if (! ValueIsURL(Value)) { return false }
+
+    let parsedURL:URL
+    try {
+      parsedURL = new URL(Value.valueOf())    // without a base: absolute only
+    } catch (Signal) {
+      return false
+    }
+
+    if (allowedProtocols == null) { return true }
+
+    return allowedProtocols.some(               // "parsedURL.protocol" already
+      (Protocol) => (normalizedProtocol(Protocol) === parsedURL.protocol)
+    )                                  // comes in lower case and with a colon
   }
 
 /**** ValueIsPhoneNumber ****/
@@ -719,17 +668,7 @@
 /**** ValueIsSerializableObject ****/
 
   export function ValueIsSerializableObject (Value:any):boolean {
-    if (ValueIsPlainObject(Value)) {
-      for (let Property in Value) {
-        if (
-          Value.hasOwnProperty(Property) &&
-          ! ValueIsSerializableValue((Value as any)[Property])
-        ) { return false }
-      }
-      return true
-    } else {
-      return false
-    }
+    return ValueIsPlainObject(Value) && ValueIsSerializableValue(Value)
   }
 
 /**** ValueIsJSONString ****/
@@ -778,6 +717,17 @@
   export const rejectNil = false
   export const acceptNil = true
 
+/**** unboxed - unboxes boxed primitives, leaves anything else untouched ****/
+
+  function unboxed (Value:any):any {
+    return (                          // "valueOf" may return other values for
+      (Value instanceof Boolean) ||          // other objects (e.g. Dates)
+      (Value instanceof Number) || (Value instanceof String)
+      ? Value.valueOf()
+      : Value
+    )
+  }
+
 /**** validatedArgument ****/
 
   export function validatedArgument (
@@ -785,27 +735,16 @@
     NilIsAcceptable:boolean, Expectation:string
   ):any|null|undefined {
     if (Argument == null) {
-      if (NilIsAcceptable) {
-        return Argument
-      } else {
-        throwError(`MissingArgument: no ${escaped(Description)} given`)
-      }
-    } else {
-      if (ValueIsValid(Argument)) {
-        switch (true) {
-          case Argument instanceof Boolean:
-          case Argument instanceof Number:
-          case Argument instanceof String:
-            return Argument.valueOf()                  // unboxes any primitives
-          default:
-            return Argument
-        }
-      } else {
-        throwError(
-          `InvalidArgument: the given ${escaped(Description)} is no valid ${escaped(Expectation)}`
-        )
-      }
+      if (NilIsAcceptable) { return Argument }
+      missingArgument(Description)
     }
+
+    if (ValueIsValid(Argument)) {
+      return unboxed(Argument)                       // unboxes any primitives
+    }
+    throwError(
+      `InvalidArgument: the given ${escaped(Description)} is no valid ${escaped(Expectation)}`
+    )
   }
 
 /**** ValidatorForClassifier ****/
@@ -864,6 +803,21 @@
     return originalFunction
   }
 
+/**** allowVariantOf - turns an "expect..." function into its "allow..." twin ****/
+
+  function allowVariantOf<ArgList extends any[], Result> (
+    expectFunction:(Description:string, Argument:any, ...ArgumentList:ArgList) => Result,
+    FunctionName:string
+  ):(Description:string, Argument:any, ...ArgumentList:ArgList) => Result|null|undefined {
+    return FunctionWithName(
+      (Description:string, Argument:any, ...ArgumentList:ArgList) => (
+        Argument == null
+        ? Argument
+        : expectFunction(Description,Argument,...ArgumentList)
+      ), FunctionName
+    ) as (Description:string, Argument:any, ...ArgumentList:ArgList) => Result|null|undefined
+  }
+
 /**** allow[ed]Value ****/
 
   export function allowValue (
@@ -881,25 +835,12 @@
   export function expectValue (
     Description:string, Argument:any, Validator?:Function
   ):any {
-    if (Argument == null) {
-      throwError(`MissingArgument: no ${escaped(Description)} given`)
-    }
+    if (Argument == null) missingArgument(Description)
 
-    let Value:any
-    switch (true) {              // unboxes primitives - but nothing else, as
-      case Argument instanceof Boolean:  // "valueOf" may return other values
-      case Argument instanceof Number:      // for other objects (e.g. Dates)
-      case Argument instanceof String:
-        Value = Argument.valueOf(); break
-      default:
-        Value = Argument
-    }
+    const Value = unboxed(Argument)    // unboxes primitives - but nothing else
+    if ((Validator == null) || (Validator(Value) === true)) { return Value }
 
-    if ((Validator == null) || (Validator(Value) === true)) {
-      return Value
-    } else {
-      throwError(`InvalidArgument: the given ${escaped(Description)} is invalid`)
-    }
+    throwError(`InvalidArgument: the given ${escaped(Description)} is invalid`)
   }
   export const expectedValue = expectValue
 
@@ -945,16 +886,9 @@
 
 /**** allow[ed]NumberInRange ****/
 
-  export function allowNumberInRange (
-    Description:string, Argument:any,
-    minValue?:number, maxValue?:number, withMin?:boolean, withMax?:boolean
-  ):number|null|undefined {
-    return (Argument == null
-      ? Argument
-      : expectedNumberInRange(Description, Argument, minValue,maxValue, withMin,withMax)
-    )
-  }
-  export const allowedNumberInRange = allowNumberInRange
+  export const allowNumberInRange = /*#__PURE__*/ allowVariantOf(
+    expectNumberInRange, 'allowNumberInRange'
+  ), allowedNumberInRange = allowNumberInRange
 
 /**** expect[ed]NumberInRange ****/
 
@@ -970,37 +904,30 @@
       )
     }
 
-    if (withMin == null) { withMin = true }
-    if (withMax == null) { withMax = true }
+    withMin ??= true; withMax ??= true
+    const hasMin = (minValue != null) && isFinite(minValue)
+    const hasMax = (maxValue != null) && isFinite(maxValue)
 
-    if ((minValue != null) && isFinite(minValue)) {
-      if ((maxValue != null) && isFinite(maxValue)) {
-        if (
-          (Argument < minValue) || (! withMin && (Argument === minValue)) ||
-          (Argument > maxValue) || (! withMax && (Argument === maxValue))
-        ) {
-          throw new RangeError(
-            `the given ${escaped(Description)} (${Argument}) is outside ` +
-            `the allowed range (${minValue}...${maxValue})`
-          )
-        }
-      } else {
-        if ((Argument < minValue) || (! withMin && (Argument === minValue))) {
-          throw new RangeError(
-            `the given ${escaped(Description)} is below the allowed ` +
-            `minimum (${Argument} ${withMin ? '<' : '<='} ${minValue})`
-          )
-        }
-      }
-    } else {
-      if ((maxValue != null) && isFinite(maxValue)) {
-        if ((Argument > maxValue) || (! withMax && (Argument === maxValue))) {
-          throw new RangeError(
-            `the given ${escaped(Description)} exceeds the allowed ` +
-            `maximum (${Argument} ${withMax ? '>' : '>='} ${maxValue})`
-          )
-        }
-      }
+    const belowMin = hasMin &&
+      ((Argument < minValue) || (! withMin && (Argument === minValue)))
+    const aboveMax = hasMax &&
+      ((Argument > maxValue) || (! withMax && (Argument === maxValue)))
+    switch (true) {
+      case (belowMin && hasMax) || (aboveMax && hasMin):
+        throw new RangeError(
+          `the given ${escaped(Description)} (${Argument}) is outside ` +
+          `the allowed range (${minValue}...${maxValue})`
+        )
+      case belowMin:
+        throw new RangeError(
+          `the given ${escaped(Description)} is below the allowed ` +
+          `minimum (${Argument} ${withMin ? '<' : '<='} ${minValue})`
+        )
+      case aboveMax:
+        throw new RangeError(
+          `the given ${escaped(Description)} exceeds the allowed ` +
+          `maximum (${Argument} ${withMax ? '>' : '>='} ${maxValue})`
+        )
     }
 
     return Argument.valueOf()
@@ -1019,15 +946,9 @@
 
 /**** allow[ed]IntegerInRange ****/
 
-  export function allowIntegerInRange (
-    Description:string, Argument:any, minValue?:number, maxValue?:number
-  ):number|null|undefined {
-    return (Argument == null
-      ? Argument
-      : expectedIntegerInRange(Description, Argument, minValue,maxValue)
-    )
-  }
-  export const allowedIntegerInRange = allowIntegerInRange
+  export const allowIntegerInRange = /*#__PURE__*/ allowVariantOf(
+    expectIntegerInRange, 'allowIntegerInRange'
+  ), allowedIntegerInRange = allowIntegerInRange
 
 /**** expect[ed]IntegerInRange ****/
 
@@ -1036,37 +957,27 @@
   ):number {
     expectInteger(Description, Argument)
 
-    if (isNaN(Argument)) {
-      throwError(
-        `InvalidArgument: the given ${escaped(Description)} is not-a-number`
-      )
-    }
+    const hasMin = (minValue != null) && isFinite(minValue)
+    const hasMax = (maxValue != null) && isFinite(maxValue)
 
-    if ((minValue != null) && isFinite(minValue)) {
-      if ((maxValue != null) && isFinite(maxValue)) {
-        if ((Argument < minValue) || (Argument > maxValue)) {
-          throw new RangeError(
-            `the given ${escaped(Description)} (${Argument}) is outside ` +
-            `the allowed range (${minValue}...${maxValue})`
-          )
-        }
-      } else {
-        if (Argument < minValue) {
-          throw new RangeError(
-            `the given ${escaped(Description)} is below the allowed ` +
-            `minimum (${Argument} < ${minValue})`
-          )
-        }
-      }
-    } else {
-      if ((maxValue != null) && isFinite(maxValue)) {
-        if (Argument > maxValue) {
-          throw new RangeError(
-            `the given ${escaped(Description)} exceeds the allowed ` +
-            `maximum (${Argument} > ${maxValue})`
-          )
-        }
-      }
+    const belowMin = hasMin && (Argument < minValue)
+    const aboveMax = hasMax && (Argument > maxValue)
+    switch (true) {
+      case (belowMin && hasMax) || (aboveMax && hasMin):
+        throw new RangeError(
+          `the given ${escaped(Description)} (${Argument}) is outside ` +
+          `the allowed range (${minValue}...${maxValue})`
+        )
+      case belowMin:
+        throw new RangeError(
+          `the given ${escaped(Description)} is below the allowed ` +
+          `minimum (${Argument} < ${minValue})`
+        )
+      case aboveMax:
+        throw new RangeError(
+          `the given ${escaped(Description)} exceeds the allowed ` +
+          `maximum (${Argument} > ${maxValue})`
+        )
     }
 
     return Argument.valueOf()
@@ -1115,15 +1026,9 @@
 
 /**** allow[ed]StringMatching ****/
 
-  export function allowStringMatching (
-    Description:string, Argument:any, Pattern:RegExp
-  ):string|null|undefined {
-    return (Argument == null
-      ? Argument
-      : expectedStringMatching(Description, Argument, Pattern)
-    )
-  }
-  export const allowedStringMatching = allowStringMatching
+  export const allowStringMatching = /*#__PURE__*/ allowVariantOf(
+    expectStringMatching, 'allowStringMatching'
+  ), allowedStringMatching = allowStringMatching
 
 /**** expect[ed]StringMatching ****/
 
@@ -1132,13 +1037,10 @@
   ):string {
     expectString(Description, Argument)
 
-    if (Pattern.test(Argument)) {
-      return Argument.valueOf()
-    } else {
-      throwError(
-        `InvalidArgument: the given ${escaped(Description)} does not match the specified pattern`
-      )
-    }
+    if (Pattern.test(Argument)) { return Argument.valueOf() }
+    throwError(
+      `InvalidArgument: the given ${escaped(Description)} does not match the specified pattern`
+    )
   }
   export const expectedStringMatching = expectStringMatching
 
@@ -1244,43 +1146,27 @@
 
 /**** allow[ed]Array ****/
 
-  export function allowArray (Description:string, Argument:any):any[]|null|undefined {
-    return (Argument == null
-      ? Argument
-      : expectedArray(Description,Argument)
-    )
-  }
-  export const allowedArray = allowArray
+  export const allowArray = /*#__PURE__*/ allowVariantOf(
+    expectArray, 'allowArray'
+  ), allowedArray = allowArray
 
 /**** expect[ed]Array ****/
 
   export function expectArray (Description:string, Argument:any):any[] {
-    if (Argument == null) {
-      throwError(`MissingArgument: no ${escaped(Description)} given`)
-    }
+    if (Argument == null) missingArgument(Description)
 
-    if (ValueIsArray(Argument)) {
-      return Argument
-    } else {
-      throwError(
-        `InvalidArgument: the given ${escaped(Description)} is no JavaScript array`
-      )
-    }
+    if (ValueIsArray(Argument)) { return Argument }
+    throwError(
+      `InvalidArgument: the given ${escaped(Description)} is no JavaScript array`
+    )
   }
   export const expectedArray = expectArray
 
 /**** allow[ed]List ****/
 
-  export function allowList (
-    Description:string, Argument:any, Expectation?:string,
-    minLength?:number, maxLength?:number
-  ):any[]|null|undefined {
-    return (Argument == null
-      ? Argument
-      : expectedList(Description, Argument, Expectation, minLength,maxLength)
-    )
-  }
-  export const allowedList = allowList
+  export const allowList = /*#__PURE__*/ allowVariantOf(
+    expectList, 'allowList'
+  ), allowedList = allowList
 
 /**** expect[ed]List ****/
 
@@ -1288,38 +1174,24 @@
     Description:string, Argument:any, Expectation?:string,
     minLength?:number, maxLength?:number
   ):any[] {
-    if (Argument == null) {
-      throwError(`MissingArgument: no ${escaped(Description)} given`)
-    }
+    if (Argument == null) missingArgument(Description)
 
-    if (ValueIsList(Argument, minLength,maxLength)) {
-      return Argument
-    } else {
-      throwError(
-        `InvalidArgument: the given ${escaped(Description)} is ` + (
-          Expectation == null
-          ? 'either not a list or contains an invalid number of elements'
-          : 'no ' + escaped(Expectation)
-        )
+    if (ValueIsList(Argument, minLength,maxLength)) { return Argument }
+    throwError(
+      `InvalidArgument: the given ${escaped(Description)} is ` + (
+        Expectation == null
+        ? 'either not a list or contains an invalid number of elements'
+        : 'no ' + escaped(Expectation)
       )
-    }
+    )
   }
   export const expectedList = expectList
 
 /**** allow[ed]ListSatisfying ****/
 
-  export function allowListSatisfying (
-    Description:string, Argument:any, Validator:(Value:any) => boolean,
-    Expectation?:string, minLength?:number, maxLength?:number
-  ):any[]|null|undefined {
-    return (Argument == null
-      ? Argument
-      : expectedListSatisfying(
-          Description, Argument, Validator, Expectation, minLength,maxLength
-        )
-    )
-  }
-  export const allowedListSatisfying = allowListSatisfying
+  export const allowListSatisfying = /*#__PURE__*/ allowVariantOf(
+    expectListSatisfying, 'allowListSatisfying'
+  ), allowedListSatisfying = allowListSatisfying
 
 /**** expect[ed]ListSatisfying ****/
 
@@ -1327,110 +1199,74 @@
     Description:string, Argument:any, Validator:(Value:any) => boolean,
     Expectation?:string, minLength?:number, maxLength?:number
   ):any[] {
-    if (Argument == null) {
-      throwError(`MissingArgument: no ${escaped(Description)} given`)
-    }
+    if (Argument == null) missingArgument(Description)
 
     if (ValueIsListSatisfying(Argument,Validator, minLength,maxLength)) {
       return Argument
-    } else {
-      throwError(
-        `InvalidArgument: the given ${escaped(Description)} is ` + (
-          Expectation == null
-          ? 'either not a list or contains invalid elements'
-          : 'no ' + escaped(Expectation)
-        )
-      )
     }
+    throwError(
+      `InvalidArgument: the given ${escaped(Description)} is ` + (
+        Expectation == null
+        ? 'either not a list or contains invalid elements'
+        : 'no ' + escaped(Expectation)
+      )
+    )
   }
   export const expectedListSatisfying = expectListSatisfying
 
 /**** allow/expect[ed]ListOf ****/
 
-  export function allowListOf (
-    Description:string, Argument:any, ValueList:any[]
-  ):any[]|null|undefined {
-    return (Argument == null
-      ? Argument
-      : expectedListOf(Description, Argument, ValueList)
-    )
-  }
-  export const allowedListOf = allowListOf
+  export const allowListOf = /*#__PURE__*/ allowVariantOf(
+    expectListOf, 'allowListOf'
+  ), allowedListOf = allowListOf
 
   export function expectListOf (
     Description:string, Argument:any, ValueList:any[]
   ):any[] {
-    if (Argument == null) {
-      throwError(`MissingArgument: no ${escaped(Description)} given`)
-    } else {
-      if (ValueIsListSatisfying(Argument,(Value:any) => ValueIsOneOf(Value,ValueList))) {
-        return Argument
-      } else {
-        throwError(`InvalidArgument: the given value is no ${escaped(Description)}`)
-      }
-    }
+    if (Argument == null) missingArgument(Description)
+
+    if (ValueIsListOf(Argument,ValueList)) { return Argument }
+    throwError(`InvalidArgument: the given value is no ${escaped(Description)}`)
   }
   export const expectedListOf = expectListOf
 
 /**** allow[ed]InstanceOf ****/
 
-  export function allowInstanceOf (
-    Description:string, Argument:any, constructor:Function, Expectation:string
-  ):any|null|undefined {
-    return (Argument == null
-      ? Argument
-      : expectedInstanceOf(Description, Argument, constructor, Expectation)
-    )
-  }
-  export const allowedInstanceOf = allowInstanceOf
+  export const allowInstanceOf = /*#__PURE__*/ allowVariantOf(
+    expectInstanceOf, 'allowInstanceOf'
+  ), allowedInstanceOf = allowInstanceOf
 
 /**** expect[ed]InstanceOf ****/
 
   export function expectInstanceOf (
     Description:string, Argument:any, constructor:Function, Expectation:string
   ):any {
-    if (Argument == null) {
-      throwError(`MissingArgument: no ${escaped(Description)} given`)
-    }
+    if (Argument == null) missingArgument(Description)
 
-    if (! (Argument instanceof constructor)) {
-      throwError(
-        `InvalidArgument: the given ${escaped(Description)} is no ${escaped(Expectation)}`
-      )
-    }
-
-    return Argument
+    if (Argument instanceof constructor) { return Argument }
+    throwError(
+      `InvalidArgument: the given ${escaped(Description)} is no ${escaped(Expectation)}`
+    )
   }
   export const expectedInstanceOf = expectInstanceOf
 
 /**** allow[ed]ValueInheritingFrom ****/
 
-  export function allowValueInheritingFrom (
-    Description:string, Argument:any, prototype:any, Expectation:string
-  ):any|null|undefined {
-    return (Argument == null
-      ? Argument
-      : expectedValueInheritingFrom(Description, Argument, prototype, Expectation)
-    )
-  }
-  export const allowedValueInheritingFrom = allowValueInheritingFrom
+  export const allowValueInheritingFrom = /*#__PURE__*/ allowVariantOf(
+    expectValueInheritingFrom, 'allowValueInheritingFrom'
+  ), allowedValueInheritingFrom = allowValueInheritingFrom
 
 /**** expect[ed]ValueInheritingFrom ****/
 
   export function expectValueInheritingFrom (
     Description:string, Argument:any, prototype:any, Expectation:string
   ):any {
-    if (Argument == null) {
-      throwError(`MissingArgument: no ${escaped(Description)} given`)
-    }
+    if (Argument == null) missingArgument(Description)
 
-    if (prototype.isPrototypeOf(Argument)) {
-      return Argument
-    } else {
-      throwError(
-        `InvalidArgument: the given ${escaped(Description)} is no ${escaped(Expectation)}`
-      )
-    }
+    if (prototype.isPrototypeOf(Argument)) { return Argument }
+    throwError(
+      `InvalidArgument: the given ${escaped(Description)} is no ${escaped(Expectation)}`
+    )
   }
   export const expectedValueInheritingFrom = expectValueInheritingFrom
 
@@ -1476,39 +1312,23 @@
 
 /**** allow[ed]OneOf ****/
 
-  export function allowOneOf (
-    Description:string, Argument:any, ValueList:any[]
-  ):any|null|undefined {
-    return (Argument == null
-      ? Argument
-      : expectedOneOf(Description, Argument, ValueList)
-    )
-  }
-  export const allowedOneOf = allowOneOf
+  export const allowOneOf = /*#__PURE__*/ allowVariantOf(
+    expectOneOf, 'allowOneOf'
+  ), allowedOneOf = allowOneOf
 
 /**** expect[ed]OneOf ****/
 
   export function expectOneOf (
     Description:string, Argument:any, ValueList:any[]
   ):any {
-    if (Argument == null) {
-      throwError(`MissingArgument: no ${escaped(Description)} given`)
-    }
+    if (Argument == null) missingArgument(Description)
 
     if (ValueIsOneOf(Argument,ValueList)) {
-      switch (true) {               // unboxes primitives - but nothing else, as
-        case Argument instanceof Boolean:   // "valueOf" may return other values
-        case Argument instanceof Number:       // for other objects (e.g. Dates)
-        case Argument instanceof String:
-          return Argument.valueOf()
-        default:
-          return Argument
-      }
-    } else {
-      throwError(
-        `InvalidArgument: the given ${escaped(Description)} is not among the supported values`
-      )
-    }
+      return unboxed(Argument)     // unboxes primitives - but nothing else, as
+    }        // "valueOf" may return other values for other objects (e.g. Dates)
+    throwError(
+      `InvalidArgument: the given ${escaped(Description)} is not among the supported values`
+    )
   }
   export const expectedOneOf = expectOneOf
 
@@ -1541,6 +1361,28 @@
   export const expectURL = /*#__PURE__*/ ValidatorForClassifier<string>(
     ValueIsURL, rejectNil, 'URL'
   ), expectedURL = expectURL
+
+/**** allow[ed]AbsoluteURL ****/
+
+  export const allowAbsoluteURL = /*#__PURE__*/ allowVariantOf(
+    expectAbsoluteURL, 'allowAbsoluteURL'
+  ), allowedAbsoluteURL = allowAbsoluteURL
+
+/**** expect[ed]AbsoluteURL ****/
+
+  export function expectAbsoluteURL (
+    Description:string, Argument:any, allowedProtocols?:string[]
+  ):string {
+    if (Argument == null) missingArgument(Description)
+
+    if (ValueIsAbsoluteURL(Argument,allowedProtocols)) {
+      return Argument.valueOf()
+    }
+    throwError(
+      `InvalidArgument: the given ${escaped(Description)} is no valid absolute URL`
+    )
+  }
+  export const expectedAbsoluteURL = expectAbsoluteURL
 
 /**** allow/expect[ed]PhoneNumber ****/
 
@@ -1754,73 +1596,69 @@
 
 /**** escaped - escapes all control characters in a given string ****/
 
-  const EscSequenceScanPattern =
-    /\\x[0-9a-fA-F]{2}|\\u[0-9a-fA-F]{4}|\\u\{[0-9a-fA-F]+\}|\\[0bfnrtv'"\\\/]?/g
-  const CtrlCharCodePattern = /[\x00-\x1f\x7f-\x9f]/g
+  const EscSequenceSource = (         // core of several escaping patterns below
+    String.raw`\\x[0-9a-fA-F]{2}|\\u[0-9a-fA-F]{4}|` +
+    String.raw`\\u\{[0-9a-fA-F]+\}|\\[0bfnrtv'"\\\/]`
+  )
+  const EscSequenceScanPattern = new RegExp(EscSequenceSource + '?','g')
+  const CtrlCharCodePattern    = /[\x00-\x1f\x7f-\x9f]/g
+
+  const CtrlCharEscapeSet:{ [Char:string]:string } = {
+    '\0':'\\0', '\b':'\\b', '\f':'\\f', '\n':'\\n',
+    '\r':'\\r', '\t':'\\t', '\v':'\\v'
+  }
+
+  function escapedCtrlChar (Char:string):string {
+    return CtrlCharEscapeSet[Char] ?? (
+      '\\x' + Char.charCodeAt(0).toString(16).padStart(2,'0')
+    )
+  }
 
   export function escaped (Text:string):string {
     return Text
       .replace(EscSequenceScanPattern, (Match) => (
         Match === '\\' ? '\\\\' : Match
       ))
-      .replace(CtrlCharCodePattern, (Match) => {
-        switch (Match) {
-          case '\0': return '\\0'
-          case '\b': return '\\b'
-          case '\f': return '\\f'
-          case '\n': return '\\n'
-          case '\r': return '\\r'
-          case '\t': return '\\t'
-          case '\v': return '\\v'
-          default: {
-            const HexCode = Match.charCodeAt(0).toString(16)
-            return '\\x' + '00'.slice(HexCode.length) + HexCode
-          }
-        }
-      })
+      .replace(CtrlCharCodePattern, escapedCtrlChar)
   }
 
 /**** unescaped - evaluates all escape sequences in a given string ****/
 
-  const EscSequenceEvalPattern =
-    /\\[0bfnrtv'"\\\/]|\\x[0-9a-fA-F]{2}|\\u[0-9a-fA-F]{4}|\\u\{[0-9a-fA-F]+\}/g
+  const EscSequenceEvalPattern = new RegExp(EscSequenceSource,'g')
+
+  const EscapeSequenceSet:{ [Sequence:string]:string } = {
+    ...Object.fromEntries(Object.entries(CtrlCharEscapeSet).map(
+      ([ Char,Sequence ]) => [ Sequence,Char ]
+    )),
+    "\\'":"'", '\\"':'"', '\\\\':'\\'
+  }
+
+  function unescapedCodePoint (Match:string):string {
+    const CodePoint = (
+      Match.charAt(2) === '{'
+      ? parseInt(Match.slice(3,-1),16)          // handles "\u{...}" escapes
+      : parseInt(Match.slice(2),16)          // handles "\xNN" and "\uNNNN"
+    )
+    return (
+      CodePoint <= 0x10FFFF ? String.fromCodePoint(CodePoint) : Match
+    )                       // leaves invalid code point escapes untouched
+  }
 
   export function unescaped (Text:string):string {
-    return Text
-      .replace(EscSequenceEvalPattern, (Match) => {
-        switch (Match) {
-          case '\\0':  return '\0'
-          case '\\b':  return '\b'
-          case '\\f':  return '\f'
-          case '\\n':  return '\n'
-          case '\\r':  return '\r'
-          case '\\t':  return '\t'
-          case '\\v':  return '\v'
-          case "\\'":  return "'"
-          case '\\"':  return '"'
-          case '\\\\': return '\\'
-          default: {
-            const CodePoint = (
-              Match.charAt(2) === '{'
-              ? parseInt(Match.slice(3,-1),16)      // handles "\u{...}" escapes
-              : parseInt(Match.slice(2),16)      // handles "\xNN" and "\uNNNN"
-            )
-            return (
-              CodePoint <= 0x10FFFF ? String.fromCodePoint(CodePoint) : Match
-            )                      // leaves invalid code point escapes untouched
-          }
-        }
-      })
+    return Text.replace(EscSequenceEvalPattern, (Match) => (
+      EscapeSequenceSet[Match] ?? unescapedCodePoint(Match)
+    ))
   }
 
 /**** quotable - makes a given string ready to be put in quotes ****/
 
-  const EscSeqOrSglQuotePattern =
-    /\\x[0-9a-fA-F]{2}|\\u[0-9a-fA-F]{4}|\\u\{[0-9a-fA-F]+\}|\\[0bfnrtv'"\\\/]?|'/g
-  const EscSeqOrDblQuotePattern =
-    /\\x[0-9a-fA-F]{2}|\\u[0-9a-fA-F]{4}|\\u\{[0-9a-fA-F]+\}|\\[0bfnrtv'"\\\/]?|"/g
-  const EscSeqOrBackQuotePattern =
-    /\\x[0-9a-fA-F]{2}|\\u[0-9a-fA-F]{4}|\\u\{[0-9a-fA-F]+\}|\\[0bfnrtv'"\\\/]?|`|\$\{/g
+  const EscSeqOrSglQuotePattern  = new RegExp(EscSequenceSource + "?|'",'g')
+  const EscSeqOrDblQuotePattern  = new RegExp(EscSequenceSource + '?|"','g')
+  const EscSeqOrBackQuotePattern = new RegExp(EscSequenceSource + '?|`|\\$\\{','g')
+
+  const QuoteEscapeSet:{ [Char:string]:string } = {
+    "'":"\\'", '"':'\\"', '`':'\\`', '${':'\\${', '\\':'\\\\'
+  }
 
   export type QuoteCharacter = '"' | "'" | '`'
 
@@ -1831,31 +1669,8 @@
       : (Quote === '`' ? EscSeqOrBackQuotePattern : EscSeqOrDblQuotePattern)
     )
     return Text
-      .replace(QuotePattern, (Match) => {
-        switch (Match) {
-          case "'":  return "\\'"
-          case '"':  return '\\"'
-          case '`':  return '\\`'
-          case '${': return '\\${'
-          case '\\': return '\\\\'
-          default:   return Match
-        }
-      })
-      .replace(CtrlCharCodePattern, (Match) => {
-        switch (Match) {
-          case '\0': return '\\0'
-          case '\b': return '\\b'
-          case '\f': return '\\f'
-          case '\n': return '\\n'
-          case '\r': return '\\r'
-          case '\t': return '\\t'
-          case '\v': return '\\v'
-          default: {
-            const HexCode = Match.charCodeAt(0).toString(16)
-            return '\\x' + '00'.slice(HexCode.length) + HexCode
-          }
-        }
-      })
+      .replace(QuotePattern, (Match) => QuoteEscapeSet[Match] ?? Match)
+      .replace(CtrlCharCodePattern, escapedCtrlChar)
   }
 
 /**** quoted ****/
@@ -1887,7 +1702,7 @@
         case '\\': return '&#92;'
         default: {
           const Result = Match.charCodeAt(0).toString(16)
-          return '&#x0000'.substring(0,7-Result.length) + Result + ';'
+          return '&#x' + Result.padStart(4,'0') + ';'
         }
       }
     })
@@ -1923,10 +1738,10 @@
 
     let Mode:ValuesDifferMode|undefined = undefined
     let Tolerance:number|undefined      = undefined
-    if ((ModeOrOptions != null) && (typeof ModeOrOptions === 'object')) {
+    if (typeof ModeOrOptions === 'string') {  // narrows in any TS version, with
+      Mode = ModeOrOptions                    // or without "strictNullChecks"
+    } else if (ModeOrOptions != null) {
       Mode = ModeOrOptions.Mode; Tolerance = ModeOrOptions.Tolerance
-    } else {
-      Mode = ModeOrOptions
     }
 
     let thisType = typeof thisValue
@@ -2260,6 +2075,16 @@
              lightgrey:'rgba(211,211,211,1.0)',
   })
 
+/**** patterns for the various CSS color notations ****/
+
+  const HexColor6Pattern = /^#[a-fA-F0-9]{6}$/
+  const HexColor8Pattern = /^#[a-fA-F0-9]{8}$/
+
+  const RGBColorPattern  =                                        // not perfect
+    /^rgb\(([0-9]+),\s*([0-9]+),\s*([0-9]+)\)$/i
+  const RGBAColorPattern =                                        // not perfect
+    /^rgba\(([0-9]+),\s*([0-9]+),\s*([0-9]+),\s*([01]?[.][0-9]+|[01])\)$/i
+
 /**** HexColor - converts a given color to #rrggbbaa ****/
 
   export function HexColor (Color:string):string {
@@ -2269,23 +2094,15 @@
       Color = ColorSet[lowerColor]
     } // do not return here as color is now in RGBA format
 
-    if (/^#[a-fA-F0-9]{6}$/.test(Color)) {
-      return Color + 'FF'
-    }
+    if (HexColor6Pattern.test(Color)) { return Color + 'FF' }
+    if (HexColor8Pattern.test(Color)) { return Color }
 
-    if (/^#[a-fA-F0-9]{8}$/.test(Color)) {
-      return Color
-    }
-
-    const HexDigit = '0123456789ABCDEF'
     function dec2hex (Value:number):string {
       Value = Math.max(0, Math.min(255, Math.round(Value)))
-      return HexDigit[Math.trunc(Value / 16)] + HexDigit[Value % 16]
+      return Value.toString(16).toUpperCase().padStart(2,'0')
     }
 
-    const RGBPattern = /^rgb\(([0-9]+),\s*([0-9]+),\s*([0-9]+)\)$/i // not perfect
-
-    let Match = RGBPattern.exec(Color)
+    let Match = RGBColorPattern.exec(Color)
     if (Match != null) {
       return ('#' +
         dec2hex(parseInt(Match[1],10)) +
@@ -2294,9 +2111,7 @@
       )
     }
 
-    const RGBAPattern = /^rgba\(([0-9]+),\s*([0-9]+),\s*([0-9]+),\s*([01]?[.][0-9]+|[01])\)$/i // not perfect
-
-    Match = RGBAPattern.exec(Color)
+    Match = RGBAColorPattern.exec(Color)
     if (Match != null) {
       return ('#' +
         dec2hex(parseInt(Match[1],10)) +
@@ -2318,7 +2133,7 @@
       return ColorSet[lowerColor]             // color is already in RGBA format
     }
 
-    if (/^#[a-fA-F0-9]{6}$/.test(Color)) {
+    if (HexColor6Pattern.test(Color)) {
       return ('rgba(' +
         parseInt(Color.slice(1,3),16) + ',' +
         parseInt(Color.slice(3,5),16) + ',' +
@@ -2326,7 +2141,7 @@
       ')')
     }
 
-    if (/^#[a-fA-F0-9]{8}$/.test(Color)) {
+    if (HexColor8Pattern.test(Color)) {
       return ('rgba(' +
         parseInt(Color.slice(1,3),16) + ',' +
         parseInt(Color.slice(3,5),16) + ',' +
@@ -2335,17 +2150,11 @@
       ')')
     }
 
-    const RGBPattern = /^rgb\(([0-9]+),\s*([0-9]+),\s*([0-9]+)\)$/i //not perfect
-
-    let Match = RGBPattern.exec(Color)
-    if (Match != null) {
+    if (RGBColorPattern.test(Color)) {
       return Color.slice(0,Color.length-1) + ',1)'
     }
 
-    const RGBAPattern = /^rgba\(([0-9]+),\s*([0-9]+),\s*([0-9]+),\s*([01]?[.][0-9]+|[01])\)$/i // not perfect
-
-    Match = RGBAPattern.exec(Color)
-    if (Match != null) { return Color }
+    if (RGBAColorPattern.test(Color)) { return Color }
 
     throwError('InvalidArgument: the given Value is not a valid CSS Color specification')
   }
