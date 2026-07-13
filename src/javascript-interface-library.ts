@@ -1626,10 +1626,13 @@
 
   const EscSequenceEvalPattern = new RegExp(EscSequenceSource,'g')
 
+  // written as a static literal (not derived from CtrlCharEscapeSet via
+  // Object.entries/map/fromEntries): Rollup can't prove those calls are
+  // side-effect-free, which made agadoo report the module as not
+  // tree-shakeable even though this table is only used when unreferenced
   const EscapeSequenceSet:{ [Sequence:string]:string } = {
-    ...Object.fromEntries(Object.entries(CtrlCharEscapeSet).map(
-      ([ Char,Sequence ]) => [ Sequence,Char ]
-    )),
+    '\\0':'\0', '\\b':'\b', '\\f':'\f', '\\n':'\n',
+    '\\r':'\r', '\\t':'\t', '\\v':'\v',
     "\\'":"'", '\\"':'"', '\\\\':'\\'
   }
 
